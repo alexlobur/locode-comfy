@@ -1,16 +1,17 @@
-from ..utils.utils import any_type
+from ...utils.anytype import any_type
 
 
 #---
 #
 #   Массив текстов
 #
+#
 #---
 class LoTextArray:
     """Массив текстов.
 
     Правила:
-      - На вход принимается счетчик (INT).
+      - На вход принимается индекс (INT).
       - В списке могут быть пустые текста.
       - На выходе будет значение в зависимости от модуля счетчика и количества значений в списке.
     """
@@ -25,33 +26,41 @@ class LoTextArray:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "counter": ("INT", {"default": 0, "step": 1}),
-                "text_array": ("*", {"forceInput": True}),
+                "index_seed": ("INT", {"default": 0, "step": 1}),
             },
+            "hidden": {
+                "text_array": ("*"),
+            }
         }
 
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("STRING",)
     FUNCTION = "compute"
     CATEGORY = "locode"
+    AUTHOR = "LoCode"
+    DEPRECATED = True
+
     OUTPUT_NODE = True
+    DESCRIPTION = """
+        Выбирает текст из массива текстов по индексу `seed_index`.
+        Если индекс выходит за пределы массива в любую сторону, то берется индекс по модулю.
+    """
 
 
-    def compute(self, counter, text_array=None):
+    def compute(self, index_seed, text_array=None):
+
         # Если text_array не передан или пустой, возвращаем пустую строку
         if not text_array:
             return ("",)
-        
-        # Если text_array - это список, используем его
-        if isinstance(text_array, list):
-            values = [str(value) for value in text_array if value and str(value).strip() != '']
-        else:
-            # Если это одиночное значение, преобразуем в список
-            values = [str(text_array)] if str(text_array).strip() != '' else []
-        
+
+        # Получаем значения из массива
+        values = text_array['__value__']
+
+        print(f"index_seed: {index_seed}, text_array: {text_array}, values: {values}")
+
         # Проверяем, что есть хотя бы один непустой текст
         if len(values) == 0:
             return ("",)
-        
+
         # Возвращаем текст по индексу, вычисленному по модулю
-        return (values[counter % len(values)],)
+        return (values[index_seed % len(values)],)

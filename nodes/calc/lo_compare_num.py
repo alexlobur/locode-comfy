@@ -1,3 +1,6 @@
+from ...utils.anytype import any_type
+
+
 #---
 #
 #   Сравнение двух чисел
@@ -17,15 +20,15 @@ class LoCompareNum:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "a": ("*", ),
-                "b": ("*", ),
+                "a": ( any_type, ),
+                "b": ( any_type, ),
                 "operation": (["a>b", "a<b", "a=b", "a!=b", "a>=b", "a<=b", "a % b = 0"], {"default": "a=b"})
             },
         }
 
     # Один выход (логическое значение)
     RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("result",)
+    RETURN_NAMES = ("BOOLEAN",)
     FUNCTION = "compare"
     CATEGORY = "locode"
     OUTPUT_NODE = True

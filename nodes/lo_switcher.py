@@ -1,4 +1,4 @@
-from ..utils.utils import any_type
+from ..utils.anytype import any_type
 
 
 #---

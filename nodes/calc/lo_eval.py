@@ -1,3 +1,5 @@
+from ...utils.anytype import any_type
+
 #---
 #
 #   Вычислить результат выражения с переменными.
@@ -17,9 +19,9 @@ class LoEval:
                 "expression": ("STRING",),
             },
             "optional": {
-                "a" : ("*"),
-                "b" : ("*"),
-                "c" : ("*"),
+                "a" : (any_type, ),
+                "b" : (any_type, ),
+                "c" : (any_type, ),
             },
         }
 
@@ -28,12 +30,14 @@ class LoEval:
     FUNCTION = "compute"
     CATEGORY = "locode"
 
-    def compute(self, expression, a, b, c):
+    def compute(self, expression, a=None, b=None, c=None):
         variables = {
             "a": a,
             "b": b,
             "c": c,
         }
-        result = eval(expression, variables)
-        return (int(round(result)), float(result))
+        # Ограничим доступ к builtins и передадим переменные как locals
+        safe_globals = {"__builtins__": {}}
+        result = eval(expression, safe_globals, variables)
+        return (int(round(float(result))), float(result))
 
