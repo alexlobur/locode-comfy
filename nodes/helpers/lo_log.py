@@ -1,5 +1,6 @@
 import time
-import pygame
+import ctypes
+import os
 from ...utils.anytype import any_type
 
 
@@ -33,14 +34,15 @@ class LoLog:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pass_any": (any_type,),
+                "any": (any_type,),
                 "name": ("STRING",),
-                "reset_after": ("BOOLEAN",),
-                "beep": ("BOOLEAN",),
+                "reset": ("BOOLEAN",),
+                "sound": (["none", "bell", "beep"], {"default": "none"}),
             },
         }
+
     RETURN_TYPES = (any_type,)
-    RETURN_NAMES = ("pass_any",)
+    RETURN_NAMES = ("any",)
 
     FUNCTION = "execute"
     OUTPUT_NODE = True
@@ -54,10 +56,11 @@ Prints any value to the console.
     first_time = None
     previous_time = None
 
+
     #
     #   Вычисляем значение
     #
-    def execute(self, pass_any: any, name: str, reset_after: bool, beep: bool):
+    def execute(self, any: any, name: str, reset: bool, sound: str):
         cls = type(self)
 
         # Текущее время
@@ -71,29 +74,45 @@ Prints any value to the console.
         past_time_delta = "00:00:00" if cls.previous_time is None else time.strftime("%H:%M:%S", time.gmtime(current_time - cls.previous_time))
 
         # Звук оповещения
-        if beep: self.beep()
+        self.beep(sound)
 
         # Сохраняем время прохождения текущего узла
         cls.previous_time = current_time
 
         # Сброс точки отсчета времени
-        if reset_after: cls.first_time = None
+        if reset: cls.first_time = None
 
         # Выводим в консоль
-        print(f"\033[34m{name} [{past_time_delta} / {past_time}]:\n{pass_any}")
+        print(f"\033[34m{name} [{past_time_delta} / {past_time}]:\n{any}\033[0m")
 
         # Возвращаем значение
-        return (pass_any,)
+        return (any,)
 
 
-    def beep(self):
-        pygame.mixer.init()
-        pygame.mixer.music.load("../../res/beep.mp3")
-        pygame.mixer.music.play()
+    #
+    #   Воспроизводим звук оповещения
+    #
+    def beep(self, name: str):
 
+        # имя файла
+        filename = { "bell": "bell.mp3", "beep": "beep.mp3" }.get(name, None)
 
-# print("\033[31mКрасный\033[0m")
-# print("\033[32mЗелёный\033[0m")
-# print("\033[33mЖёлтый\033[0m")
-# print("\033[1;34mСиний жирный\033[0m")        
+        # если такого звука нет, выходим
+        if filename is None: return
+
+        # базовая директория: корень пакета locode-comfy (два уровня вверх от этого файла)
+        base_dir = os.path.abspath( os.path.dirname(__file__) + "/../../" )
+
+        # если файл не найден, выводим сообщение и выходим
+        if not os.path.exists(os.path.join(base_dir, "res", filename)): return
+
+        # путь к файлу
+        path = os.path.join(base_dir, "res", filename)
+        if not os.path.exists(path): return
+
+        # воспроизводим звук
+        mci = ctypes.windll.winmm.mciSendStringW
+        mci(f'open "{path}" type mpegvideo alias mymp3', None, 0, 0)
+        mci('play mymp3 wait', None, 0, 0)
+        mci('close mymp3', None, 0, 0)
 
