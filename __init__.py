@@ -1,6 +1,5 @@
 from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
 from .nodes.helpers.lo_log import LoLog
-from .nodes.params.lo_text_array import LoTextArray
 from .nodes.params.lo_text_array_2 import LoTextArray2
 from .nodes.calc.lo_eval import LoEval
 from .nodes.calc.lo_random_num import LoRandomNum
@@ -21,7 +20,6 @@ NODE_CLASS_MAPPINGS = {
     "LoGetVideoProps": LoGetVideoProps,
     "LoRandomNum"    : LoRandomNum,
     "LoRandomBool"   : LoRandomBool,
-    "LoTextArray"    : LoTextArray,
     "LoTextArray2"   : LoTextArray2,
 }
 
@@ -37,7 +35,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LoGetVideoProps": "Lo:GetVideoProps",
     "LoRandomNum"    : "Lo:RandomNum",
     "LoRandomBool"   : "Lo:RandomBool",
-    "LoTextArray"    : "Lo:TextArray",
     "LoTextArray2"   : "Lo:TextArray2",
 }
 

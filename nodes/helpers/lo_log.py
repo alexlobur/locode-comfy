@@ -1,7 +1,6 @@
 import time
-import ctypes
-import os
 from ...utils.anytype import any_type
+from ...utils import play_sound
 
 
 #---
@@ -19,7 +18,7 @@ class LoLog:
         - любое значение (ANY).
         - Имя узла в консоли (STRING).
         - Сброс точки отсчета времени после вывода (BOOLEAN).
-        - Звук оповещения (BOOLEAN).
+        - Звук оповещения (STRING).
       - На выходе:
         - любое значение (ANY).
     """
@@ -32,12 +31,15 @@ class LoLog:
 
     @classmethod
     def INPUT_TYPES(cls):
+        sounds = list(play_sound.SOUNDS.keys())
+        sounds.insert(0, "none")
+
         return {
             "required": {
                 "any": (any_type,),
                 "name": ("STRING",),
                 "reset": ("BOOLEAN",),
-                "sound": (["none", "bell", "beep"], {"default": "none"}),
+                "sound": (sounds, {"default": "none"}),
             },
         }
 
@@ -74,7 +76,7 @@ Prints any value to the console.
         past_time_delta = "00:00:00" if cls.previous_time is None else time.strftime("%H:%M:%S", time.gmtime(current_time - cls.previous_time))
 
         # Звук оповещения
-        self.beep(sound)
+        play_sound.play(sound)
 
         # Сохраняем время прохождения текущего узла
         cls.previous_time = current_time
@@ -83,36 +85,8 @@ Prints any value to the console.
         if reset: cls.first_time = None
 
         # Выводим в консоль
-        print(f"\033[34m{name} [{past_time_delta} / {past_time}]:\n{any}\033[0m")
+        print(f"    \033[34m{name} [{past_time_delta} / {past_time}]:\n{any}\033[0m")
 
         # Возвращаем значение
         return (any,)
-
-
-    #
-    #   Воспроизводим звук оповещения
-    #
-    def beep(self, name: str):
-
-        # имя файла
-        filename = { "bell": "bell.mp3", "beep": "beep.mp3" }.get(name, None)
-
-        # если такого звука нет, выходим
-        if filename is None: return
-
-        # базовая директория: корень пакета locode-comfy (два уровня вверх от этого файла)
-        base_dir = os.path.abspath( os.path.dirname(__file__) + "/../../" )
-
-        # если файл не найден, выводим сообщение и выходим
-        if not os.path.exists(os.path.join(base_dir, "res", filename)): return
-
-        # путь к файлу
-        path = os.path.join(base_dir, "res", filename)
-        if not os.path.exists(path): return
-
-        # воспроизводим звук
-        mci = ctypes.windll.winmm.mciSendStringW
-        mci(f'open "{path}" type mpegvideo alias mymp3', None, 0, 0)
-        mci('play mymp3 wait', None, 0, 0)
-        mci('close mymp3', None, 0, 0)
 

@@ -78,6 +78,8 @@
 
 .text-array-widget .tabs .tab .tab-delete > svg{
     width: 10px; height: 10px;
+    fill: currentColor;
+    stroke: none;
 }
 
 .text-array-widget .tabs .tab.active:HOVER .tab-delete{

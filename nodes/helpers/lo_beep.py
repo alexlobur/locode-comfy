@@ -1,20 +1,24 @@
 from ...utils.anytype import any_type
+from ...utils import play_sound
+
 
 #---
 #
-#   Звук оповещения при проходе узла
+#   Вывести звук оповещения
 #
 #---
 class LoBeep:
-    """Звук оповещения при проходе узла.
+    """
+    Воспроизводит звук оповещения.
 
     Правила:
-      - На вход не принимается ничего.
-      - На выходе не возвращается ничего.
+      - На вход принимаются:
+        - любое значение (ANY).
+        - Звук оповещения (STRING).
+      - На выходе:
+        - любое значение (ANY).
     """
 
-
-    OUTPUT_NODE = True
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
@@ -23,21 +27,40 @@ class LoBeep:
 
     @classmethod
     def INPUT_TYPES(cls):
+        # Звуки оповещения
+        sounds = list(play_sound.SOUNDS.keys())
+        sounds.insert(0, "none")
+
         return {
             "required": {
-                "pass_any": ( any_type, ),
+                "any": (any_type,),
+                "sound": (sounds, {"default": "none"}),
             },
         }
 
+
     RETURN_TYPES = (any_type,)
-    RETURN_NAMES = ("pass_any",)
+    RETURN_NAMES = ("any",)
+
     FUNCTION = "execute"
-    CATEGORY = "locode"
     OUTPUT_NODE = True
 
-    def execute(self, pass_any=None):
+    CATEGORY = "locode"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Plays a sound notification.
+"""
 
-        # звук оповещения
 
-        # возвращаем значение
+    #
+    #   Вычисляем значение
+    #
+    def execute(self, any: any, sound: str):
+        # Звук оповещения
+        play_sound.play(sound)
+        # Возвращаем значение
         return (any,)
+
+
+
+

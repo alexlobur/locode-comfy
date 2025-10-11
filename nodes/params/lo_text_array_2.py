@@ -52,9 +52,9 @@ If the index is out of bounds in either direction, the index is wrapped using mo
 So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 = 3.
 Delimiter can be any string. You can use `\\n` for new lines and `\\t` for tabs.
 Outputs:
-  <li> `INDEX_STRING`: Text at the given index. </li>
-  <li> `TAB_STRING`: Text of the active tab. </li>
-  <li> `CONCATENATE`: All texts joined into a single string with the delimiter. </li>
+- `INDEX_STRING`: Text at the given index.
+- `TAB_STRING`: Text of the active tab.
+- `CONCATENATE`: All texts joined into a single string with the delimiter.
 """
 
 
