@@ -16,7 +16,7 @@ class LoEval:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "expression": ("STRING",),
+                "expression": ("STRING", {"default": "a + b" }),
             },
             "optional": {
                 "a" : (any_type, ),
@@ -29,6 +29,12 @@ class LoEval:
     RETURN_NAMES = ("int", "float")
     FUNCTION = "compute"
     CATEGORY = "locode"
+    DESCRIPTION = """
+    Evaluates an expression with variables.
+    Outputs:
+    - `int`: Integer result.
+    - `float`: Float result.
+    """
 
     def compute(self, expression, a=None, b=None, c=None):
         variables = {

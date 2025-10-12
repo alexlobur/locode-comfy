@@ -40,8 +40,8 @@ class LoTextArray2:
             }
         }
 
-    RETURN_TYPES = ("STRING", "STRING", "STRING")
-    RETURN_NAMES = ("INDEX_STRING", "ACTIVE_TAB_STRING", "CONCATENATE")
+    RETURN_TYPES = ("STRING", "STRING", "STRING", "LIST")
+    RETURN_NAMES = ("INDEX_STRING", "ACTIVE_TAB_STRING", "CONCATENATE", "LIST")
     FUNCTION = "execute"
 
     CATEGORY = "locode"
@@ -90,4 +90,4 @@ Outputs:
         active_string = texts[active_tab]
         concatenated = delimiter.join(texts)
 
-        return (selected_by_index, active_string, concatenated)
+        return (selected_by_index, active_string, concatenated, texts)
