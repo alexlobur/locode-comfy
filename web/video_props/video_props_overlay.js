@@ -44,6 +44,7 @@ app.registerExtension({
             const height = Number(getWidgetValueByName(this, "height", 0)) || 0;
             const duration = Number(getWidgetValueByName(this, "duration", 0)) || 0;
             const fps = Number(getWidgetValueByName(this, "fps", 0)) || 0;
+            const pixels = width*height;
 
             // Проверка валидности значений
             if (width <= 0 || height <= 0 || duration <= 0 || fps <= 0) return;
@@ -51,8 +52,9 @@ app.registerExtension({
             const { frames, durationFinal } = computeFrames(duration, fps);
 
             // Формируем строки
+            const pixelsStr = pixels > 1000*1000 ? `${(pixels/1000/1000).toFixed(2)}Mpx` : `${pixels}px`;
             const lines = [
-                `size: ${width}×${height}`,
+                `size: ${width}x${height} ${pixelsStr}`,
                 `duration: ${duration}s`,
                 `fps: ${fps}`,
                 `frames: ${frames} → ${durationFinal}s`,

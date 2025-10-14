@@ -23,9 +23,8 @@ class LoNumListFromStr:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "hidden": {
+            "required": {
                 "string": ("STRING", {"default": "1, 2, 3", "multiline": True }),
-                "delimiter": ("STRING", {"default": "\\n" }),
             },
         }
 
@@ -85,8 +84,9 @@ class LoListFromStr:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "hidden": {
+            "required": {
                 "string": ("STRING", {"default": "1\n 2\n 3\n" }),
+                "delimiter": ("STRING", {"default": "\\n" }),
             },
         }
 
