@@ -20,8 +20,8 @@ class LoCompareNum:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "a": ( "NUMBER", ),
-                "b": ( "NUMBER", ),
+                "a": ( any_type, ),
+                "b": ( any_type, ),
                 "operation": (["a>b", "a<b", "a=b", "a!=b", "a>=b", "a<=b", "a % b = 0"], {"default": "a=b"})
             },
         }
