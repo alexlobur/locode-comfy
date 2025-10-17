@@ -20,8 +20,8 @@ class LoCompareNum:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "a": ( any_type, ),
-                "b": ( any_type, ),
+                "a": ( "NUMBER", ),
+                "b": ( "NUMBER", ),
                 "operation": (["a>b", "a<b", "a=b", "a!=b", "a>=b", "a<=b", "a % b = 0"], {"default": "a=b"})
             },
         }
@@ -30,7 +30,7 @@ class LoCompareNum:
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("BOOLEAN",)
     FUNCTION = "compare"
-    CATEGORY = "locode"
+    CATEGORY = "locode/calc"
     OUTPUT_NODE = True
 
     def compare(self, a, b, operation: str = "a=b"):

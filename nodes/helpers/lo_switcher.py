@@ -1,4 +1,4 @@
-from ..utils.anytype import any_type
+from ...utils.anytype import any_type
 
 
 #---
@@ -50,7 +50,7 @@ class LoSwitcher:
     RETURN_TYPES = (any_type,)
     RETURN_NAMES = ("result",)
     FUNCTION = "compute"
-    CATEGORY = "locode"
+    CATEGORY = "locode/helpers"
     DESCRIPTION = """
 Selects a value from a list of values based on the index_seed.
 The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items, then the result index will be 10 % 7 = 3.

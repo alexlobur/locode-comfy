@@ -23,7 +23,7 @@ class LoRandomBool:
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("boolean",)
     FUNCTION = "compute"
-    CATEGORY = "locode"
+    CATEGORY = "locode/calc"
 
     @classmethod
     def IS_CHANGED(cls):

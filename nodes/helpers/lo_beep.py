@@ -45,7 +45,7 @@ class LoBeep:
     FUNCTION = "execute"
     OUTPUT_NODE = True
 
-    CATEGORY = "locode"
+    CATEGORY = "locode/helpers"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Plays a sound notification.

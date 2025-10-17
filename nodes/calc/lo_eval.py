@@ -28,7 +28,7 @@ class LoEval:
     RETURN_TYPES = ("INT", "FLOAT")
     RETURN_NAMES = ("int", "float")
     FUNCTION = "compute"
-    CATEGORY = "locode"
+    CATEGORY = "locode/calc"
     DESCRIPTION = """
     Evaluates an expression with variables.
     Outputs:
@@ -44,6 +44,13 @@ class LoEval:
         }
         # Ограничим доступ к builtins и передадим переменные как locals
         safe_globals = {"__builtins__": {}}
-        result = eval(expression, safe_globals, variables)
-        return (int(round(float(result))), float(result))
+
+        result_float = float( eval(expression, safe_globals, variables) )
+        result_int = int(round(result_float))
+
+        # Печатаем результат
+        print(f"LoEval: {expression} = {result_float} (INT: {result_int})")
+
+        # Возвращаем результат как INT и FLOAT
+        return (result_int, result_float)
 

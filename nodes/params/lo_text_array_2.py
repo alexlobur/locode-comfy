@@ -44,7 +44,7 @@ class LoTextArray2:
     RETURN_NAMES = ("INDEX_STRING", "ACTIVE_TAB_STRING", "CONCATENATE", "LIST")
     FUNCTION = "execute"
 
-    CATEGORY = "locode"
+    CATEGORY = "locode/params"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Selects text from an array of texts by the `seed_index`.

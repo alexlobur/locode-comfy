@@ -32,7 +32,6 @@ class LoGetFromList:
             "required": {
                 "index": ("INT", {"default": 0, "step": 1 }),
                 "any_list": ("LIST", {"default": [] }),
-                "modulo_index": ("BOOLEAN", {"default": False }),
             },
         }
 
@@ -40,7 +39,7 @@ class LoGetFromList:
     RETURN_NAMES = ("any",)
     FUNCTION = "execute"
 
-    CATEGORY = "locode"
+    CATEGORY = "locode/params"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Selects value from a list by the `index`.
@@ -54,36 +53,15 @@ Outputs:
     #
     #   Вычисляем значение
     #
-    def execute(self, index: int, list: list, type: str, modulo_index: bool):
-        """
-        Вычисляем значение.
-        Args:
-            - `index` (int): Индекс значения
-            - `list` (list): Список значений
-            - `type` (str): Тип значения
-            - `modulo_index` (bool): Использовать модуль
-        """
+    def execute(self, index: int, any_list: list):
 
-        # Если список пустой, возвращаем пустое значение
-        if len(list) == 0:
+        # Если список пустой, выбрасываем ошибку
+        if len(any_list) == 0:
             raise ValueError("List is empty")
 
         # Подгоняем индекс к диапазону значений
-        index_final = index % len(list)
+        index_final = index % len(any_list)
 
-        # Вычисляем значения
-        return (self.get_value_of_type(list[index_final], type),)
+        # значение из списка
+        return (any_list[index_final], )
 
-
-    #
-    #   Подгоняем индекс к диапазону значений
-    #
-    def get_value_of_type(self, value: any, type: str) -> any:
-        if type == "INT":
-            return int(value)
-        elif type == "FLOAT":
-            return float(value)
-        elif type == "STRING":
-            return str(value)
-        else:
-            return value

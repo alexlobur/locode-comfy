@@ -24,7 +24,7 @@ class LoRandomNum:
     RETURN_TYPES = ("INT", "FLOAT")
     RETURN_NAMES = ("int", "float")
     FUNCTION = "compute"
-    CATEGORY = "locode"
+    CATEGORY = "locode/calc"
 
     @classmethod
     def IS_CHANGED(cls):

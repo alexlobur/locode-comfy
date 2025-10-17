@@ -1,4 +1,4 @@
-from ..utils.anytype import *
+from ...utils.anytype import *
 
 
 def is_none(value):
@@ -10,7 +10,7 @@ class LoSwitcher2:
   """The dynamic Any Switch. """
 
   EXPERIMENTAL = True
-  CATEGORY = "locode"
+  CATEGORY = "locode/helpers"
 
   @classmethod
   def INPUT_TYPES(cls):  # pylint: disable = invalid-name, missing-function-docstring

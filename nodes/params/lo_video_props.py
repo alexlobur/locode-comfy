@@ -29,7 +29,7 @@ class LoSetVideoProps:
     RETURN_TYPES = ("INT", "INT", "FLOAT", "FLOAT", "INT", "LO_VIDEO_PROPS")
     RETURN_NAMES = ("width", "height", "duration", "fps", "frames", "video_props")
     FUNCTION = "execute"
-    CATEGORY = "locode"
+    CATEGORY = "locode/params"
 
     # 
     # Функция для вычисления параметров видео
@@ -66,7 +66,7 @@ class LoGetVideoProps:
     RETURN_TYPES = ("INT", "INT", "FLOAT", "FLOAT", "INT", "LO_VIDEO_PROPS")
     RETURN_NAMES = ("width", "height", "duration", "fps", "frames", "video_props")
     FUNCTION = "execute"
-    CATEGORY = "locode"
+    CATEGORY = "locode/params"
 
     # 
     # Функция для получения параметров видео
