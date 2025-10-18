@@ -14,7 +14,6 @@ class LoCompareNum:
       - На выходе будет логическое значение.
     """
 
-    EXPERIMENTAL = True
 
     @classmethod
     def INPUT_TYPES(cls):

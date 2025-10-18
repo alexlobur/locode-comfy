@@ -25,8 +25,8 @@ class LoToInt:
             },
         }
 
-    RETURN_TYPES = ( "INT" )
-    RETURN_NAMES = ("int",)
+    RETURN_TYPES = ( "INT", )
+    RETURN_NAMES = ("int", )
     FUNCTION = "execute"
 
     CATEGORY = "locode/params"
@@ -43,9 +43,17 @@ class LoToInt:
     #
     def execute(self, any_type: any_type, method: str):
 
+        try:
+            # преобразуем любой тип в число
+            number = float(any_type)
+        except ValueError:
+            raise ValueError(f"Invalid any_type: {any_type}. Must be a number.")
+
         if method == "floor":
-            return (int(math.floor(any_type)),)
+            return (int(math.floor(number)),)
         elif method == "ceil":
-            return (int(math.ceil(any_type)),)
+            return (int(math.ceil(number)),)
         elif method == "round":
-            return (int(round(any_type)),)
+            return (int(round(number)),)
+        else:
+            raise ValueError(f"Invalid method: {method}. Must be 'floor', 'ceil' or 'round'.")
