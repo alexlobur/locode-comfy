@@ -28,7 +28,7 @@ class LoRandomBool:
     @classmethod
     def IS_CHANGED(cls):
         # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
-        return random.random()
+        return True
 
     def compute(self, true_weight):
         result = random.random() < true_weight

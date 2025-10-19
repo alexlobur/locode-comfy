@@ -29,7 +29,7 @@ class LoRandomNum:
     @classmethod
     def IS_CHANGED(cls):
         # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
-        return random.random()
+        return True
 
     def compute(self, min, max):
         result = min +random.random() * (max - min)

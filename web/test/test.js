@@ -22,18 +22,31 @@ class TestWidget {
 // Регистрация фронтенд-расширения
 //
 app.registerExtension({
-    name: "TestWidget",
+    name: "LoTestWidget",
     
     // Вызывается перед регистрацией каждого определения узла.
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         // DEBUG
-        console.debug("beforeRegisterNodeDef", nodeType, nodeData, app);
+        console.debug("beforeRegisterNodeDef", arguments);
 
-        // Проверяем, что имя узла соответствует нужному типу
-        if (nodeData.name === "LoTest") {
-            new TestWidget(nodeType, nodeData, app);
+        // Проверяем, что узел является тестовым
+        if (nodeType.comfyClass !== "LoTest") {
+            return;
         }
+
+        const widget = new TestWidget(nodeType, nodeData, app);
+
+        const originalOnExecuted = nodeType.prototype.onExecuted;
+
+        nodeType.prototype.onExecuted = function () {
+            console.debug("onExecuted", arguments);
+
+            // Вызываем оригинальный метод
+            return originalOnExecuted?.apply(this, arguments);
+        }
+
     },
+
 
     // Вызывается при создании узла.
     async nodeCreated(node){
@@ -41,11 +54,13 @@ app.registerExtension({
         console.debug("nodeCreated", node);
     },
 
+
     // Вызывается при инициализации расширения.
     async init(){
         // DEBUG
         console.debug("init", arguments );
     },
+
 
     // Вызывается при настройке расширения.
     async setup(){
@@ -53,36 +68,5 @@ app.registerExtension({
         console.debug("setup", arguments);
     },
 
-    // Вызывается при добавлении кастомных узлов.
-    async addCustomNodeDefs(){
-        // DEBUG
-        console.debug("addCustomNodeDefs", arguments);
-    },
-    
-    // Вызывается при получении кастомных виджетов.
-    async getCustomWidgets(){
-        // DEBUG
-        console.debug("getCustomWidgets", arguments);
-    },
 
-    // Вызывается при регистрации кастомных узлов.
-    async registerCustomNodes(){
-        // DEBUG
-        console.debug("registerCustomNodes", arguments);
-    },
-
-    async beforeConfigureGraph(){
-        // DEBUG
-        console.debug("beforeConfigureGraph", arguments);
-    },
-
-    async loadedGraphNode(){
-        // DEBUG
-        console.debug("loadedGraphNode", arguments);
-    },
-
-    async afterConfigureGraph(){
-        // DEBUG
-        console.debug("afterConfigureGraph", arguments);
-    },
 });
