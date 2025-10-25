@@ -12,6 +12,7 @@ from .nodes.params.lo_str_list import LoStrList
 from .nodes.params.lo_num_list import LoNumList
 from .nodes.params.lo_to_int import LoToInt
 from .nodes.params.lo_to_float import LoToFloat
+from .nodes.params.lo_to_str import LoToStr
 from .nodes.test.lo_test import LoTest
 
 
@@ -32,6 +33,7 @@ NODE_CLASS_MAPPINGS = {
     "LoGetFromList":     LoGetFromList,
     "LoToInt":           LoToInt,
     "LoToFloat":         LoToFloat,
+    "LoToStr":           LoToStr,
     "LoTest":            LoTest,
 }
 
@@ -53,6 +55,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LoGetFromList":     "Lo:GetFromList",
     "LoToInt":           "Lo:ToInt",
     "LoToFloat":         "Lo:ToFloat",
+    "LoToStr":           "Lo:ToStr",
     "LoTest":            "Lo:Test",
 }
 
