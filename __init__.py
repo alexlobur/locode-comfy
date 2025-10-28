@@ -1,18 +1,20 @@
 from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
 from .nodes.helpers.lo_log import LoLog
-from .nodes.params.lo_text_array_2 import LoTextArray2
 from .nodes.calc.lo_eval import LoEval
 from .nodes.calc.lo_random_num import LoRandomNum
 from .nodes.calc.lo_random_bool import LoRandomBool
 from .nodes.calc.lo_compare_num import LoCompareNum
 from .nodes.helpers.lo_switcher import LoSwitcher
 from .nodes.helpers.lo_switcher2 import LoSwitcher2
+
 from .nodes.params.lo_get_from_list import LoGetFromList
 from .nodes.params.lo_str_list import LoStrList
+from .nodes.params.lo_str_list_join import LoStrListJoin
 from .nodes.params.lo_num_list import LoNumList
 from .nodes.params.lo_to_int import LoToInt
 from .nodes.params.lo_to_float import LoToFloat
-from .nodes.params.lo_to_str import LoToStr
+from .nodes.params.lo_text_array_2 import LoTextArray2
+from .nodes.params.lo_texts import LoTexts
 from .nodes.test.lo_test import LoTest
 
 
@@ -28,12 +30,13 @@ NODE_CLASS_MAPPINGS = {
     "LoRandomNum":       LoRandomNum,
     "LoRandomBool":      LoRandomBool,
     "LoTextArray2":      LoTextArray2,
+    "LoTexts":           LoTexts,
     "LoStrList":         LoStrList,
+    "LoStrListJoin":     LoStrListJoin,
     "LoNumList":         LoNumList,
     "LoGetFromList":     LoGetFromList,
     "LoToInt":           LoToInt,
     "LoToFloat":         LoToFloat,
-    "LoToStr":           LoToStr,
     "LoTest":            LoTest,
 }
 
@@ -50,12 +53,13 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LoRandomNum":       "Lo:RandomNum",
     "LoRandomBool":      "Lo:RandomBool",
     "LoTextArray2":      "Lo:TextArray2",
+    "LoTexts":           "Lo:Texts",
     "LoStrList":         "Lo:StrList",
+    "LoStrListJoin":     "Lo:StrListJoin",
     "LoNumList":         "Lo:NumList",
     "LoGetFromList":     "Lo:GetFromList",
     "LoToInt":           "Lo:ToInt",
     "LoToFloat":         "Lo:ToFloat",
-    "LoToStr":           "Lo:ToStr",
     "LoTest":            "Lo:Test",
 }
 
