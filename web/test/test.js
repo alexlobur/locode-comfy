@@ -26,13 +26,12 @@ app.registerExtension({
     
     // Вызывается перед регистрацией каждого определения узла.
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        // DEBUG
-        console.debug("beforeRegisterNodeDef", arguments);
-
         // Проверяем, что узел является тестовым
         if (nodeType.comfyClass !== "LoTest") {
             return;
         }
+
+        console.debug("beforeRegisterNodeDef", arguments);
 
         const widget = new TestWidget(nodeType, nodeData, app);
 

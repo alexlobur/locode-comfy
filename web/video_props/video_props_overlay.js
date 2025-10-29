@@ -13,9 +13,6 @@ app.registerExtension({
     name: "LoSetVideoPropsOverlay",
     async beforeRegisterNodeDef(nodeType, nodeData, appInst) {
 
-        // DEBUG
-        console.debug("beforeRegisterNodeDef", nodeType, nodeData, appInst);
-
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeData.name !== "LoSetVideoProps") return;
         

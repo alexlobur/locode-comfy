@@ -341,11 +341,13 @@ class TextsWidget {
 app.registerExtension({
     name: "TextsWidget",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        // DEBUG
-        console.debug("beforeRegisterNodeDef", nodeType, nodeData, app);
+
+        console.debug(`beforeRegisterNodeDef: ${nodeData.name}`);
 
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeData.name !== "LoTexts") return
+
+        console.debug("beforeRegisterNodeDef", nodeType, nodeData, app);
 
         //
         // Создание узла и инициализация виджета

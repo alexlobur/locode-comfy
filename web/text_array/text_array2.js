@@ -326,8 +326,6 @@ class TextArray2Widget {
 app.registerExtension({
     name: "TextArray2Widget",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        // DEBUG
-        console.debug("beforeRegisterNodeDef", nodeType, nodeData, app);
 
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeData.name === "LoTextArray2") {
