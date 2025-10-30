@@ -1,5 +1,7 @@
 /**
  * Класс для утилит Locode
+ * 
+ * @deprecated Use `dom_utils`
  */
 export class LocodeUtils {
 

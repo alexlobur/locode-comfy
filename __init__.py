@@ -4,9 +4,9 @@ from .nodes.calc.lo_eval import LoEval
 from .nodes.calc.lo_random_num import LoRandomNum
 from .nodes.calc.lo_random_bool import LoRandomBool
 from .nodes.calc.lo_compare_num import LoCompareNum
+from .nodes.calc.lo_is_empty import LoIsEmpty
 from .nodes.helpers.lo_switcher import LoSwitcher
 from .nodes.helpers.lo_switcher2 import LoSwitcher2
-
 from .nodes.params.lo_get_from_list import LoGetFromList
 from .nodes.params.lo_str_list import LoStrList
 from .nodes.params.lo_str_list_join import LoStrListJoin
@@ -22,6 +22,7 @@ from .nodes.test.lo_test import LoTest
 NODE_CLASS_MAPPINGS = {
     "LoLog":             LoLog,
     "LoEval":            LoEval,
+    "LoIsEmpty":         LoIsEmpty,
     "LoSwitcher":        LoSwitcher,
     "LoSwitcher2":       LoSwitcher2,
     "LoCompareNum":      LoCompareNum,
@@ -45,6 +46,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "LoLog":             "Lo:Log",
     "LoEval":            "Lo:Eval",
+    "LoIsEmpty":         "Lo:IsEmpty",
     "LoSwitcher":        "Lo:Switcher",
     "LoSwitcher2":       "Lo:Switcher2(Test)",
     "LoCompareNum":      "Lo:CompareNum",

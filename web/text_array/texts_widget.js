@@ -3,7 +3,7 @@ import {importCss, createElement} from "../utils/dom_utils.js"
 
 
 // Подключаем CSS стили
-importCss("text_array.css", import.meta)
+importCss("texts_widget.css", import.meta)
 
 // Минимальные размеры самого узла
 const MIN_NODE_WIDTH = 240
@@ -66,23 +66,34 @@ class TextsWidget {
     /**
      *  Скелет элемента
      */
-    #buildDomScaffold({ textInput }){
+    #buildDomScaffold({ onInput, onSave, onLoad, onAddTab }){
         const parent = createElement("div", {
             classList: ["text-array-widget"],
             content: `
                 <div class="topbar">
                     <div class="tabs"></div>
-                    <div class="menu"></div>
+                    <div class="popup-menu">
+                        <button class="btn_save">Save</button>
+                        <button class="btn_load">Load</button>
+                        <button class="btn_add_tab">Add Tab</button>
+                    </div>
                 </div>
                 <div class="content">
+                    <textarea class="text-input comfy-multiline-input"></textarea>
                 </div>
             `
         })
+        // Events
+        parent.querySelector(".btn_save").addEventListener("click", onSave )
+        parent.querySelector(".btn_load").addEventListener("click", onLoad )
+        parent.querySelector(".btn_add_tab").addEventListener("click", onAddTab )
+        parent.querySelector(".text-input").addEventListener("input", onInput )
+
         this.dom = {
             parent: parent,
             tabs: parent.querySelector(".tabs"),
-            menu: parent.querySelector(".menu"),
-            textInput: textInput
+            menu: parent.querySelector(".popup-menu"),
+            textInput: parent.querySelector(".text-input"),
         }
     }
 
@@ -91,16 +102,14 @@ class TextsWidget {
      * Создаем интерфейс
      */
     #createElement() {
+        console.log(this.node)
 
         // Создаем скелет DOM
-        this.dom = this.#buildDomScaffold({
-            // Текстовое поле
-            textInput:  createElement( "textarea", {
-                classList: ["text-input", "comfy-multiline-input"],
-                events: {
-                    "input": () => this.#handleInput()
-                },
-            })
+        this.#buildDomScaffold({
+            onInput:    () => this.#handleInput(),
+            onLoad:     ()=> alert("onLoad"),
+            onSave:     ()=> alert("onSave"),
+            onAddTab:   ()=> alert("onAddTab"),
         })
 
         // Добавляем элемент к узлу (node)

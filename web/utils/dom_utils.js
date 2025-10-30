@@ -4,7 +4,7 @@
  *  @param {string} pathRel - относительный путь к CSS файлу
  *  @param {?import.meta} importMeta - import.meta
  */
-function importCss(pathRel, importMeta=null){
+export function importCss(pathRel, importMeta=null){
     console.debug("css", pathRel, importMeta);
     const cssPath = new URL(pathRel, importMeta.url).href;
     const link = document.createElement('link');
@@ -30,36 +30,36 @@ function importCss(pathRel, importMeta=null){
 export function createElement(tagName, { parent, styles={}, classList=[], attributes={}, content='', events={} }={}){
 
     // Create the element
-    const element = document.createElement(tagName);
+    const element = document.createElement(tagName)
 
     // Add the attributes
-    for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+    for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value)
 
     // Add the class list
     for (const className of classList){
-        if(className) element.classList.add(className);
+        if(className) element.classList.add(className)
     } 
 
     // Добавление контента
     content = Array.isArray(content) ? content : [content]
     for (const item of content){
         if( typeof item == "string" ){
-            element.insertAdjacentHTML('beforeend', item);
+            element.insertAdjacentHTML('beforeend', item)
         } else {
-            element.append(item);
+            element.append(item)
         }
     }
 
     // Add the styles
-    for (const [key, value] of Object.entries(styles)) element.style[key] = value;
+    for (const [key, value] of Object.entries(styles)) element.style[key] = value
 
     // События
     for (const [key, value] of Object.entries(events)) element.addEventListener( key, value )
 
         // Add the parent
     if (parent) {
-        parent.appendChild(element);
+        parent.appendChild(element)
     }
 
-    return element;
+    return element
 }
