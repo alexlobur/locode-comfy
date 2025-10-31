@@ -32,7 +32,11 @@ def play(name: str):
 
 # Звуки оповещения
 SOUNDS = {
-    "beep": "beep.mp3",
-    "notify": "notify.mp3",
-    "drop": "drop.mp3",
+    "start":    "drop.mp3",
+    "step":     "bdin.mp3",
+    "finish":   "notify.mp3",
+    "finish2":  "jink.mp3",
+    "beep":     "beep.mp3",
+    "notify":   "notify.mp3",
+    "drop":     "drop.mp3",
 }

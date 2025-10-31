@@ -41,6 +41,18 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
                     """,
                     "placeholder": "index_seed"
                 }),
+                "replacers": ("STRING", {
+                    "default": "",
+                    "tooltip": f"""
+JSON for text replacement {{value1}}.
+Example:
+    {{
+        "value1": "Value1 text",
+        "value2": "Value2 text"
+    }}
+                    """,
+                    "placeholder": "replacers"
+                }),
             },
             "hidden": {
                 "widget_data": ("*"),
@@ -75,6 +87,8 @@ Outputs:
             - `delimiter` (str): Разделитель строк
             - `widget_data` (dict): Данные из виджета в формате { "texts": [...], "activeTab": int }
         """
+
+        #TODO: добавить замену
 
         # Получаем данные из виджета
         texts = widget_data.get("texts")
