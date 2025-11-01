@@ -68,14 +68,17 @@ class TextsWidget {
      */
     #buildDomScaffold({ onInput, onSave, onLoad, onAddTab }){
         const parent = createElement("div", {
-            classList: ["text-array-widget"],
+            classList: ["lo-texts-widget"],
             content: `
                 <div class="topbar">
                     <div class="tabs"></div>
                     <div class="popup-menu">
-                        <button class="btn_save">Save</button>
-                        <button class="btn_load">Load</button>
-                        <button class="btn_add_tab">Add Tab</button>
+                        <div class="popup-icon">menu</div>
+                        <div class="popup-items">
+                            <button class="btn_save">Save</button>
+                            <button class="btn_load">Load</button>
+                            <button class="btn_add_tab">Add Tab</button>
+                        </div>
                     </div>
                 </div>
                 <div class="content">

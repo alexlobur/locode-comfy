@@ -1,5 +1,4 @@
-
-.text-array-widget {
+.lo-texts-widget {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -22,11 +21,11 @@
 
 
 /* popup-menu */
-.text-array-widget .popup-menu {
+.lo-texts-widget .popup-menu {
     position: absolute; z-index: 1000; top: -80px;
 }
 
-.text-array-widget .popup-menu BUTTON{
+.lo-texts-widget .popup-menu BUTTON{
     cursor: pointer;
     background: transparent;
     border-radius: 16px;
@@ -36,13 +35,13 @@
 
 
 /* закладки */
-.text-array-widget .tabs{
+.lo-texts-widget .tabs{
     display: flex; gap: 2px;
     flex-wrap: wrap;
     pointer-events: auto;
 }
 
-.text-array-widget .tabs .tab{
+.lo-texts-widget .tabs .tab{
     overflow: visible;
     position: relative;
     white-space: nowrap;
@@ -57,7 +56,7 @@
     pointer-events: auto;
 }
 
-.text-array-widget .tabs .tab.active {
+.lo-texts-widget .tabs .tab.active {
     padding: 3px 10px;
     color: var(--tab-active-fg);
     background-color: var(--tab-active-bg);
@@ -65,20 +64,20 @@
 }
 
 
-.text-array-widget .tabs .tab:HOVER {
+.lo-texts-widget .tabs .tab:HOVER {
     cursor: pointer;
     background-color: var(--tab-hover-bg);
     color: var(--tab-hover-fg);
 }
 
 
-.text-array-widget .tabs .tab.active:HOVER {
+.lo-texts-widget .tabs .tab.active:HOVER {
     padding: 3px 16px 3px 4px;
 }
 
 /* кнопка удаления */
 
-.text-array-widget .tabs .tab .tab-delete{
+.lo-texts-widget .tabs .tab .tab-delete{
     position: absolute; z-index: 100;
     right: 2px; top: 50%; transform: translateY(-50%);
     display: flex; align-items: center; justify-content: center;
@@ -91,35 +90,35 @@
     pointer-events: none;
 }
 
-.text-array-widget .tabs .tab .tab-delete > svg{
+.lo-texts-widget .tabs .tab .tab-delete > svg{
     width: 10px; height: 10px;
     fill: currentColor;
     stroke: none;
 }
 
-.text-array-widget .tabs .tab.active:HOVER .tab-delete{
+.lo-texts-widget .tabs .tab.active:HOVER .tab-delete{
     right: -4px;
     opacity: 1;
     cursor: pointer;
     pointer-events: auto;
 }
 
-.text-array-widget .tabs .tab.active:HOVER .tab-delete:HOVER{
+.lo-texts-widget .tabs .tab.active:HOVER .tab-delete:HOVER{
     background-color: var(--tab-delete-hover-bg);
 }
 
 
-.text-array-widget .content{
+.lo-texts-widget .content{
     flex: 1 1 auto;            /* растягиваем контент, чтобы соблюдать min-height контейнера */
     display: flex;
     pointer-events: auto;
 }
 
-/* .text-array-widget .content textarea{}
-.text-array-widget .content textarea:focus {} */
+/* .lo-texts-widget .content textarea{}
+.lo-texts-widget .content textarea:focus {} */
 
 /* текстовое поле занимает доступную высоту */
-.text-array-widget .content .text-input{
+.lo-texts-widget .content .text-input{
     flex: 1 1 auto;
     min-height: 20px;
     box-sizing: border-box;
@@ -131,7 +130,7 @@
 
 
 /* кнопка добавления новой закладки */
-.text-array-widget .add-button {
+.lo-texts-widget .add-button {
     overflow: visible;
     position: relative;
     white-space: nowrap;
@@ -145,7 +144,7 @@
     pointer-events: auto;
 }
 
-.text-array-widget .add-button:hover{
+.lo-texts-widget .add-button:hover{
     background-color: var(--tab-hover-bg);
     color: var(--tab-hover-fg);
 }
