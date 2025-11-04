@@ -1,28 +1,45 @@
-from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
-from .nodes.helpers.lo_log import LoLog
 from .nodes.calc.lo_eval import LoEval
 from .nodes.calc.lo_random_num import LoRandomNum
 from .nodes.calc.lo_random_bool import LoRandomBool
 from .nodes.calc.lo_compare_num import LoCompareNum
 from .nodes.calc.lo_is_empty import LoIsEmpty
-from .nodes.helpers.lo_switcher import LoSwitcher
-from .nodes.helpers.lo_switcher2 import LoSwitcher2
+from .nodes.calc.lo_not_bool import LoNotBool
+
+from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
 from .nodes.params.lo_get_from_list import LoGetFromList
+from .nodes.params.lo_from_list import LoFromList
 from .nodes.params.lo_str_list import LoStrList
 from .nodes.params.lo_str_list_join import LoStrListJoin
 from .nodes.params.lo_num_list import LoNumList
 from .nodes.params.lo_to_int import LoToInt
 from .nodes.params.lo_to_float import LoToFloat
-from .nodes.params.lo_text_array_2 import LoTextArray2
-from .nodes.params.lo_texts import LoTexts
-from .nodes.test.lo_test import LoTest
+from .nodes.params.lo_any_list import LoAnyList
+from .nodes.params.lo_to_str import LoToStr
+from .nodes.params.lo_replace_abc import LoReplaceAbc
+from .nodes.params.lo_replace_any import LoReplaceAny
+
+from .nodes.texts.lo_text_array_2 import LoTextArray2
+from .nodes.texts.lo_texts import LoTexts
+
+from .nodes.helpers.lo_log import LoLog
+from .nodes.helpers.lo_beep import LoBeep
+from .nodes.helpers.lo_switcher import LoSwitcher
+from .nodes.helpers.lo_switcher2 import LoSwitcher2
+
+from .nodes.system.lo_mkdir import LoMkDir
+from .nodes.system.lo_readdir import LoReadDir
+from .nodes.system.lo_file_exists import LoFileExists
+from .nodes.system.lo_count_dir_images import LoCountDirImages
+from .nodes.system.lo_rmdir import LoRmDir
 
 
 # Регистрируем узлы
 NODE_CLASS_MAPPINGS = {
     "LoLog":             LoLog,
+    "LoBeep":            LoBeep,
     "LoEval":            LoEval,
     "LoIsEmpty":         LoIsEmpty,
+    "LoNotBool":         LoNotBool,
     "LoSwitcher":        LoSwitcher,
     "LoSwitcher2":       LoSwitcher2,
     "LoCompareNum":      LoCompareNum,
@@ -36,16 +53,27 @@ NODE_CLASS_MAPPINGS = {
     "LoStrListJoin":     LoStrListJoin,
     "LoNumList":         LoNumList,
     "LoGetFromList":     LoGetFromList,
+    "LoFromList":        LoFromList,
     "LoToInt":           LoToInt,
     "LoToFloat":         LoToFloat,
-    "LoTest":            LoTest,
+    "LoToStr":           LoToStr,
+    "LoMkDir":           LoMkDir,
+    "LoReadDir":         LoReadDir,
+    "LoRmDir":           LoRmDir,
+    "LoFileExists":      LoFileExists,
+    "LoAnyList":         LoAnyList,
+    "LoCountDirImages":  LoCountDirImages,
+    "LoReplaceAbc":      LoReplaceAbc,
+    "LoReplaceAny":      LoReplaceAny,
 }
 
 
 # Регистрируем отображаемые имена узлов
 NODE_DISPLAY_NAME_MAPPINGS = {
     "LoLog":             "Lo:Log",
+    "LoBeep":            "Lo:LoBeep",
     "LoEval":            "Lo:Eval",
+    "LoNotBool":         "Lo:NotBool",
     "LoIsEmpty":         "Lo:IsEmpty",
     "LoSwitcher":        "Lo:Switcher",
     "LoSwitcher2":       "Lo:Switcher2(Test)",
@@ -60,9 +88,18 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LoStrListJoin":     "Lo:StrListJoin",
     "LoNumList":         "Lo:NumList",
     "LoGetFromList":     "Lo:GetFromList",
+    "LoFromList":        "Lo:FromList",
     "LoToInt":           "Lo:ToInt",
     "LoToFloat":         "Lo:ToFloat",
-    "LoTest":            "Lo:Test",
+    "LoToStr":           "Lo:ToStr",
+    "LoMkDir":           "Lo:MkDir",
+    "LoReadDir":         "Lo:ReadDir",
+    "LoRmDir":           "Lo:RmDir",
+    "LoFileExists":      "Lo:FileExists",
+    "LoAnyList":         "Lo:AnyList",
+    "LoCountDirImages":  "Lo:CountDirImages",
+    "LoReplaceAbc":      "Lo:ReplaceAbc",
+    "LoReplaceAny":      "Lo:ReplaceAny",
 }
 
 
