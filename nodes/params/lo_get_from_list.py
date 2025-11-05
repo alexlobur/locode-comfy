@@ -49,6 +49,8 @@ Outputs:
 - `VALUE`: Value from the list.
 """
 
+    DEPRECATED = True
+
 
     #
     #   Вычисляем значение
