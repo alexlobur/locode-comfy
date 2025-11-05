@@ -1,5 +1,4 @@
 .lo-texts-widget {
-    position: relative;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -22,10 +21,16 @@
 
 /* popup-menu */
 .lo-texts-widget .popup-menu {
-    position: absolute; z-index: 1000; top: -80px;
+    position: relative;
+}
+.lo-texts-widget .popup-menu .popup-icon {
+    position: relative;
 }
 
 .lo-texts-widget .popup-menu BUTTON{
+    position: absolute;
+    bottom: 0px;
+    z-index: 100;
     cursor: pointer;
     background: transparent;
     border-radius: 16px;
