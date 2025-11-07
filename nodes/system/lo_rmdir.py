@@ -50,11 +50,12 @@ class LoRmDir:
     #   Запуск функции
     #
     def execute(self, path: str, pass_any):
+        print(f"[LoRmDir] Removing directory: {path}")
         try:
             # удаляем директорию (даже если она не пустая)
             if os.path.exists(path):
                 shutil.rmtree(path)
             return (pass_any,)
         except Exception as e:
-            print(f"Error removing directory: {e}")
+            print(f"[LoRmDir] Error removing directory: {e}")
             return (pass_any,)

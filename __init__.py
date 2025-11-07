@@ -4,6 +4,7 @@ from .nodes.calc.lo_random_bool import LoRandomBool
 from .nodes.calc.lo_compare_num import LoCompareNum
 from .nodes.calc.lo_is_empty import LoIsEmpty
 from .nodes.calc.lo_not_bool import LoNotBool
+from .nodes.calc.lo_counter import LoCounter
 
 from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
 from .nodes.params.lo_get_from_list import LoGetFromList
@@ -65,6 +66,7 @@ NODE_CLASS_MAPPINGS = {
     "LoCountDirImages":  LoCountDirImages,
     "LoReplaceAbc":      LoReplaceAbc,
     "LoReplaceAny":      LoReplaceAny,
+    "LoCounter":         LoCounter,
 }
 
 
@@ -100,6 +102,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LoCountDirImages":  "Lo:CountDirImages",
     "LoReplaceAbc":      "Lo:ReplaceAbc",
     "LoReplaceAny":      "Lo:ReplaceAny",
+    "LoCounter":         "Lo:Counter",
 }
 
 

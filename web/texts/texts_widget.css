@@ -4,6 +4,7 @@
     gap: 8px;
     user-select: none;
     pointer-events: none;
+    position: relative;
 
     /* переменные для закладок */
     --tab-bg:              color-mix(in srgb, var(--p-surface-900) 25%, transparent);
@@ -13,64 +14,71 @@
     --tab-hover-bg:        color-mix(in srgb, var(--p-surface-900) 100%, transparent);
     --tab-hover-fg:        var(--p-text-color);
 
-    --tab-delete-bg:       var(--p-surface-800);
-    --tab-delete-fg:       var(--p-text-color);
-    --tab-delete-hover-bg: red;
+    --tab-menu-bg:         color-mix(in srgb, var(--p-surface-900) 95%, transparent);
+
+    --menu-btn-fg:         color-mix(in srgb, var(--p-text-color) 50%, transparent);
+    --menu-btn-bg:         color-mix(in srgb, var(--p-surface-900) 30%, transparent);;
+    --menu-btn-hover-fg:   var(--p-text-color);
+    --menu-btn-hover-bg:   color-mix(in srgb, var(--p-surface-900) 50%, transparent);
+
+    --gragged-color:        color-mix(in srgb, var(--p-text-color) 50%, transparent);
 }
 
 
 /* popup-menu */
 .lo-texts-widget .popup-menu {
-    position: relative;
-}
-.lo-texts-widget .popup-menu .popup-icon {
-    position: relative;
+    position: absolute;
+    top: -60px;
+    display: flex;
+    gap: 2px;
 }
 
 .lo-texts-widget .popup-menu BUTTON{
-    position: absolute;
-    bottom: 0px;
     z-index: 100;
     cursor: pointer;
-    background: transparent;
     border-radius: 16px;
-    border: 1px solid red;
-}
-
-
-
-/* закладки */
-.lo-texts-widget .tabs{
-    display: flex; gap: 2px;
-    flex-wrap: wrap;
+    font-size: 10px;
+    border: none;
+    padding: 4px 8px;
+    background: var(--menu-btn-bg);
+    color: var(--menu-btn-fg);
+    transition: 0.25s all;
     pointer-events: auto;
 }
 
+.lo-texts-widget .popup-menu BUTTON:HOVER{
+    background: var(--menu-btn-hover-bg);
+    color: var(--menu-btn-hover-fg);
+}
+
+
+/* tabs */
+.lo-texts-widget .tabs{
+    display: flex; gap: 1px;
+    flex-wrap: wrap;
+}
+
+
 .lo-texts-widget .tabs .tab{
-    overflow: visible;
     position: relative;
     white-space: nowrap;
     padding: 3px 6px;
     border-radius: 8px;
-
     color: var(--tab-fg);
     background-color: var(--tab-bg);
-
     font-size: 0.65rem;
     transition: all 0.2s;
     pointer-events: auto;
+    cursor: pointer;
 }
 
 .lo-texts-widget .tabs .tab.active {
     padding: 3px 10px;
     color: var(--tab-active-fg);
     background-color: var(--tab-active-bg);
-    cursor: pointer;
 }
 
-
 .lo-texts-widget .tabs .tab:HOVER {
-    cursor: pointer;
     background-color: var(--tab-hover-bg);
     color: var(--tab-hover-fg);
 }
@@ -80,39 +88,80 @@
     padding: 3px 16px 3px 4px;
 }
 
-/* кнопка удаления */
-
-.lo-texts-widget .tabs .tab .tab-delete{
-    position: absolute; z-index: 100;
-    right: 2px; top: 50%; transform: translateY(-50%);
-    display: flex; align-items: center; justify-content: center;
-    width: 14px; height: 14px;
-    color: var(--tab-delete-fg);
-    background-color: var(--tab-delete-bg);
-    border-radius: 50%;
-    transition: all 0.2s;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.lo-texts-widget .tabs .tab .tab-delete > svg{
-    width: 10px; height: 10px;
-    fill: currentColor;
-    stroke: none;
-}
-
-.lo-texts-widget .tabs .tab.active:HOVER .tab-delete{
-    right: -4px;
-    opacity: 1;
-    cursor: pointer;
+/* tab-menu */
+.lo-texts-widget .tabs .tab .tab-menu{
+    display: none;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: 16px;
+    position: absolute;
+    z-index: 200;
+    left: 50%; top: -3px;
+    background: var(--tab-menu-bg);
+    transform: translate(-50%, -100%);
     pointer-events: auto;
 }
 
-.lo-texts-widget .tabs .tab.active:HOVER .tab-delete:HOVER{
-    background-color: var(--tab-delete-hover-bg);
+/* это типа хитбокса */
+.lo-texts-widget .tabs .tab .tab-menu:after{
+    content: ""; position: absolute; z-index: -1;
+    display: block; width: 100%; height: 40px;
+    bottom: -5px; left: 0;
+    /* border: 1px solid red; */
 }
 
 
+.lo-texts-widget .tabs .tab:HOVER .tab-menu{
+    display: flex;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+}
+
+.lo-texts-widget .tabs .tab .tab-menu button{
+    background: transparent;
+    border: none;
+    color: var(--menu-btn-fg);
+    cursor: pointer;
+    font-size: 10px;
+    padding: 3px 8px;
+}
+
+.lo-texts-widget .tabs .tab .tab-menu button:HOVER{
+    color: var(--menu-btn-hover-fg);
+}
+
+
+/* drag mode */
+
+.lo-texts-widget .tabs .tab.dragged{
+    outline: 1px solid var(--gragged-color);
+}
+
+.lo-texts-widget .tabs.drag-mode .tab .tab-menu{
+    display: none;
+}
+
+.lo-texts-widget .tabs .drag-target{
+    display: block; position: relative;
+    width: 0;
+}
+
+.lo-texts-widget .tabs .drag-target:HOVER:after{
+    content: ""; display: block; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 3px; height: 100%; border-radius: 3px;
+    background-color: var(--gragged-color);
+}
+
+
+.lo-texts-widget .tabs.drag-mode .drag-target .hitbox {
+    display: block; position: absolute;
+    width: 12px; height: 100%; top: 0; left: 50%; transform: translateX(-50%);
+    pointer-events: all;
+    z-index: 100;
+}
+
+
+/* content */
 .lo-texts-widget .content{
     flex: 1 1 auto;            /* растягиваем контент, чтобы соблюдать min-height контейнера */
     display: flex;
@@ -131,25 +180,4 @@
     border-radius: 4px;
     padding: 8px;
     pointer-events: auto;
-}
-
-
-/* кнопка добавления новой закладки */
-.lo-texts-widget .add-button {
-    overflow: visible;
-    position: relative;
-    white-space: nowrap;
-    padding: 3px 6px;
-    border-radius: 8px;
-    color: var(--tab-fg);
-    background-color: var(--tab-bg);
-    font-size: 0.65rem;
-    border: none;
-    cursor: pointer;
-    pointer-events: auto;
-}
-
-.lo-texts-widget .add-button:hover{
-    background-color: var(--tab-hover-bg);
-    color: var(--tab-hover-fg);
 }

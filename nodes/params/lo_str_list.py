@@ -53,7 +53,7 @@ class LoStrList:
         strings = string.split(delimiter)
 
         # Убираем пустые строки
-        strings = [string for string in strings if string.strip()]
+        # strings = [string for string in strings if string.strip()]
 
         # очистка крайних пробелов
         if trim:

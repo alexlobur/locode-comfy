@@ -49,5 +49,6 @@ class LoFileExists:
     #   Вычисляем значение
     #
     def execute(self, path: str):
-        return (os.path.exists(path), os.path.isdir(path))
+        exists = os.path.exists(path) 
+        return (exists, exists & os.path.isdir(path))
 

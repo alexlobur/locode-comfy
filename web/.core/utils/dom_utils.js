@@ -5,7 +5,7 @@
  *  @param {?import.meta} importMeta - import.meta
  */
 export function importCss(pathRel, importMeta=null){
-    console.debug("css", pathRel, importMeta);
+    // console.debug("css", pathRel, importMeta);
     const cssPath = new URL(pathRel, importMeta.url).href;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -60,6 +60,49 @@ export function createElement(tagName, { parent, styles={}, classList=[], attrib
     if (parent) {
         parent.appendChild(element)
     }
+
+    return element
+}
+
+
+
+/**
+ *  Вешает обработку перетаскивания
+ * 
+ *  @param {Element} element
+ *  @param {function(Element, Event)} onDragStart
+ *  @param {function(Element, Event)} onDragMove
+ *  @param {function(Element, Event)} onDragEnd
+ *  @returns {Element}
+ */
+export function makeDraggable({ element, onDragStart, onDragMove, onDragEnd, dragDelay=300 }){
+    let isDragged = false
+
+    const startDrag = (e)=>{
+        isDragged = true
+        document.addEventListener("pointermove", moveDrag )
+        document.addEventListener('pointerup', endDrag )
+        document.addEventListener('pointercancel', endDrag )
+
+        setTimeout(()=>{
+            if(!isDragged) return
+            onDragStart?.(element, e)
+        }, dragDelay)
+    }
+
+    const endDrag = (e)=>{
+        isDragged = false
+        document.removeEventListener("pointermove", moveDrag )
+        document.removeEventListener('pointerup', endDrag )
+        document.removeEventListener('pointercancel', endDrag )
+        onDragEnd?.(element, e)
+    }
+
+    const moveDrag = (e)=>{
+        onDragMove?.(element, e)
+    }
+
+    element.addEventListener("pointerdown", startDrag )
 
     return element
 }

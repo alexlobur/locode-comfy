@@ -41,7 +41,7 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
                     """,
                     "placeholder": "index_seed"
                 }),
-                "replacers": ("STRING", {
+                "replacers": ("ANY", {
                     "default": "",
                     "tooltip": f"""
 JSON for text replacement {{value1}}.
