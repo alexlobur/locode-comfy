@@ -67,9 +67,9 @@
     color: var(--tab-fg);
     background-color: var(--tab-bg);
     font-size: 0.65rem;
-    transition: all 0.2s;
     pointer-events: auto;
     cursor: pointer;
+    transition: all 0.3s;
 }
 
 .lo-texts-widget .tabs .tab.active {
@@ -85,7 +85,6 @@
 
 
 .lo-texts-widget .tabs .tab.active:HOVER {
-    padding: 3px 16px 3px 4px;
 }
 
 /* tab-menu */
@@ -129,6 +128,12 @@
     color: var(--menu-btn-hover-fg);
 }
 
+.lo-texts-widget .tabs .tab .tab-menu button:disabled,
+.lo-texts-widget .tabs .tab .tab-menu button[disabled]{
+    color: var(--menu-btn-fg);
+    cursor: default;
+    opacity: 0.5;
+}
 
 /* drag mode */
 
@@ -136,8 +141,16 @@
     outline: 1px solid var(--gragged-color);
 }
 
+.lo-texts-widget .tabs .tab.was-dragged{
+    outline: 1px solid var(--gragged-color);
+}
+
 .lo-texts-widget .tabs.drag-mode .tab .tab-menu{
     display: none;
+}
+
+.lo-texts-widget .tabs.drag-mode .tab {
+    pointer-events: none;
 }
 
 .lo-texts-widget .tabs .drag-target{
@@ -148,7 +161,7 @@
 .lo-texts-widget .tabs .drag-target:HOVER:after{
     content: ""; display: block; position: absolute;
     top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 3px; height: 100%; border-radius: 3px;
+    width: 2px; height: 100%; border-radius: 4px;
     background-color: var(--gragged-color);
 }
 

@@ -22,13 +22,7 @@ class TextsWidget {
     inputData       // данные входного параметра
     app             // ссылка на приложение
 
-    // DOM
-    dom = {
-        parent: null,
-        topBar: null,
-        menu: null,
-        textInput: null,
-    }
+    #element
 
     /**
      * @type {TabsIterrator}
@@ -72,7 +66,22 @@ class TextsWidget {
      *  Скелет элемента
      */
     #buildDomScaffold({ onInput, onSave, onLoad, onAddTab }){
-        const parent = createElement("div", {
+
+        this.dom = {
+            parent: parent,
+            topBar: parent.querySelector(".topbar"),
+            menu: parent.querySelector(".popup-menu"),
+            textInput: parent.querySelector(".text-input"),
+        }
+    }
+
+
+    /**
+     * Создаем интерфейс
+     */
+    #createElement() {
+        // Создаем скелет DOM
+        const element = createElement("div", {
             classList: ["lo-texts-widget"],
             content: `
                 <div class="popup-menu">
@@ -88,50 +97,28 @@ class TextsWidget {
             `
         })
 
-        // Events
-        parent.querySelector(".btn_save").addEventListener("click", onSave )
-        parent.querySelector(".btn_load").addEventListener("click", onLoad )
-        parent.querySelector(".btn_add_tab").addEventListener("click", onAddTab )
-        parent.querySelector(".text-input").addEventListener("input", onInput )
-
-        this.dom = {
-            parent: parent,
-            topBar: parent.querySelector(".topbar"),
-            menu: parent.querySelector(".popup-menu"),
-            textInput: parent.querySelector(".text-input"),
-        }
-    }
-
-
-    /**
-     * Создаем интерфейс
-     */
-    #createElement() {
-        console.log(this.node)
-
-        // Создаем скелет DOM
-        this.#buildDomScaffold({
-            onInput:    this.#textInputHandler,
-            onLoad:     ()=> alert("onLoad"),
-            onSave:     ()=> alert("onSave"),
-            onAddTab:   ()=> this.#tabsIterrator.addTab(),
-        })
-
         // Tabs
         this.#tabsBar = new TextsTabsBar({
-            parent:         this.dom.topBar,
+            parent:         element.querySelector(".topbar"),
             tabsIterrator:  this.#tabsIterrator
         })
+
+        // Events
+        element.querySelector(".btn_save").addEventListener("click", this.#saveHandler )
+        element.querySelector(".btn_load").addEventListener("click", this.#loadHandler )
+        element.querySelector(".btn_add_tab").addEventListener("click", ()=> this.#tabsIterrator.addTab() )
+        element.querySelector(".text-input").addEventListener("input", this.#textInputHandler )
 
         // Добавляем элемент к узлу (node)
         this.node.addDOMWidget(this.inputName, "text_array", this.dom.parent, {
             getValue: () => this.getValue(),
             setValue: (value) => this.setValue(value)
-        });
+        })
 
         this.#setState()           // Обновляем состояние
         this.#setNodeMinSize()     // Задаём минимальные размеры самого узла и оборачиваем onResize
         this.#updateNodeValue()    // Инициализируем значение узла текущим состоянием, чтобы оно попало в сохранение
+        this.#element = element
     }
 
 
@@ -177,6 +164,20 @@ class TextsWidget {
     #textInputHandler = (e) => {
         this.#tabsIterrator.activeTab.text = this.dom.textInput.value
         this.#updateNodeValue()
+    }
+
+
+    /**
+     *  Обработчик сохранения файла
+     */
+    #saveHandler = () => {
+    }
+
+
+    /**
+     *  Обработчик загрузки из файла
+     */
+    #loadHandler = () => {
     }
 
 

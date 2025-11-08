@@ -86,6 +86,7 @@ export class TabsIterrator extends ChangeNotifier {
      *  @returns {this}
      */
     removeTab(index){
+        if(this.#tabs.length<=1) return
         this.#tabs.splice(index, 1)
         this.#setActiveIndex()
         this.notifyListeners(new TabsIterratorEvent("removed"))

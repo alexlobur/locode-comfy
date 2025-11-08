@@ -64,8 +64,10 @@ export class TextsTabsBar{
                     tabIndex:   index,
                     isActive:   index == this.#tabsIterrator.activeIndex,
                     onSelect:   () => this.#tabsIterrator.set({ activeIndex: index }),
-                    onClone:    () => this.#tabsIterrator.addTab(index, { text: item.title, text: item.text }),
-                    onRemove:   () => this.#tabsIterrator.removeTab(index),
+                    onClone:    () => this.#tabsIterrator.addTab(index, { text: tabData.title, text: tabData.text }),
+                    onRemove:   this.#tabsIterrator.tabs.length>1
+                        ? () => this.#tabsIterrator.removeTab(index)
+                        : null,
                     onDragStart: this.#dragStartHandler,
                     onDragEnd:   (_, e) => this.#dragEndHandler(e, index),
                 })
@@ -101,18 +103,31 @@ export class TextsTabsBar{
      *  Обработчик DragEnd
      */
     #dragEndHandler = (event, index) => {
-        this.#element.classList.remove("drag-mode")
         // получение индекса
-        let gragIndex = event.target.closest(".drag-target")?.getAttribute("tabIndex")
+        let dragIndex = event.target.closest(".drag-target")?.getAttribute("tabIndex")
+        dragIndex = dragIndex!=null ? Number(dragIndex) : null
 
-        // проверка индекса
-        if(gragIndex==null) return // нет индекса - выдох
-        gragIndex = Number(gragIndex)
-        if(gragIndex==index || gragIndex==index+1) return // перетаскивание на самого себя
+        // проверка индекса: нет таргета или перетаскивание на самого себя
+        if(dragIndex==null || dragIndex==index || dragIndex==index+1){
+            this.#element.classList.remove("drag-mode")
+            return
+        }
 
-        // перемещение
-        console.log(index, gragIndex)
-        this.#tabsIterrator.moveTab(index, gragIndex)
+        // корректировка dragIndex после index
+        dragIndex = dragIndex < index ? dragIndex : dragIndex-1
+        this.#tabsIterrator.moveTab(index, dragIndex)
+
+        // ставим отметку was-dragged
+        setTimeout(()=>{
+            this.#element.querySelectorAll(".tab")[dragIndex].classList.add("was-dragged")
+        }, 50 )
+
+        // удаляем по истечении времени
+        setTimeout(()=>{
+            this.#element.querySelectorAll(".tab").forEach(el => el.classList.remove("was-dragged") )
+            this.#element.classList.remove("drag-mode")
+        }, 300 )
+
     }
 
 }
@@ -130,6 +145,7 @@ function createTabElement({
     onSelect,
     onClone,
     onRemove,
+    onRename,
     onDragStart,
     onDragEnd,
     parent=null
@@ -158,7 +174,10 @@ function createTabElement({
 
     // Добавление событий
     tab.querySelector('button[name="clone"]').addEventListener("click", (e)=> onClone?.(e, tabIndex) )
-    tab.querySelector('button[name="remove"]').addEventListener("click", (e)=> onRemove?.(e, tabIndex) )
+    tab.querySelector('button[name="rename"]').addEventListener("click", (e)=> onRename?.(e, tabIndex) )
+    onRemove!=null
+        ? tab.querySelector('button[name="remove"]').addEventListener("click", (e)=> onRemove?.(e, tabIndex) )
+        : tab.querySelector('button[name="remove"]').setAttribute("disabled", "true")
 
     // Перетаскивание
     makeDraggable({

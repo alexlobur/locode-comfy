@@ -1,12 +1,13 @@
 import { app } from "../../../scripts/app.js";
-import {LocodeUtils} from "../utils/utils.js";
+import {importCss, createElement} from "../.core/utils/dom_utils.js";
+
 
 // Подключаем CSS стили
-LocodeUtils.css("text_array.css", import.meta);
+importCss("text_array.css", import.meta);
 
 // Минимальные размеры самого узла
-const MIN_NODE_WIDTH = 240;
-const MIN_NODE_HEIGHT = 300;
+const MIN_NODE_WIDTH = 240
+const MIN_NODE_HEIGHT = 300
 
 
 /**
@@ -69,20 +70,20 @@ class TextArray2Widget {
         // Общий каркас
 
         // Контейнер для виджета
-        this.dom.parent = LocodeUtils.createElement("div", { className: "text-array-widget" });
-        this.dom.parent.addEventListener("wheel", (_) => { return; }, { passive: true });
+        this.dom.parent = createElement("div", { classList: ["text-array-widget"] })
+        this.dom.parent.addEventListener("wheel", (_) => { return; }, { passive: true })
 
         // контейнер для закладок
-        this.dom.tabs = LocodeUtils.createElement("div", { className: "tabs", parent: this.dom.parent });
+        this.dom.tabs = createElement( "div", { classList: ["tabs"], parent: this.dom.parent })
 
         // контейнер для содержимого
-        this.dom.content = LocodeUtils.createElement("div", { className: "content", parent: this.dom.parent });
+        this.dom.content = createElement("div", { classList: ["content"], parent: this.dom.parent })
 
         // Тектовое поле
-        this.dom.textInput = LocodeUtils.createElement("textarea", {
-            className:  "text-input comfy-multiline-input",
+        this.dom.textInput = createElement("textarea", {
+            classList: ["text-input", "comfy-multiline-input"],
             parent:     this.dom.content,
-            listeners: {
+            events: {
                 "input": () => this.#handleInput()
             }
         });
@@ -147,15 +148,15 @@ class TextArray2Widget {
         }
 
         // Создаем кнопку добавления новой закладки
-        this.dom.addButton = LocodeUtils.createElement("button", {
-            className:      "add-button",
-            content:        "+",
-            parent:         this.dom.parent,
-            listeners: {
+        this.dom.addButton = createElement("button", {
+            classList:  ["add-button"],
+            content:    "+",
+            parent:     this.dom.parent,
+            events: {
                 "click": () => this.#addNewTab()
             }
         });
-        this.dom.tabs.appendChild(this.dom.addButton);
+        this.dom.tabs.appendChild(this.dom.addButton)
 
     }
 
@@ -188,21 +189,21 @@ class TextArray2Widget {
      */
     #createTabElement(tabIndex, {onDelete, onSelect, parent=null}){
         const isActive = tabIndex === this.activeTab;
-        const tab = LocodeUtils.createElement("div", {
+        const tab = createElement("div", {
             parent:     parent,
-            className:  "tab " + (isActive ? "active" : ""),
+            classList: [ "tab", isActive ? "active" : null ],
             content:    tabIndex.toString().padStart(2, "0"),
-            listeners: {
+            events: {
                 "click": () => onSelect.call(this, tabIndex) // Обработчик выбора
             }
         });
 
         // Добавляем кнопку удаления
-        LocodeUtils.createElement("span", {
+        createElement("span", {
             parent:     tab,
-            className:  "tab-delete",
+            classList:  ["tab-delete"],
             content:    '<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
-            listeners: {
+            events: {
                 // Обработчик удаления
                 "click": (e) => {
                     e.stopPropagation();

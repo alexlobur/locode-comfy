@@ -41,6 +41,8 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
                     """,
                     "placeholder": "index_seed"
                 }),
+            },
+            "optional": {
                 "replacers": ("ANY", {
                     "default": "",
                     "tooltip": f"""
