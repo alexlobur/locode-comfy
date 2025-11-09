@@ -32,7 +32,6 @@ app.registerExtension({
 
     // При создании конкретного инстанса — выставить границы сразу
     async nodeCreated(node, app){
-        console.log("nodeCreated", node)
         const cls = node?.constructor?.comfyClass || node?.comfyClass || node?.type;
         if (cls !== "LoCounter") return;
         applyMinMax(node);
@@ -76,7 +75,6 @@ function updateNodesValues(app){
 function applyMinMax(node){
     try{
         const widgets = listToNamedObject(node.widgets)
-        console.log(widgets)
 
         // Настроить границы
         widgets.minor.options = { ...(widgets.minor.options || {}), min: 0, max: widgets.max_minor.value }

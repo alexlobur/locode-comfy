@@ -1,5 +1,5 @@
-import { app } from "../../../scripts/app.js";
-import {importCss, createElement} from "../.core/utils/dom_utils.js";
+import { app } from "../../../scripts/app.js"
+import {importCss, createElement} from "../.core/utils/dom_utils.js"
 
 
 // Подключаем CSS стили
@@ -53,8 +53,6 @@ class TextArray2Widget {
         // Создаем элемент
         this.#createElement();
 
-        // DEBUG
-        console.debug("constructor", this);
     }
 
 
@@ -65,10 +63,6 @@ class TextArray2Widget {
      * Создаем интерфейс
      */
     #createElement() {
-        console.debug("createElement", this);
-
-        // Общий каркас
-
         // Контейнер для виджета
         this.dom.parent = createElement("div", { classList: ["text-array-widget"] })
         this.dom.parent.addEventListener("wheel", (_) => { return; }, { passive: true })

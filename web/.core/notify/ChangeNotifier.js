@@ -41,7 +41,6 @@ export class ChangeNotifier {
      *  @protected
      */
     notifyListeners(eventData){
-        console.log("notifyListeners", this.#listeners)
         for (const listener of this.#listeners) listener?.call(this, eventData)
     }
 

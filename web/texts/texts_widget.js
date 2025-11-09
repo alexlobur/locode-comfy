@@ -1,5 +1,6 @@
 import {app} from "../../../scripts/app.js"
 import {importCss, createElement} from "../.core/utils/dom_utils.js"
+import { loadFileFromUser, saveFile } from "../.core/utils/files_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 
@@ -8,12 +9,12 @@ import {TextsTabsBar} from "./texts_tabs_bar.js"
 importCss("texts_widget.css", import.meta)
 
 // Минимальные размеры самого узла
-const MIN_NODE_WIDTH = 240
-const MIN_NODE_HEIGHT = 300
+const MIN_NODE_WIDTH = 260
+const MIN_NODE_HEIGHT = 200
 
 /**
- * TextsWidget
- * Кастомный виджет для массива текстов с закладками
+ *  TextsWidget
+ *  Кастомный виджет для массива текстов с закладками
  */
 class TextsWidget {
 
@@ -23,6 +24,8 @@ class TextsWidget {
     app             // ссылка на приложение
 
     #element
+
+    #textInput
 
     /**
      * @type {TabsIterrator}
@@ -96,11 +99,16 @@ class TextsWidget {
                 </div>
             `
         })
+        this.#element = element
+
+        // Текстовый блок
+        this.#textInput = this.#element.querySelector(".text-input")
 
         // Tabs
         this.#tabsBar = new TextsTabsBar({
-            parent:         element.querySelector(".topbar"),
-            tabsIterrator:  this.#tabsIterrator
+            parent:             element.querySelector(".topbar"),
+            tabsIterrator:      this.#tabsIterrator,
+            onRenamePressed:    this.#tabRename
         })
 
         // Events
@@ -110,7 +118,7 @@ class TextsWidget {
         element.querySelector(".text-input").addEventListener("input", this.#textInputHandler )
 
         // Добавляем элемент к узлу (node)
-        this.node.addDOMWidget(this.inputName, "text_array", this.dom.parent, {
+        this.node.addDOMWidget(this.inputName, "text_array", element, {
             getValue: () => this.getValue(),
             setValue: (value) => this.setValue(value)
         })
@@ -118,7 +126,6 @@ class TextsWidget {
         this.#setState()           // Обновляем состояние
         this.#setNodeMinSize()     // Задаём минимальные размеры самого узла и оборачиваем onResize
         this.#updateNodeValue()    // Инициализируем значение узла текущим состоянием, чтобы оно попало в сохранение
-        this.#element = element
     }
 
 
@@ -149,7 +156,7 @@ class TextsWidget {
      */
     #setState(){
         // Устанавливаем значение текстового поля
-        this.dom.textInput.value = this.#tabsIterrator.activeTab.text
+        this.#textInput.value = this.#tabsIterrator.activeTab.text
     }
 
 
@@ -162,7 +169,7 @@ class TextsWidget {
      *  сохраняем текст текущей вкладки и обновляем значение узла
      */
     #textInputHandler = (e) => {
-        this.#tabsIterrator.activeTab.text = this.dom.textInput.value
+        this.#tabsIterrator.activeTab.text = this.#textInput.value
         this.#updateNodeValue()
     }
 
@@ -171,13 +178,28 @@ class TextsWidget {
      *  Обработчик сохранения файла
      */
     #saveHandler = () => {
+        const data = {
+            version: 0,
+            data: this.#tabsIterrator.toJson()
+        }
+        saveFile(data, "texts.json")
     }
 
 
     /**
      *  Обработчик загрузки из файла
      */
-    #loadHandler = () => {
+    #loadHandler = async() => {
+        const jsonData = await loadFileFromUser({ accept: ".json" })
+        try{
+            const data = JSON.parse(jsonData)
+            if(data.version==null || data.version>0){
+                throw new Error("Bad file version")
+            }
+            this.#tabsIterrator.fromJson(data.data)
+        } catch (e){
+            console.error(data)
+        }
     }
 
 
@@ -186,9 +208,21 @@ class TextsWidget {
      *  @param {*} data 
      */
     #tabsIterratorHandler = (data) => {
-        console.debug(data)
         this.#updateNodeValue()
         this.#setState()
+    }
+
+
+    /**
+     *  Запрос на изменение имени
+     */
+    #tabRename = (oldName) => {
+        console.log(app.ui)
+        app.ui.dialog.show({
+            title: "Добавить вкладку",
+            text: "Введите название:",
+            // Можно добавить input поле через кастомный HTML
+        })
     }
 
 

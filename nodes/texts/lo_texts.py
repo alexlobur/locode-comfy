@@ -46,11 +46,11 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
                 "replacers": ("ANY", {
                     "default": "",
                     "tooltip": f"""
-JSON for text replacement {{value1}}.
+JSON for text replacement.
 Example:
     {{
-        "value1": "Value1 text",
-        "value2": "Value2 text"
+        "find1": "Replacement text1",
+        "find2": "Replacement text2"
     }}
                     """,
                     "placeholder": "replacers"

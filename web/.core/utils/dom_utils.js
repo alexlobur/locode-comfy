@@ -5,13 +5,12 @@
  *  @param {?import.meta} importMeta - import.meta
  */
 export function importCss(pathRel, importMeta=null){
-    // console.debug("css", pathRel, importMeta);
-    const cssPath = new URL(pathRel, importMeta.url).href;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = cssPath;
-    document.head.appendChild(link);
+    const cssPath = new URL(pathRel, importMeta.url).href
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.type = 'text/css'
+    link.href = cssPath
+    document.head.appendChild(link)
 }
 
 

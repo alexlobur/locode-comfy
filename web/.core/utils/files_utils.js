@@ -37,7 +37,7 @@ export function saveFile(data, filename, mimeType = "application/octet-stream"){
  * @param {'text'|'arrayBuffer'|'dataURL'|'binaryString'|null} readAs — способ чтения. null вернёт File/Files без чтения
  * @returns {Promise<any>|Promise<any[]>} В зависимости от multiple и readAs
  */
-export function loadFileFromUser({ accept = "*/*", multiple = false, readAs = "text" } = {}){
+export async function loadFileFromUser({ accept = "*/*", multiple = false, readAs = "text" } = {}){
 
     return new Promise((resolve, reject) => {
         // Создаем INPUT

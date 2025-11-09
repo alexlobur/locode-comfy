@@ -1,5 +1,5 @@
 import { app } from "../../../scripts/app.js"
-import { createElement } from "../utils/dom_utils.js"
+import { createElement } from "../.core/utils/dom_utils.js"
 
 
 /**

@@ -143,6 +143,7 @@
 
 .lo-texts-widget .tabs .tab.was-dragged{
     outline: 1px solid var(--gragged-color);
+    scale: 50%, 100%;
 }
 
 .lo-texts-widget .tabs.drag-mode .tab .tab-menu{

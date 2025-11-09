@@ -17,6 +17,10 @@ export class TextsTabsBar{
      */
     #tabsIterrator
 
+    #calls = {
+        onRenamePressed: null
+    }
+
 
     /**
      *  TextsTabs
@@ -24,7 +28,10 @@ export class TextsTabsBar{
      *  @param {Element} parent
      *  @param {TabsIterrator} tabsIterrator
      */
-    constructor({ parent, tabsIterrator }){
+    constructor({ parent, tabsIterrator, onRenamePressed }){
+        this.#calls = {
+            onRenamePressed: onRenamePressed
+        }
         this.#createElement(parent)
         this.#tabsIterrator = tabsIterrator
         this.#tabsIterrator.addListener( this.#tabsIterratorHandler )
@@ -68,8 +75,9 @@ export class TextsTabsBar{
                     onRemove:   this.#tabsIterrator.tabs.length>1
                         ? () => this.#tabsIterrator.removeTab(index)
                         : null,
+                    onRename:   () => this.#calls.onRenamePressed(tabData.title),
                     onDragStart: this.#dragStartHandler,
-                    onDragEnd:   (_, e) => this.#dragEndHandler(e, index),
+                    onDragEnd:  (_, e) => this.#dragEndHandler(e, index),
                 })
             )
         }
