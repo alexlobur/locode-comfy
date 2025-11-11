@@ -104,6 +104,9 @@ export class TabsIterrator extends ChangeNotifier {
     }
 
 
+    notify = () => this.notifyListeners()
+
+
     /* Сериализация */
 
     /**

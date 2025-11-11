@@ -72,6 +72,13 @@
     transition: all 0.3s;
 }
 
+.lo-texts-widget .tabs .tab .name{
+    display: inline-block;
+    max-width: 28px;
+    overflow: clip;
+    text-overflow: clip;
+}
+
 .lo-texts-widget .tabs .tab.active {
     padding: 3px 10px;
     color: var(--tab-active-fg);
@@ -195,3 +202,4 @@
     padding: 8px;
     pointer-events: auto;
 }
+

@@ -37,3 +37,33 @@ export function genUid(length = 8){
     }
     return uid
 }
+
+
+/**
+ *  Пишет многострочный текст на Канве
+ * 
+ *  @param {*} ctx 
+ *  @param {*} text 
+ *  @param {*} marginLeft 
+ *  @param {*} marginTop 
+ *  @param {*} maxWidth 
+ *  @param {*} lineHeight 
+ */
+export function wrapText(ctx, text, marginLeft, marginTop, maxWidth, lineHeight){
+    var words = text.split(" ")
+    var countWords = words.length
+    var line = ""
+    for (var n = 0; n < countWords; n++) {
+        var testLine = line + words[n] + " "
+        var testWidth = ctx.measureText(testLine).width
+        if (testWidth > maxWidth) {
+            ctx.fillText(line, marginLeft, marginTop)
+            line = words[n] + " "
+            marginTop += lineHeight
+        }
+        else {
+            line = testLine
+        }
+    }
+    ctx.fillText(line, marginLeft, marginTop)
+}

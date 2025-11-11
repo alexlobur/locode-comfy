@@ -2,7 +2,7 @@
  *  Подключение CSS стилей
  * 
  *  @param {string} pathRel - относительный путь к CSS файлу
- *  @param {?import.meta} importMeta - import.meta
+ *  @param {?import.meta} importMeta - Пишешь import.meta
  */
 export function importCss(pathRel, importMeta=null){
     const cssPath = new URL(pathRel, importMeta.url).href
@@ -64,7 +64,6 @@ export function createElement(tagName, { parent, styles={}, classList=[], attrib
 }
 
 
-
 /**
  *  Вешает обработку перетаскивания
  * 
@@ -104,4 +103,55 @@ export function makeDraggable({ element, onDragStart, onDragMove, onDragEnd, dra
     element.addEventListener("pointerdown", startDrag )
 
     return element
+}
+
+
+/**
+*   Фиксирование ширины тела страницы с учетом полосы прокрутки
+*   @param {boolean} fix
+*/
+export function modalBodyFix(fix = true){
+    if(!fix){ // восстановление
+        document.body.style.width = ""
+        document.body.style.overflow = ""
+        return
+    }
+    const dw = window.innerWidth - document.body.getBoundingClientRect().width
+    document.body.style.width = "calc( 100vw - "+dw+"px )"
+    document.body.style.overflow = "hidden"
+}
+
+
+/**
+ *  Запускает таймер интервал с прогрессом
+ *  
+ *  @param {Number} duration - продолжительность
+ *  @param {Number} durationTick - частота обновления прогресса
+ *  @param {function(Number)} onProgress
+ *  @param onDone
+ *  @private
+ */
+export function runTimer({ duration, onProgress, onDone, durationTick = 5 }){
+    const startTime = Date.now()
+    onProgress?.(0)
+    // Интервал
+    const intervalID = setInterval( ()=>{
+        const progress = (Date.now() - startTime)/duration
+        onProgress?.(progress > 1 ? 1 : progress)
+        if(progress >=1){
+            clearInterval(intervalID)
+            onDone?.()
+        }
+    }, durationTick )
+}
+
+
+
+/**
+ *  Блокирует дальнейшее распростанения события
+ */
+export function haltEvent(e, fn=null){
+    e.stopPropagation()
+    e.preventDefault()
+    fn?.()
 }

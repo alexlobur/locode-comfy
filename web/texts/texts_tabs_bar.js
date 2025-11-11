@@ -1,5 +1,6 @@
-import {createElement, makeDraggable} from "../.core/utils/dom_utils.js"
-import { TabsIterrator } from "./tabs_iterrator.js"
+import {createElement, makeDraggable, haltEvent} from "../.core/utils/dom_utils.js"
+import {TabsIterrator} from "./tabs_iterrator.js"
+import { showInputDialog } from "../.core/ui/dialogs/show_input_dialog.js"
 
 
 /**
@@ -17,10 +18,6 @@ export class TextsTabsBar{
      */
     #tabsIterrator
 
-    #calls = {
-        onRenamePressed: null
-    }
-
 
     /**
      *  TextsTabs
@@ -28,10 +25,7 @@ export class TextsTabsBar{
      *  @param {Element} parent
      *  @param {TabsIterrator} tabsIterrator
      */
-    constructor({ parent, tabsIterrator, onRenamePressed }){
-        this.#calls = {
-            onRenamePressed: onRenamePressed
-        }
+    constructor({ parent, tabsIterrator }){
         this.#createElement(parent)
         this.#tabsIterrator = tabsIterrator
         this.#tabsIterrator.addListener( this.#tabsIterratorHandler )
@@ -75,9 +69,9 @@ export class TextsTabsBar{
                     onRemove:   this.#tabsIterrator.tabs.length>1
                         ? () => this.#tabsIterrator.removeTab(index)
                         : null,
-                    onRename:   () => this.#calls.onRenamePressed(tabData.title),
+                    onRename:    this.#renameHandler,
                     onDragStart: this.#dragStartHandler,
-                    onDragEnd:  (_, e) => this.#dragEndHandler(e, index),
+                    onDragEnd:   (_, e) => this.#dragEndHandler(e, index),
                 })
             )
         }
@@ -104,6 +98,16 @@ export class TextsTabsBar{
      */
     #dragStartHandler = () => {
         this.#element.classList.add("drag-mode")
+    }
+
+
+    /**
+     *  Обработчик переименования Таба
+     */
+    #renameHandler = async(e, index) => {
+        const tabData = this.#tabsIterrator.tabs[index]
+        tabData.title = await showInputDialog({ value: tabData.title })
+        this.#tabsIterrator.notify()
     }
 
 
@@ -158,12 +162,12 @@ function createTabElement({
     onDragEnd,
     parent=null
 }){
-    const name = String(tabIndex).padStart(2, "0")
+    const name = tabData.title || String(tabIndex)
     const tab = createElement("div", {
         parent:     parent,
         classList:  [ "tab", isActive ? "active" : null ],
         content: `
-            <span class="name">
+            <span class="name" title="[${tabIndex}] ${tabData.title}">
                 ${name}
             </span>
             <div class="tab-menu">
@@ -173,18 +177,15 @@ function createTabElement({
             </div>
         `,
         events: {
-            // Выбор закладки
-            "click": (e) => {
-                onSelect?.(e, tabIndex)
-            },
+            "click": (e) => haltEvent(e, ()=>onSelect?.(e, tabIndex))
         }
     });
 
     // Добавление событий
-    tab.querySelector('button[name="clone"]').addEventListener("click", (e)=> onClone?.(e, tabIndex) )
-    tab.querySelector('button[name="rename"]').addEventListener("click", (e)=> onRename?.(e, tabIndex) )
+    tab.querySelector('button[name="clone"]').addEventListener("click", (e)=> haltEvent(e, ()=>onClone?.(e, tabIndex)) )
+    tab.querySelector('button[name="rename"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRename?.(e, tabIndex)) )
     onRemove!=null
-        ? tab.querySelector('button[name="remove"]').addEventListener("click", (e)=> onRemove?.(e, tabIndex) )
+        ? tab.querySelector('button[name="remove"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRemove?.(e, tabIndex)) )
         : tab.querySelector('button[name="remove"]').setAttribute("disabled", "true")
 
     // Перетаскивание
@@ -203,4 +204,3 @@ function createTabElement({
     return tab
 
 }
-

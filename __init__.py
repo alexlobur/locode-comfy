@@ -26,6 +26,7 @@ from .nodes.helpers.lo_log import LoLog
 from .nodes.helpers.lo_beep import LoBeep
 from .nodes.helpers.lo_switcher import LoSwitcher
 from .nodes.helpers.lo_switcher2 import LoSwitcher2
+from .nodes.helpers.lo_comment import LoComment
 
 from .nodes.system.lo_mkdir import LoMkDir
 from .nodes.system.lo_readdir import LoReadDir

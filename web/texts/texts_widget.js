@@ -1,6 +1,8 @@
 import {app} from "../../../scripts/app.js"
-import {importCss, createElement} from "../.core/utils/dom_utils.js"
-import { loadFileFromUser, saveFile } from "../.core/utils/files_utils.js"
+import { showInputDialog } from "../.core/ui/dialogs/show_input_dialog.js"
+import {importCss, createElement, haltEvent} from "../.core/utils/dom_utils.js"
+import {loadFileFromUser, saveFile} from "../.core/utils/files_utils.js"
+import {listToNamedObject} from "../.core/utils/nodes_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 
@@ -11,6 +13,7 @@ importCss("texts_widget.css", import.meta)
 // Минимальные размеры самого узла
 const MIN_NODE_WIDTH = 260
 const MIN_NODE_HEIGHT = 200
+
 
 /**
  *  TextsWidget
@@ -52,9 +55,6 @@ class TextsWidget {
         this.inputData = inputData
         this.app = app
 
-        this.node.color = "#2f3544"
-        this.node.bgcolor = "#3a435e"
-
         this.#tabsIterrator.addListener( this.#tabsIterratorHandler )
 
         // Создаем элемент
@@ -63,21 +63,6 @@ class TextsWidget {
 
 
     /*** INTERFACE ***/
-
-
-    /**
-     *  Скелет элемента
-     */
-    #buildDomScaffold({ onInput, onSave, onLoad, onAddTab }){
-
-        this.dom = {
-            parent: parent,
-            topBar: parent.querySelector(".topbar"),
-            menu: parent.querySelector(".popup-menu"),
-            textInput: parent.querySelector(".text-input"),
-        }
-    }
-
 
     /**
      * Создаем интерфейс
@@ -108,24 +93,22 @@ class TextsWidget {
         this.#tabsBar = new TextsTabsBar({
             parent:             element.querySelector(".topbar"),
             tabsIterrator:      this.#tabsIterrator,
-            onRenamePressed:    this.#tabRename
         })
 
         // Events
         element.querySelector(".btn_save").addEventListener("click", this.#saveHandler )
         element.querySelector(".btn_load").addEventListener("click", this.#loadHandler )
-        element.querySelector(".btn_add_tab").addEventListener("click", ()=> this.#tabsIterrator.addTab() )
+        element.querySelector(".btn_add_tab").addEventListener("click", this.#addTabHandler )
         element.querySelector(".text-input").addEventListener("input", this.#textInputHandler )
 
         // Добавляем элемент к узлу (node)
-        this.node.addDOMWidget(this.inputName, "text_array", element, {
+        this.node.addDOMWidget( this.inputName, "STRING", element, {
             getValue: () => this.getValue(),
-            setValue: (value) => this.setValue(value)
+            setValue: (value) => this.setValue(value),
         })
 
-        this.#setState()           // Обновляем состояние
         this.#setNodeMinSize()     // Задаём минимальные размеры самого узла и оборачиваем onResize
-        this.#updateNodeValue()    // Инициализируем значение узла текущим состоянием, чтобы оно попало в сохранение
+        this.#setState()           // Обновляем состояние
     }
 
 
@@ -157,11 +140,21 @@ class TextsWidget {
     #setState(){
         // Устанавливаем значение текстового поля
         this.#textInput.value = this.#tabsIterrator.activeTab.text
+        // Обновляем узел
+        if (this.node.onResize) this.node.onResize()
     }
 
 
-
     /*** ACTIONS ***/
+
+
+    /**
+     *  Добавление таба
+     */
+    #addTabHandler = (e) => {
+        haltEvent(e)
+        this.#tabsIterrator.addTab()
+    }
 
 
     /**
@@ -169,27 +162,33 @@ class TextsWidget {
      *  сохраняем текст текущей вкладки и обновляем значение узла
      */
     #textInputHandler = (e) => {
+        haltEvent(e)
         this.#tabsIterrator.activeTab.text = this.#textInput.value
-        this.#updateNodeValue()
     }
 
 
     /**
      *  Обработчик сохранения файла
      */
-    #saveHandler = () => {
+    #saveHandler = async(e) => {
+        haltEvent(e)
         const data = {
             version: 0,
             data: this.#tabsIterrator.toJson()
         }
-        saveFile(data, "texts.json")
+        const fname = await showInputDialog({
+            title: "File Name",
+            value: ""
+        })
+        saveFile(data, ( fname.trim() || "texts_data") +".json" )
     }
 
 
     /**
      *  Обработчик загрузки из файла
      */
-    #loadHandler = async() => {
+    #loadHandler = async(e) => {
+        haltEvent(e)
         const jsonData = await loadFileFromUser({ accept: ".json" })
         try{
             const data = JSON.parse(jsonData)
@@ -208,38 +207,7 @@ class TextsWidget {
      *  @param {*} data 
      */
     #tabsIterratorHandler = (data) => {
-        this.#updateNodeValue()
         this.#setState()
-    }
-
-
-    /**
-     *  Запрос на изменение имени
-     */
-    #tabRename = (oldName) => {
-        console.log(app.ui)
-        app.ui.dialog.show({
-            title: "Добавить вкладку",
-            text: "Введите название:",
-            // Можно добавить input поле через кастомный HTML
-        })
-    }
-
-
-    /**
-     * Обновляем значение узла TODO: исправить этот бред
-     */
-    #updateNodeValue() {
-        // Обновляем значение узла
-        if (this.node.widgets && this.node.widgets[this.inputName]) {
-            this.node.widgets[this.inputName].value = this.getValue()
-        }
-        // Дублируем в свойства узла для надёжной сериализации
-        if (!this.node.properties) this.node.properties = {}
-        this.node.properties.widget_data = this.getValue()
-        
-        // Обновляем узел
-        if (this.node.onResize) this.node.onResize()
     }
 
 
@@ -250,7 +218,7 @@ class TextsWidget {
      * Получаем значение
      */
     getValue() {
-        return this.#tabsIterrator.toJson()
+        return JSON.stringify(this.#tabsIterrator.toJson())
     }
 
 
@@ -259,9 +227,12 @@ class TextsWidget {
      * @param {any} value - значение
      */
     setValue(value){
-        this.#tabsIterrator.fromJson(value)
-        this.#setState()
-        this.#updateNodeValue()
+        try{
+            this.#tabsIterrator.fromJson(JSON.parse(value))
+            this.#setState()
+        } catch (e){
+            console.warn("Bad value in setValue")
+        }
     }
 
 }
@@ -286,50 +257,21 @@ app.registerExtension({
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function() {
             const ret = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
-
             // создаём и сохраняем ссылку на виджет
-            this.__widget = new TextsWidget(this, "widget_data", {}, app)
-
-            // если есть сохранённые значения в properties — загрузим их
-            try {
-                const saved = this?.properties?.widget_data
-                this.__widget.setValue(saved)
-            } catch (e) {
-                console.warn("LoTexts restore on create failed", e)
-            }
-            return ret
+            this.__widget = new TextsWidget(this, "widget_data", nodeData, app)
+            this.color = "#2f3544"
+            this.bgcolor = "#3a435e"
         }
-
 
         //
         // Сериализация: гарантируем сохранение значений
-        const onSerialize = nodeType.prototype.onSerialize
-        nodeType.prototype.onSerialize = function(o){
-            const ret = onSerialize ? onSerialize.apply(this, arguments) : undefined
-            try {
-                if (!o.properties) o.properties = {};
-                const data = this?.__widget?.getValue?.()
-                o.properties.widget_data = data;
-            } catch (e) {
-                console.warn("LoTexts onSerialize warning", e)
-            }
-            return ret;
-        }
-
-
-        //
-        // Конфигурация (загрузка из workflow): восстановим значения в виджет
-        const onConfigure = nodeType.prototype.onConfigure;
-        nodeType.prototype.onConfigure = function(o) {
-            const ret = onConfigure ? onConfigure.apply(this, arguments) : undefined
-            try {
-                const saved = o?.properties?.widget_data
-                this.__widget.setValue(saved)
-            } catch (e) {
-                console.warn("LoTexts onConfigure warning", e)
-            }
-            return ret;
-        }
+        // const onSerialize = nodeType.prototype.onSerialize
+        // nodeType.prototype.onSerialize = function(o) {
+        //     const ret = onSerialize ? onSerialize.apply(this, arguments) : undefined
+        //     console.debug("SERIALIZE", this, arguments)
+        //     return ret
+        // }
 
     }
+
 })

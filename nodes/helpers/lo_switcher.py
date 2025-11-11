@@ -1,4 +1,5 @@
 from ...utils.anytype import any_type
+# from comfy.comfy_types.node_typing import IO
 
 
 #---
@@ -75,3 +76,5 @@ The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items
 
         # возвращаем значение из списка по индексу
         return (values[index_seed % values_count],)
+
+

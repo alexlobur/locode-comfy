@@ -1,0 +1,73 @@
+.lomodal {
+    --color-overlay: #000;
+
+    --window-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+    --window-bg: #333;
+    --window-padding: 32px;
+    --window-border-radius: 16px;
+    --window-max-width: 640px;
+    --window-margin: 32px;
+
+    --close-size: 40px;
+    --close-icon-size: 18px;
+
+    --content-spacing: 16px;
+}
+
+
+.lomodal > .lomodal-overlay {
+    position: fixed; left: 0; top: 0; bottom: 0; right: 0; opacity: 0.6;
+    background-color: var(--color-overlay);
+}
+.lomodal > .lomodal-container {
+    position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+    overflow: auto; display: block;
+}
+.lomodal > .lomodal-container > .lomodal-wrapper {
+    display: flex;
+    min-height: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: var(--window-margin);
+    box-sizing: border-box;
+}
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window {
+    background-color: var(--window-bg);
+    padding: var(--window-padding);
+    border-radius: var(--window-border-radius);
+    max-width: var(--window-max-width);
+    box-shadow: var(--window-shadow);
+    position: relative;
+}
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-close {
+    position: absolute; top: 0; right: 0;
+    width: var(--close-size);
+    height: var(--close-size);
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.3;
+}
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-close:HOVER {
+    opacity: 1.0;
+}
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-close:after {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-size: var(--close-icon-size);
+    content: "\2716";
+}
+
+/* content */
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-title {
+    font-size: var(--font-size-caption); font-weight: 500;
+    text-align: center;
+    margin-bottom: var(--content-spacing);
+}
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-title:empty { display: none; }
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-content { }
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-actions {
+    margin-top: var(--content-spacing);
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+.lomodal > .lomodal-container > .lomodal-wrapper > .lomodal-window > .lomodal-actions:empty { display: none; }

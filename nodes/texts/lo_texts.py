@@ -1,4 +1,5 @@
-from ...utils.utils import fit_value
+import json
+from ...utils.utils import fit_val
 
 
 #---
@@ -8,20 +9,6 @@ from ...utils.utils import fit_value
 #
 #---
 class LoTexts:
-    """
-    Список текстов с закладками (Extended).
-
-    Правила:
-      - На вход принимаются:
-        - индекс (INT).
-        - разделитель строк (STRING).
-        - данные из виджета (DICT).
-      - На выходе:
-        - текст в зависимости от индекса.
-        - текст активной вкладки.
-        - весь текст, объединенный в одну строку с разделителем.
-    """
-
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
@@ -42,27 +29,13 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
                     "placeholder": "index_seed"
                 }),
             },
-            "optional": {
-                "replacers": ("ANY", {
-                    "default": "",
-                    "tooltip": f"""
-JSON for text replacement.
-Example:
-    {{
-        "find1": "Replacement text1",
-        "find2": "Replacement text2"
-    }}
-                    """,
-                    "placeholder": "replacers"
-                }),
-            },
             "hidden": {
-                "widget_data": ("*"),
+                "widget_data": ("STRING", ),
             }
         }
 
     RETURN_TYPES = ("STRING", "STRING", "LIST")
-    RETURN_NAMES = ("INDEX_STRING", "ACTIVE_STRING", "STRINGS_LIST")
+    RETURN_NAMES = ("ACTIVE_STRING", "INDEX_STRING", "STRINGS_LIST")
     FUNCTION = "execute"
 
     CATEGORY = "locode/params"
@@ -71,8 +44,8 @@ Example:
 Selects text from an array of texts by the `index_seed`.
 If the index is out of bounds in either direction, the index is wrapped using modulo.
 Outputs:
-- `INDEX_STRING`: Text at the given index.
 - `ACTIVE_STRING`: Text of the active tab.
+- `INDEX_STRING`: Text at the given index.
 - `STRINGS_LIST`: All texts joined into a single string with the delimiter.
 """
 
@@ -80,32 +53,30 @@ Outputs:
     #
     #   Вычисляем значение
     #
-    def execute(self, index_seed: int, widget_data: dict) -> tuple[str, str, str]:
-        """
-        Вычисляем значение.
+    def execute(self, index_seed: int, widget_data: str) -> tuple[str, str, list[str]]:
 
-        Args:
-            - `index_seed` (int): Индекс текста
-            - `delimiter` (str): Разделитель строк
-            - `widget_data` (dict): Данные из виджета в формате { "texts": [...], "activeTab": int }
-        """
+        # Разбираем JSON
+        try:
+            data = json.loads(widget_data) if isinstance(widget_data, str) else (widget_data or {})
+        except Exception:
+            # Некорректный JSON — возвращаем пустые значения
+            print(f"{self.__class__} Bad JSON: ${widget_data}")
+            return ("", "", [])
 
-        #TODO: добавить замену
+        tabs = data.get("tabs") or []
+        active_index = data.get("activeIndex", 0)
 
-        # Получаем данные из виджета
-        texts = widget_data.get("texts")
-        active_tab = widget_data.get("activeTab")
+        # Формируем список текстов из вкладок
+        texts: list[str] = [(t.get("text") or "") for t in tabs if isinstance(t, dict)]
 
-        # Если массив пустой, возвращаем пустые строки
+        # Если список пуст — возвращаем пустые значения
         if len(texts) == 0:
-            return ('', '', '')
+            return ("", "", [])
 
-        # Безопасные границы для активной вкладки
-        active_tab = fit_value(active_tab, len(texts) - 1, 0)
+        # Безопасные индексы
+        active_index = fit_val(active_index, 0, len(texts) - 1)
+        seed_index = index_seed % len(texts)
 
-        # Вычисляем значения
-        selected_by_index = texts[index_seed % len(texts)]
-        active_string = texts[active_tab]
-
-        return (selected_by_index, active_string, texts)
+        # Возвращаем: текст активной вкладки, текст по index_seed, список текстов
+        return (texts[active_index], texts[seed_index], texts)
 
