@@ -1,8 +1,7 @@
-import {app} from "../../../scripts/app.js"
-import { showInputDialog } from "../.core/ui/dialogs/show_input_dialog.js"
-import {importCss, createElement, haltEvent} from "../.core/utils/dom_utils.js"
-import {loadFileFromUser, saveFile} from "../.core/utils/files_utils.js"
-import {listToNamedObject} from "../.core/utils/nodes_utils.js"
+import {app} from "../../../../scripts/app.js"
+import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
+import {importCss, createElement, haltEvent} from "../../.core/utils/dom_utils.js"
+import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 
