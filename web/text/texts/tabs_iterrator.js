@@ -1,5 +1,5 @@
-import {ChangeNotifier} from "../.core/notify/ChangeNotifier.js"
-import { genUid } from "../.core/utils/nodes_utils.js"
+import {ChangeNotifier} from "../../.core/notify/ChangeNotifier.js"
+import { genUid } from "../../.core/utils/nodes_utils.js"
 
 
 /**

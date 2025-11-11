@@ -49,7 +49,7 @@ export class LoCommentNode extends LGraphNode {
 	}
 
 
-	// onDrawBackground(ctx) {
+	onDrawBackground(ctx) {
 		// const [w, h] = this.size
 		// const r = 8
 		// ctx.save()
@@ -73,18 +73,16 @@ export class LoCommentNode extends LGraphNode {
 		// 	ctx.strokeRect(0.5, 0.5, w - 1, h - 1)
 		// }
 		// ctx.restore()
-	// }
+	}
+
 
 	onDrawForeground(ctx) {
 		if (this.flags?.collapsed) return
 		ctx.save()
-		ctx.font = "400 13px Arial"
-		ctx.fillStyle = "#999"
+		ctx.font = "400 10px Arial"
+		ctx.fillStyle = "#666"
 		ctx.textBaseline = "top"
 		wrapText(ctx, this.comment, 10, 10, this.size[0], 16)
-		// ctx.font = "400 10px Arial"
-		// ctx.fillStyle = "#999"
-		// ctx.textBaseline = "top"
 		// ctx.fillText(this.comment, 8, 6)
 		ctx.restore()
 	}
@@ -133,9 +131,9 @@ export class LoCommentNode extends LGraphNode {
 
 LoCommentNode.type = "Lo:Comment"
 LoCommentNode.title = "Lo:Comment"
-LoCommentNode.category = "locode/helpers"
-LoCommentNode._category = "locode/helpers"
-LoCommentNode.description = "Комментарий"
+LoCommentNode.category = "locode/ui"
+LoCommentNode._category = "locode/ui"
+LoCommentNode.description = "Comment"
 LoCommentNode.title_mode = LiteGraph.AUTOHIDE_TITLE // LiteGraph.TRANSPARENT_TITLE //LiteGraph.NO_TITLE
 LoCommentNode.collapsable = true
 

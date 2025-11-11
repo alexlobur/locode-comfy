@@ -1,5 +1,5 @@
 import { app } from "../../../scripts/app.js"
-import {importCss, createElement} from "../.core/utils/dom_utils.js"
+import {importCss, createElement} from "../../.core/utils/dom_utils.js"
 
 
 // Подключаем CSS стили
