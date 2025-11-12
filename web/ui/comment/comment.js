@@ -1,19 +1,13 @@
 import { app } from "../../../../scripts/app.js"
-import { wrapText } from "../../.core/utils/nodes_utils.js"
+import { wrapCanvasText } from "../../.core/utils/nodes_utils.js"
 
 
-const NO_COLOR = "#00000033"
+const DEFAULT_COLOR = "#33333344"
+const DEFAULT_TEXT_COLOR = "#FFFFFF66"
+const DEFAULT_TEXT_FONT = "400 10px Arial"
+const MIN_NODE_SIZE = [ 100, 100 ]
 
 export class LoCommentNode extends LGraphNode {
-
-
-	set comment(val){
-		this.properties.comment = val
-	}
-
-	get comment (){
-		return this.properties.comment
-	}
 
 
 	constructor(title = LoCommentNode.title){
@@ -24,14 +18,11 @@ export class LoCommentNode extends LGraphNode {
 		this.resizable = true
         // this.isDropEnabled = false
 
-		this.properties = this.properties || {}
-		this.properties.comment = this.properties.comment || ""
+		// Обновление свойств
+		this.updateProperties()
 
 		// Визуальные настройки нода (минимальные)
-		// this.size = MIN_NODE_SIZE
-		this.color = NO_COLOR
-		this.bgcolor = NO_COLOR
-		// this.boxcolor = NO_COLOR
+		this.size = MIN_NODE_SIZE
 		// this.clip_area = true
 		// this.render_shadow = false
 		// this.widgets_up = true
@@ -40,9 +31,28 @@ export class LoCommentNode extends LGraphNode {
 	}
 
 
+	updateProperties({ bgcolor=null, text_color=null, comment=null, font=null }={}){
+		this.properties = this.properties || {}
+		this.properties.comment		= comment || this.properties.comment || ""
+		this.properties.bgcolor		= bgcolor || this.properties.bgcolor || DEFAULT_COLOR
+		this.properties.text_color	= text_color || this.properties.text_color || DEFAULT_TEXT_COLOR
+		this.properties.font		= font || this.properties.font || DEFAULT_TEXT_FONT
+		this.color		= this.properties.bgcolor
+		this.bgcolor	= this.properties.bgcolor
+		this.boxcolor	= this.properties.text_color
+	}
+
+
 	onPropertyChanged(name, value){
 		if (name === "comment"){
-			this.comment = value ?? ""
+			console.debug(value)
+			value = String(value).replaceAll("\n", "\\n")
+			this.updateProperties({ comment: value })
+			this.setDirtyCanvas(true, true)
+			return true
+		}
+		if (["bgcolor", "text_color", "font"].includes(name)){
+			this.updateProperties()
 			this.setDirtyCanvas(true, true)
 			return true
 		}
@@ -77,13 +87,14 @@ export class LoCommentNode extends LGraphNode {
 
 
 	onDrawForeground(ctx) {
+		const {comment, text_color, font} = this.properties
+
 		if (this.flags?.collapsed) return
 		ctx.save()
-		ctx.font = "400 10px Arial"
-		ctx.fillStyle = "#666"
+		ctx.font = font
+		ctx.fillStyle = text_color
 		ctx.textBaseline = "top"
-		wrapText(ctx, this.comment, 10, 10, this.size[0], 16)
-		// ctx.fillText(this.comment, 8, 6)
+		wrapCanvasText( ctx, comment, this.size[0]-16, { marginLeft: 8, marginTop: 8 })
 		ctx.restore()
 	}
 
@@ -97,17 +108,9 @@ export class LoCommentNode extends LGraphNode {
 		options = options || [];
 		options.push(
 			{
-				content: "Clear comment",
+				content: "Reset Defaults",
 				callback: () => {
-					this.comment = ''
-					this.setDirtyCanvas(true, true)
-				},
-			},
-			{
-				content: "Reset Color",
-				callback: () => {
-					this.color = NO_COLOR
-					this.bgcolor = NO_COLOR
+					this.updateProperties({ bgcolor: DEFAULT_COLOR, text_color: DEFAULT_TEXT_COLOR, font: DEFAULT_TEXT_FONT })
 					this.setDirtyCanvas(true, true)
 				},
 			},
@@ -134,7 +137,7 @@ LoCommentNode.title = "Lo:Comment"
 LoCommentNode.category = "locode/ui"
 LoCommentNode._category = "locode/ui"
 LoCommentNode.description = "Comment"
-LoCommentNode.title_mode = LiteGraph.AUTOHIDE_TITLE // LiteGraph.TRANSPARENT_TITLE //LiteGraph.NO_TITLE
+LoCommentNode.title_mode = LiteGraph.NORMAL_TITLE //LiteGraph.AUTOHIDE_TITLE // LiteGraph.TRANSPARENT_TITLE //LiteGraph.NO_TITLE
 LoCommentNode.collapsable = true
 
 

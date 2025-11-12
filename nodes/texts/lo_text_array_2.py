@@ -44,6 +44,8 @@ class LoTextArray2:
     RETURN_NAMES = ("INDEX_STRING", "ACTIVE_TAB_STRING", "CONCATENATE", "LIST")
     FUNCTION = "execute"
 
+    DEPRECATED = True
+
     CATEGORY = "locode/params"
     AUTHOR = "LoCode"
     DESCRIPTION = """
