@@ -1,5 +1,6 @@
 import {app} from "../../../../scripts/app.js"
 import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
+import Logger from "../../.core/utils/Logger.js"
 import {importCss, createElement, haltEvent} from "../../.core/utils/dom_utils.js"
 import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
@@ -246,7 +247,7 @@ class TextsWidget {
 //   только для узла с именем "LoTextArray2".
 //
 app.registerExtension({
-    name: "TextsWidget",
+    name: "locode.Texts",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeData.name !== "LoTexts") return

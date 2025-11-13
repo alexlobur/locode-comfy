@@ -45,6 +45,9 @@ class LoBeep:
     FUNCTION = "execute"
     OUTPUT_NODE = True
 
+    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoBeep", "Lo:Beep")
+
     CATEGORY = "locode/helpers"
     AUTHOR = "LoCode"
     DESCRIPTION = """

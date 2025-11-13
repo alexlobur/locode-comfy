@@ -27,7 +27,11 @@ class LoEval:
 
     RETURN_TYPES = ("INT", "FLOAT")
     RETURN_NAMES = ("int", "float")
-    FUNCTION = "compute"
+    FUNCTION = "execute"
+
+    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoEval", "Lo:Eval")
+
     CATEGORY = "locode/calc"
     DESCRIPTION = """
     Evaluates an expression with variables.
@@ -36,7 +40,7 @@ class LoEval:
     - `float`: Float result.
     """
 
-    def compute(self, expression, a=None, b=None, c=None):
+    def execute(self, expression, a=None, b=None, c=None):
         variables = {
             "a": a,
             "b": b,

@@ -10,6 +10,9 @@ from ...utils.utils import fit_val
 #---
 class LoTexts:
 
+    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoTexts", "Lo:Texts")
+
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return True

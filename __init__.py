@@ -21,12 +21,12 @@ from .nodes.params.lo_replace_any import LoReplaceAny
 
 from .nodes.texts.lo_text_array_2 import LoTextArray2
 from .nodes.texts.lo_texts import LoTexts
+from .nodes.texts.replacers import Replacers
 
 from .nodes.helpers.lo_log import LoLog
 from .nodes.helpers.lo_beep import LoBeep
 from .nodes.helpers.lo_switcher import LoSwitcher
 from .nodes.helpers.lo_switcher2 import LoSwitcher2
-from .nodes.helpers.lo_comment import LoComment
 
 from .nodes.system.lo_mkdir import LoMkDir
 from .nodes.system.lo_readdir import LoReadDir
@@ -37,9 +37,6 @@ from .nodes.system.lo_rmdir import LoRmDir
 
 # Регистрируем узлы
 NODE_CLASS_MAPPINGS = {
-    "LoLog":             LoLog,
-    "LoBeep":            LoBeep,
-    "LoEval":            LoEval,
     "LoIsEmpty":         LoIsEmpty,
     "LoNotBool":         LoNotBool,
     "LoSwitcher":        LoSwitcher,
@@ -73,11 +70,8 @@ NODE_CLASS_MAPPINGS = {
 
 # Регистрируем отображаемые имена узлов
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "LoLog":             "Lo:Log",
-    "LoBeep":            "Lo:LoBeep",
-    "LoEval":            "Lo:Eval",
-    "LoNotBool":         "Lo:NotBool",
     "LoIsEmpty":         "Lo:IsEmpty",
+    "LoNotBool":         "Lo:NotBool",
     "LoSwitcher":        "Lo:Switcher",
     "LoSwitcher2":       "Lo:Switcher2(Test)",
     "LoCompareNum":      "Lo:CompareNum",
@@ -105,6 +99,16 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LoReplaceAny":      "Lo:ReplaceAny",
     "LoCounter":         "Lo:Counter",
 }
+
+
+# Автоматическая регистрация классов с NODE_MAPPINGS
+classes = [ Replacers, LoTexts, LoLog, LoBeep, LoEval ]
+
+for cls in classes:
+    mapping = getattr(cls, "NODE_MAPPINGS", None)
+    node_id, display_name = mapping
+    NODE_CLASS_MAPPINGS[node_id] = cls
+    NODE_DISPLAY_NAME_MAPPINGS[node_id] = display_name
 
 
 # Регистрируем JS и CSS файлы

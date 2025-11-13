@@ -49,6 +49,9 @@ class LoLog:
     FUNCTION = "execute"
     OUTPUT_NODE = True
 
+    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoLog", "Lo:Log")
+
     CATEGORY = "locode/helpers"
     AUTHOR = "LoCode"
     DESCRIPTION = """

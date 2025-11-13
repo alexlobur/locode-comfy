@@ -1,0 +1,41 @@
+@import "./scroll.css";
+
+
+:root{
+    --locode-menu-bg:           color-mix(in srgb, var(--p-surface-800) 100%, transparent);
+    --locode-menu-btn-fg:       color-mix(in srgb, var(--p-text-color) 50%, transparent);
+    --locode-menu-btn-bg:       color-mix(in srgb, var(--p-surface-900) 30%, transparent);
+    --locode-menu-btn-hover-fg: var(--p-text-color);
+    --locode-menu-btn-hover-bg: color-mix(in srgb, var(--p-surface-900) 50%, transparent);
+}
+
+
+/* custom widget menu */
+.locode-widget-menu {
+    padding: 8px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: var(--locode-menu-bg);
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.15);
+}
+
+.locode-widget-menu BUTTON {
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 10px;
+
+    color: var(--locode-menu-btn-fg);
+    background: var(--locode-menu-btn-bg);
+    border: none;
+
+    pointer-events: auto;
+    cursor: pointer;
+    transition: 0.25s all;
+}
+
+
+.locode-widget-menu BUTTON:HOVER{
+    color: var(--locode-menu-btn-hover-fg);
+    background: var(--locode-menu-btn-hover-bg);
+}
+

@@ -1,0 +1,50 @@
+.locode-replacers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    user-select: none;
+    position: relative;
+
+    /* vars */
+    --input-font:       400 11px "Courier New", monospace;
+    --input-bg:         color-mix(in srgb, var(--p-surface-800) 80%, transparent);
+    --input-fg:         color-mix(in srgb, var(--p-text-color) 50%, transparent);
+    --input-border:     none; /* 1px solid rgba(255,255,255,0.25); */
+    --input-active-fg:  color-mix(in srgb, var(--p-text-color) 100%, transparent);
+}
+
+
+.locode-replacers .inputs{
+    overflow: auto;
+}
+
+.locode-replacers .inputs .items{
+    display: grid; gap: 4px 2px;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    padding-right: 4px;
+}
+
+.locode-replacers .inputs .items > DIV{
+    padding: 4px 6px;
+    border-radius: 6px;
+    width: 100%;
+    min-width: 24px;
+    box-sizing: border-box;
+    color: var(--input-fg);
+    background: var(--input-bg);
+    border: var(--input-border);
+    font: var(--input-font);
+}
+
+.locode-replacers .inputs .items > DIV:nth-child(2n-1){
+    background: none;
+}
+
+.locode-replacers .inputs .items > DIV:focus,
+.locode-replacers .inputs .items > DIV:HOVER{
+    outline: none;
+    background: var(--input-bg);
+    color: var(--input-active-fg);
+}
+
