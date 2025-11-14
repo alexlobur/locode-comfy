@@ -47,6 +47,8 @@ export class LoCommentNode extends LGraphNode {
 		this.resizable = true
         // this.isDropEnabled = false
 
+		this.properties = this.properties || {}
+
 		// Визуальные настройки нода (минимальные)
 		this.size = NODE_CFG.minSize
 		// this.clip_area = true
