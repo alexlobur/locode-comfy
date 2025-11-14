@@ -1,0 +1,53 @@
+
+.locode-comment-modal .lomodal-window{
+    background: var(--p-surface-900) !important;
+    border: 1px solid var(--p-surface-800) !important;
+    width: 360px;
+}
+
+.locode-comment-modal .lomodal-title{
+    opacity: 0.5;
+}
+
+.locode-comment-modal FORM{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.locode-comment-modal LABEL{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.locode-comment-modal LABEL.row{
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.locode-comment-modal LABEL .label{
+    font-size: 14px;
+    opacity: 0.5;
+}
+
+.locode-comment-modal INPUT,
+.locode-comment-modal TEXTAREA {
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    background: color-mix(in srgb, var(--p-surface-800) 25%, transparent);
+    color: color-mix(in srgb, var(--p-text) 50%, transparent);
+    outline: 1px solid var(--p-surface-800);
+    border: none;
+}
+
+.locode-comment-modal .row INPUT{
+    width: 160px;
+}
+
+.locode-comment-modal TEXTAREA{
+    min-height: 200px;
+    resize: none;
+}

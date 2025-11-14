@@ -114,9 +114,10 @@ export class TabsIterrator extends ChangeNotifier {
      * @param {Object} json 
      * @returns {this}
      */
-    fromJson(json){
+    fromJson(json, append=false){
+        const tabs = Array.from(json['tabs']??[]).map( data => new TabData(data) )
         this.set({
-            tabs:        Array.from(json['tabs']??[]).map( data => new TabData(data) ),
+            tabs: append ? [...this.#tabs, ...tabs] : tabs,
             activeIndex: json['activeIndex']??0
         })
         return this

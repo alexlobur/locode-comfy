@@ -2,7 +2,6 @@ import {createElement, makeDraggable, haltEvent} from "../../.core/utils/dom_uti
 import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 
-
 /**
  *  TextsTabs
  */
@@ -65,7 +64,8 @@ export class TextsTabsBar{
                     tabIndex:   index,
                     isActive:   index == this.#tabsIterrator.activeIndex,
                     onSelect:   () => this.#tabsIterrator.set({ activeIndex: index }),
-                    onClone:    () => this.#tabsIterrator.addTab(index, { text: tabData.title, text: tabData.text }),
+                    onAdd:      () => this.#tabsIterrator.addTab(index+1, { title: "", text: "", activeIndex: index+1 }),
+                    onClone:    () => this.#tabsIterrator.addTab(index+1, { title: tabData.title, text: tabData.text, activeIndex: index+1 }),
                     onRemove:   this.#tabsIterrator.tabs.length>1
                         ? () => this.#tabsIterrator.removeTab(index)
                         : null,
@@ -155,6 +155,7 @@ function createTabElement({
     tabIndex,
     isActive,
     onSelect,
+    onAdd,
     onClone,
     onRemove,
     onRename,
@@ -170,8 +171,9 @@ function createTabElement({
             <span class="name" title="[${tabIndex}] ${tabData.title}">
                 ${name}
             </span>
-            <div class="tab-menu">
+            <div class="locode-widget-menu">
                 <button name="remove">Remove</button>
+                <button name="add">Add</button>
                 <button name="clone">Clone</button>
                 <button name="rename">Rename</button>
             </div>
@@ -182,6 +184,7 @@ function createTabElement({
     });
 
     // Добавление событий
+    tab.querySelector('button[name="add"]').addEventListener("click", (e)=> haltEvent(e, ()=>onAdd?.(e, tabIndex)) )
     tab.querySelector('button[name="clone"]').addEventListener("click", (e)=> haltEvent(e, ()=>onClone?.(e, tabIndex)) )
     tab.querySelector('button[name="rename"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRename?.(e, tabIndex)) )
     onRemove!=null

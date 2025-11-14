@@ -58,7 +58,7 @@ function updateNodesValues(app){
         const comfyClass = node?.constructor?.comfyClass || node?.comfyClass || node?.type;
         if (comfyClass !== "LoCounter") continue;
         try{
-            const widgets = listToNamedObject(node.widgets);
+            const widgets = listToNamedObject(node.widgets)
             widgets.minor.value++
             if (widgets.minor.value > widgets.max_minor.value){
                 widgets.minor.value = 0;

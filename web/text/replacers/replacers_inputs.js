@@ -17,7 +17,7 @@ export class ReplacersInputs{
      * @type {ReplacerItem[]}
      */
     get data(){ return this.#data }
-    #data = [new ReplacerItem("find", "replace"),]
+    #data = [new ReplacerItem(),]
 
     #onChanged
 
@@ -94,14 +94,16 @@ export class ReplacersInputs{
     }
 
 
-    fromJson(data){
-        this.#data = data.map( itemData => ReplacerItem.fromData(itemData) )
+    decode(data){
+        this.#data = data.map( item => new ReplacerItem(item[0], item[1]) )
         this.#normalizeData()
     }
 
 
-    toJson(){
+    encode(){
         return this.#data
+            .filter( item => !item.isEmpty )
+            .map( item => [item.find, item.replace] )
     }
 
 }
@@ -119,10 +121,6 @@ export class ReplacerItem{
     constructor(find='', replace=''){
         this.find = find
         this.replace = replace
-    }
-
-    static fromData(data){
-        return new ReplacerItem(data.find??"find", data.replace??"replace")
     }
 
 }

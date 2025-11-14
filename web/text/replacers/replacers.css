@@ -29,16 +29,23 @@
     padding: 4px 6px;
     border-radius: 6px;
     width: 100%;
-    min-width: 24px;
+    min-width: 36px;
     box-sizing: border-box;
     color: var(--input-fg);
-    background: var(--input-bg);
     border: var(--input-border);
     font: var(--input-font);
 }
 
-.locode-replacers .inputs .items > DIV:nth-child(2n-1){
-    background: none;
+.locode-replacers .inputs .items > DIV:nth-child(2n){
+    background: var(--input-bg);
+}
+
+.locode-replacers .inputs .items > DIV:empty::before{
+    content: "find"; opacity: 0.5;
+    font-size: 8px;
+}
+.locode-replacers .inputs .items > DIV:nth-child(2n):empty::before{
+    content: "replace";
 }
 
 .locode-replacers .inputs .items > DIV:focus,

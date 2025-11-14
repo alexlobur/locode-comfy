@@ -1,18 +1,25 @@
-import {app} from "../../../../scripts/app.js"
-import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
+import {coreInit} from "../../.core/core_init.js"
 import Logger from "../../.core/utils/Logger.js"
+import {app} from "../../../../scripts/app.js"
+import {showInputDialog} from "../../.core/ui/dialogs/show_input_dialog.js"
 import {importCss, createElement, haltEvent} from "../../.core/utils/dom_utils.js"
 import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 
+// Инициализация ядра
+coreInit()
 
 // Подключаем CSS стили
 importCss("texts_widget.css", import.meta)
 
-// Минимальные размеры самого узла
-const MIN_NODE_WIDTH = 260
-const MIN_NODE_HEIGHT = 200
+// Конфиг узла
+const NODE_CFG = {
+    type:       "LoTexts",
+    minSize:    [250, 200],
+    color:      "#2f3544",
+    bgcolor:    "#3a435e",
+}
 
 
 /**
@@ -72,11 +79,6 @@ class TextsWidget {
         const element = createElement("div", {
             classList: ["lo-texts-widget"],
             content: `
-                <div class="popup-menu">
-                    <button class="btn_add_tab">Add Tab</button>
-                    <button class="btn_save">Save</button>
-                    <button class="btn_load">Load</button>
-                </div>
                 <div class="topbar">
                 </div>
                 <div class="content">
@@ -96,9 +98,6 @@ class TextsWidget {
         })
 
         // Events
-        element.querySelector(".btn_save").addEventListener("click", this.#saveHandler )
-        element.querySelector(".btn_load").addEventListener("click", this.#loadHandler )
-        element.querySelector(".btn_add_tab").addEventListener("click", this.#addTabHandler )
         element.querySelector(".text-input").addEventListener("input", this.#textInputHandler )
 
         // Добавляем элемент к узлу (node)
@@ -120,8 +119,8 @@ class TextsWidget {
         this.node.onResize = (...args) => {
             if (originalOnResize) originalOnResize(...args)
             const size = this.node.size || [0, 0]
-            const newW = Math.max(size[0], MIN_NODE_WIDTH)
-            const newH = Math.max(size[1], MIN_NODE_HEIGHT)
+            const newW = Math.max(size[0], NODE_CFG.minSize[0])
+            const newH = Math.max(size[1], NODE_CFG.minSize[1])
             if (newW !== size[0] || newH !== size[1]) {
                 this.node.size[0] = newW
                 this.node.size[1] = newH
@@ -161,8 +160,7 @@ class TextsWidget {
      *  Обработчик изменения текста.
      *  сохраняем текст текущей вкладки и обновляем значение узла
      */
-    #textInputHandler = (e) => {
-        haltEvent(e)
+    #textInputHandler = () => {
         this.#tabsIterrator.activeTab.text = this.#textInput.value
     }
 
@@ -170,8 +168,7 @@ class TextsWidget {
     /**
      *  Обработчик сохранения файла
      */
-    #saveHandler = async(e) => {
-        haltEvent(e)
+    saveData = async() => {
         const data = {
             version: 0,
             data: this.#tabsIterrator.toJson()
@@ -187,17 +184,16 @@ class TextsWidget {
     /**
      *  Обработчик загрузки из файла
      */
-    #loadHandler = async(e) => {
-        haltEvent(e)
+    loadData = async() => {
         const jsonData = await loadFileFromUser({ accept: ".json" })
         try{
             const data = JSON.parse(jsonData)
             if(data.version==null || data.version>0){
                 throw new Error("Bad file version")
             }
-            this.#tabsIterrator.fromJson(data.data)
+            this.#tabsIterrator.fromJson(data.data, true)
         } catch (e){
-            console.error(data)
+            Logger.error("loadData", data)
         }
     }
 
@@ -231,7 +227,7 @@ class TextsWidget {
             this.#tabsIterrator.fromJson(JSON.parse(value))
             this.#setState()
         } catch (e){
-            console.warn("Bad value in setValue")
+            Logger.warn("Bad value in setValue", e)
         }
     }
 
@@ -250,18 +246,36 @@ app.registerExtension({
     name: "locode.Texts",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         // Проверяем, что имя узла соответствует нужному типу
-        if (nodeData.name !== "LoTexts") return
+        if (nodeData.name !== NODE_CFG.type) return
 
         //
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function() {
-            const ret = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
             // создаём и сохраняем ссылку на виджет
             this.__widget = new TextsWidget(this, "widget_data", nodeData, app)
-            this.color = "#2f3544"
-            this.bgcolor = "#3a435e"
+            this.color = NODE_CFG.color
+            this.bgcolor = NODE_CFG.bgcolor
+            return onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
         }
+
+        //
+        // Контекстное меню
+        const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions
+        nodeType.prototype.getExtraMenuOptions = function(canvas, menu) {
+            menu = menu ?? []
+            menu.push(...[
+                {
+                    content: "Save Texts",
+                    callback: this.__widget.saveData
+                },{
+                    content: "Load & Append Texts",
+                    callback: this.__widget.loadData
+                },
+            ])
+            return getExtraMenuOptions ? getExtraMenuOptions.apply(this, [canvas, menu]) : undefined
+        }
+
 
         //
         // Сериализация: гарантируем сохранение значений

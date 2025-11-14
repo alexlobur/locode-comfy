@@ -10,32 +10,36 @@
 }
 
 
+
 /* custom widget menu */
 .locode-widget-menu {
     padding: 8px;
-    border-radius: 8px;
-    box-sizing: border-box;
-    background-color: var(--locode-menu-bg);
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.15);
+    border-radius: 16px;
+    background: var(--locode-menu-bg);
+    pointer-events: auto;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
 }
 
+
 .locode-widget-menu BUTTON {
-    padding: 4px 8px;
-    border-radius: 16px;
-    font-size: 10px;
-
-    color: var(--locode-menu-btn-fg);
-    background: var(--locode-menu-btn-bg);
+    background: transparent;
     border: none;
-
-    pointer-events: auto;
+    color: var(--locode-menu-btn-fg);
     cursor: pointer;
+    font-size: 10px;
+    padding: 3px 8px;
     transition: 0.25s all;
 }
 
 
 .locode-widget-menu BUTTON:HOVER{
     color: var(--locode-menu-btn-hover-fg);
-    background: var(--locode-menu-btn-hover-bg);
+}
+
+.lo-texts-widget .tabs .tab .tab-menu button:disabled,
+.lo-texts-widget .tabs .tab .tab-menu button[disabled]{
+    color: var(--locode-menu-btn-fg);
+    cursor: default;
+    opacity: 0.5;
 }
 

@@ -5,13 +5,22 @@
  *  @param {?import.meta} importMeta - Пишешь import.meta
  */
 export function importCss(pathRel, importMeta=null){
+    // Определение пути
     const cssPath = new URL(pathRel, importMeta.url).href
+    // если уже грузили - скип
+    if(CSS_PATHS.includes(cssPath)) return
+
+    // Подключение
     const link = document.createElement('link')
     link.rel = 'stylesheet'
     link.type = 'text/css'
     link.href = cssPath
     document.head.appendChild(link)
+
+    // Добавление в загруженные
+    CSS_PATHS.push(cssPath)
 }
+const CSS_PATHS = []
 
 
 /**

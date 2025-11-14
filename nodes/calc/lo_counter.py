@@ -11,7 +11,7 @@ class LoCounter:
             "required": {
                 "major": ("INT", {"default": 0}),
                 "minor": ("INT", {"default": 0}),
-                "max_minor": ("INT", {"min": 1, "default": 5}),
+                "max_minor": ("INT", {"min": 0, "default": 5}),
             },
         }
 
