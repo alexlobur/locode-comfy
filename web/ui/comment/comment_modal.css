@@ -2,7 +2,8 @@
 .locode-comment-modal .lomodal-window{
     background: var(--p-surface-900) !important;
     border: 1px solid var(--p-surface-800) !important;
-    width: 360px;
+    width: 460px;
+    max-width: 80%;
 }
 
 .locode-comment-modal .lomodal-title{
@@ -12,8 +13,17 @@
 .locode-comment-modal FORM{
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
+
+.locode-comment-modal HR{
+    margin:0;
+    padding: 0;
+    width: 100%;
+    border: 1px solid #FFFFFF09;
+    border-bottom: none;
+}
+
 
 .locode-comment-modal LABEL{
     display: flex;
@@ -44,10 +54,10 @@
 }
 
 .locode-comment-modal .row INPUT{
-    width: 160px;
+    width: 200px;
 }
 
 .locode-comment-modal TEXTAREA{
-    min-height: 200px;
+    height: 180px;
     resize: none;
 }

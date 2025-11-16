@@ -1,9 +1,9 @@
 import {coreInit} from "../../.core/core_init.js"
-import Logger from "../../.core/utils/Logger.js"
 import { app } from "../../../../scripts/app.js"
 import { wrapCanvasText } from "../../.core/utils/nodes_utils.js"
 import { openCommentModal } from "./comment_modal.js"
 import { CommentData } from "./comment_data.js"
+import Logger from "../../.core/utils/Logger.js"
 
 // Инициализация ядра
 coreInit()
@@ -12,9 +12,19 @@ coreInit()
 const NODE_CFG = {
 	minSize:		[ 100, 100 ],
 	borderRadius:	8,
-	borderSize:		0.5,
-	spacing:		8,
-	padding:		8,
+	spacing:		2,
+	commentDataDefault: new CommentData({
+        title:		'',
+        titleColor:	'#FFFFFF66',
+        titleFont:	'600 11px Arial, sans-serif',
+        text:		'Double click...',
+        textColor:	'#FFFFFF66',
+        textFont:	'400 10px Arial, sans-serif',
+        bgColor:	'#33333344',
+        borderColor:'#FFFFFF66',
+        borderSize:	0.0,
+		padding:	10.0
+	})
 }
 
 
@@ -30,7 +40,7 @@ export class LoCommentNode extends LGraphNode {
 	}
 
 	/**
-	 * @param {CommentData}
+	 *	@param {CommentData}
 	 */
 	set commentData(value){
 		this.properties.data = value.toJson()
@@ -47,7 +57,10 @@ export class LoCommentNode extends LGraphNode {
 		this.resizable = true
         // this.isDropEnabled = false
 
-		this.properties = this.properties || {}
+		// Начальные свойства
+		this.properties = {
+			data: this.properties.data || NODE_CFG.commentDataDefault.toJson()
+		}
 
 		// Визуальные настройки нода (минимальные)
 		this.size = NODE_CFG.minSize
@@ -55,7 +68,7 @@ export class LoCommentNode extends LGraphNode {
 		// this.render_shadow = false
 		// this.widgets_up = true
 
-		console.debug(this)
+		Logger.debug(this)
 	}
 
 
@@ -66,15 +79,22 @@ export class LoCommentNode extends LGraphNode {
 		}
 	}
 
+	onShowCustomPanelInfo(panel) {
+        var _a, _b;
+        (_a = panel.querySelector('div.property[data-property="Mode"]')) === null || _a === void 0 ? void 0 : _a.remove();
+        (_b = panel.querySelector('div.property[data-property="Color"]')) === null || _b === void 0 ? void 0 : _b.remove();
+    }
 
 	onDrawBackground(ctx) {
 		const [w, h] = this.size
 		const r = NODE_CFG.borderRadius
-		const lineWidth = NODE_CFG.borderSize
-		const {borderColor} = this.properties
+		const {bgColor, borderColor, borderSize} = this.commentData
+
+		this.bgcolor = bgColor || this.bgcolor
 
 		// // фон
-		// ctx.fillStyle = "#30364a"
+		// ctx.save()
+		// ctx.fillStyle = bgColor
 		// if (ctx.roundRect) {
 		// 	ctx.beginPath()
 		// 	ctx.roundRect(0, 0, w, h, r)
@@ -82,19 +102,24 @@ export class LoCommentNode extends LGraphNode {
 		// } else {
 		// 	ctx.fillRect(0, 0, w, h)
 		// }
+		// ctx.restore()
 
-		// рамка
-		if(!borderColor) return // не задана
+		/// Рамка
+		if(!borderColor || borderSize<=0) return // не задана
 		ctx.save()
+
+		const borderRadius = ctx.roundRect ? r : 0
+
+		// Создаем область обрезки
+		ctx.beginPath()
+		ctx.roundRect(0, 0, w, h, borderRadius)
+		ctx.clip()
+
 		ctx.strokeStyle = borderColor
-		ctx.lineWidth = lineWidth
-		if (ctx.roundRect){
-			ctx.beginPath()
-			ctx.roundRect(lineWidth/2, lineWidth/2, w - lineWidth/2, h - lineWidth/2, r)
-			ctx.stroke()
-		} else {
-			ctx.strokeRect(lineWidth/2, lineWidth/2, w - lineWidth/2, h - lineWidth/2)
-		}
+		ctx.lineWidth = borderSize*2 // это чтобы учесть обрезку
+		ctx.beginPath()
+		ctx.roundRect(0, 0, w, h, borderRadius)
+		ctx.stroke()
 		ctx.restore()
 	}
 
@@ -103,36 +128,31 @@ export class LoCommentNode extends LGraphNode {
 		if (this.flags?.collapsed) return
 
 		// начальные данные
-		const {textColor, font, caption} = this.properties
-		const {captionFont, padding, spacing} = NODE_CFG
+		const {spacing} = NODE_CFG
 		const [w, h] = this.size
+		const data = this.commentData
+		const padding = data.padding
 		let topMargin = padding
-		ctx.save()
 
+		ctx.save()
 		// Создаем область обрезки
 		ctx.beginPath();
 		ctx.rect(0, 0, w, h)
 		ctx.clip()
 
 		// Заголовок
-		if(caption){
-			ctx.font = captionFont
-			ctx.fillStyle = textColor
+		if(data.title){
+			ctx.font = data.titleFont
+			ctx.fillStyle = data.titleColor
 			ctx.textBaseline = "top"
-			const captionH = wrapCanvasText( ctx, caption, w-padding*2, {
-				marginLeft: padding, marginTop: topMargin
-			})
+			const captionH = wrapCanvasText( ctx, data.title, w-padding*2, { marginLeft: padding, marginTop: topMargin })
 			topMargin += captionH + spacing
 		}
-
 		// комментарий
-		ctx.font = font
-		ctx.fillStyle = textColor
+		ctx.font = data.textFont
+		ctx.fillStyle = data.textColor
 		ctx.textBaseline = "top"
-		wrapCanvasText( ctx, this.comment, w-padding*2, {
-			marginLeft: padding, marginTop: topMargin
-		})
-
+		wrapCanvasText( ctx, data.text, w-padding*2, { marginLeft: padding, marginTop: topMargin })
 		ctx.restore()
 	}
 
@@ -146,31 +166,21 @@ export class LoCommentNode extends LGraphNode {
 	 *	Вывод окна редактирования
 	 */
 	#editCommentData = async() =>{
-		const result = await openCommentModal(this.commentData)
-		Logger.debug(result)
-		this.commentData = result
+		this.commentData = await openCommentModal(this.commentData)
 	}
 
 
 	/**
 	 *	Дополнительное меню
 	 */
-	getExtraMenuOptions(_, options) {
+	getExtraMenuOptions(_, options){
 		options = options || []
-		// options.push(
-		// 	{
-		// 		content: "Reset Defaults",
-		// 		callback: () => {
-		// 			this.data = ({
-		// 				bgColor:	NODE_CFG.bgColor,
-		// 				textColor:	NODE_CFG.textColor,
-		// 				boxColor:	NODE_CFG.boxColor,
-		// 				textFont:	NODE_CFG.textFont
-		// 			})
-		// 			this.setDirtyCanvas(true, true)
-		// 		},
-		// 	},
-		// )
+		options.push(
+			{
+				content: "Edit Comment",
+				callback: () => this.#editCommentData()
+			},
+		)
 	}
 
 

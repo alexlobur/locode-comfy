@@ -13,7 +13,7 @@ importCss("comment_modal.css", import.meta)
  */
 export async function openCommentModal(data){
 
-	Logger.log(data)
+	Logger.debug("openCommentModal", data)
 
 	return new Promise((resolve)=>{
 
@@ -23,21 +23,27 @@ export async function openCommentModal(data){
 					<div class="label">Title:</div>
 					<input type="text" name="title" value="${data.title}">
 				</label>
+				<label>
+					<div class="label">Text:</div>
+					<textarea name="text">${data.text}</textarea>
+				</label>
+				<label class="row">
+					<div class="label">Padding:</div>
+					<input type="number" min="0" name="padding" value="${data.padding}">
+				</label>
+				<hr>
 				<label class="row">
 					<div class="label">Title Font:</div>
 					<input type="text" name="titleFont" value="${data.titleFont}">
 				</label>
 				<label class="row">
+					<div class="label">Text Font:</div>
+					<input type="text" name="textFont" value="${data.textFont}">
+				</label>
+				<hr>
+				<label class="row">
 					<div class="label">Title Color:</div>
 					<input type="text" name="titleColor" value="${data.titleColor}">
-				</label>
-				<label>
-					<div class="label">Comment:</div>
-					<textarea name="comment">${data.text}</textarea>
-				</label>
-				<label class="row">
-					<div class="label">Comment Font:</div>
-					<input type="text" name="textFont" value="${data.textFont}">
 				</label>
 				<label class="row">
 					<div class="label">Text Color:</div>
@@ -54,7 +60,7 @@ export async function openCommentModal(data){
 				</label>
 				<label class="row">
 					<div class="label">Border Size:</div>
-					<input type="text" name="borderSize" value="${data.borderSize}">
+					<input type="number" min="0" name="borderSize" value="${data.borderSize}">
 				</label>
 				<input type="submit" hidden />
 			`,
@@ -83,7 +89,8 @@ export async function openCommentModal(data){
 						textFont:		form.textFont.value.trim(),
 						bgColor:	  	form.bgColor.value.trim(),
 						borderColor:  	form.borderColor.value.trim(),
-						borderSize:  	form.borderSize.value.trim(),
+						borderSize:  	Number(form.borderSize.value),
+						padding:		Number(form.padding.value),
 					})
 				)
 			}

@@ -55,7 +55,7 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
     // Вычисляем высоту строки
     const metrics = ctx.measureText("M")
     //const effectiveLineHeight = ((metrics.fontBoundingBoxAscent ?? 0) + (metrics.fontBoundingBoxDescent ?? 0))*1.25
-    const effectiveLineHeight = metrics.fontBoundingBoxDescent*1.25
+    const effectiveLineHeight = metrics.fontBoundingBoxDescent*lineSpacing
 
     let cursorY = marginTop
 
@@ -75,7 +75,7 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
         const words = paragraph.split(" ")
 
         for (const word of words){
-            const testLine = line + word + " "
+            const testLine = line + word
             const testWidth = ctx.measureText(testLine).width
 
             // Переносим строку на новую линию, если достигли ограничения по ширине.
@@ -83,14 +83,11 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
                 commitLine(line)
                 line = word + " "
             } else {
-                line = testLine
+                line = testLine + " "
             }
         }
-
         // Добавляем завершающую строку параграфа (возможно пустую).
         commitLine(line.trimEnd())
-
-        // Пустая строка между параграфами уже учтена выше; переходим к следующему.
     }
 
     // Финальная высота — разница между текущей и начальной координатой по Y.
