@@ -2,8 +2,9 @@
 .locode-comment-modal .lomodal-window{
     background: var(--p-surface-900) !important;
     border: 1px solid var(--p-surface-800) !important;
-    width: 460px;
+    width: 440px;
     max-width: 80%;
+    user-select: none;
 }
 
 .locode-comment-modal .lomodal-title{
@@ -13,17 +14,84 @@
 .locode-comment-modal FORM{
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
-.locode-comment-modal HR{
-    margin:0;
-    padding: 0;
+
+.locode-comment-modal INPUT,
+.locode-comment-modal TEXTAREA {
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    background: color-mix(in srgb, var(--p-surface-800) 25%, transparent);
+    color: color-mix(in srgb, var(--p-text-color) 66%, transparent);
+    outline: 1px solid var(--p-surface-800);
+    border: none;
+}
+
+.locode-comment-modal INPUT:focus,
+.locode-comment-modal TEXTAREA:focus {
+    color: var(--p-text-color);
+    outline: 2px solid var(--p-surface-700);
+}
+
+.locode-comment-modal FORM TEXTAREA{
+    height: 180px;
+    resize: none;
+}
+.locode-comment-modal FORM .chbox{
+    padding: 8px; border-radius: 8px;
+    display: flex; gap: 8px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    outline: 1px solid var(--p-surface-800);
+}
+.locode-comment-modal FORM .chbox INPUT[type='checkbox']{
+    width: auto;
+    outline: none;
+}
+
+
+/* font */
+.locode-comment-modal .font{
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+    max-height: 200px;
+    transition: 0.5s all;
+}
+
+.locode-comment-modal .no-header .header-font,
+.locode-comment-modal .no-text .text-font{
+    z-index: -1;
+    opacity: 0;
+    max-height: 0px;
+    margin-bottom: 0px;
+}
+
+.locode-comment-modal .font LABEL:nth-child(1){
+    grid-column: span 3;
+}
+.locode-comment-modal .font LABEL:nth-child(2){
+    grid-column: span 1;
+}
+.locode-comment-modal .font INPUT{
     width: 100%;
-    border: 1px solid #FFFFFF09;
-    border-bottom: none;
 }
 
+
+
+.locode-comment-modal .-r-1-1{
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.locode-comment-modal .-r-1-1 INPUT{
+    width: 120px;
+}
+.locode-comment-modal .-r-1-1 INPUT[type="number"]{
+    width: 64px;
+}
 
 .locode-comment-modal LABEL{
     display: flex;
@@ -39,25 +107,6 @@
 
 .locode-comment-modal LABEL .label{
     font-size: 14px;
-    opacity: 0.5;
+    opacity: 0.33;
 }
 
-.locode-comment-modal INPUT,
-.locode-comment-modal TEXTAREA {
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 16px;
-    background: color-mix(in srgb, var(--p-surface-800) 25%, transparent);
-    color: color-mix(in srgb, var(--p-text) 50%, transparent);
-    outline: 1px solid var(--p-surface-800);
-    border: none;
-}
-
-.locode-comment-modal .row INPUT{
-    width: 200px;
-}
-
-.locode-comment-modal TEXTAREA{
-    height: 180px;
-    resize: none;
-}

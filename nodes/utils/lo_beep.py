@@ -48,7 +48,7 @@ class LoBeep:
     # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     NODE_MAPPINGS = ("LoBeep", "Lo:Beep")
 
-    CATEGORY = "locode/helpers"
+    CATEGORY = "locode/utils"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Plays a sound notification.

@@ -155,7 +155,6 @@ export function runTimer({ duration, onProgress, onDone, durationTick = 5 }){
 }
 
 
-
 /**
  *  Блокирует дальнейшее распростанения события
  */

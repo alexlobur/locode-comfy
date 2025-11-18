@@ -1,12 +1,18 @@
 #---
 #
-#   Формирует строку из списка строк
+#   Формирует строку из списка
 #
 #---
-class LoStrListJoin:
-    """
-    Формирует строку из списка строк
-    """
+class LoListJoin:
+
+    NODE_MAPPINGS = ("LoListJoin", "Lo:ListJoin") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    CATEGORY = "locode/lists"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Count items in list
+"""
+
+    # ---
 
 
     @classmethod
@@ -18,7 +24,7 @@ class LoStrListJoin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "strings_list": ( "LIST", {
+                "list": ( "LIST", {
                     "tooltip" : "List of strings or any"
                 }),
                 "delimiter": ( "STRING", {

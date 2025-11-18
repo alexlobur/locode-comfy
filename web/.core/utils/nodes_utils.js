@@ -42,37 +42,43 @@ export function genUid(length = 8){
 /**
  *  Пишет многострочный текст на канве, учитывая ручные переносы строк.
  *
- *  @param {CanvasRenderingContext2D} ctx      Контекст канвы, в котором будет рисоваться текст.
- *  @param {string} text                      Исходный текст, допускающий переносы `\n`.
- *  @param {number} marginLeft                Координата X первой строки.
- *  @param {number} marginTop                 Координата Y первой строки.
- *  @param {number} maxWidth                  Максимальная ширина строки.
- *  @param {number|null} lineSpacing          Межстрочный интервал.
- *  @returns {number}                         Итоговая высота набранного блока текста.
+ *  @param {CanvasRenderingContext2D} ctx   Контекст канвы, в котором будет рисоваться текст.
+ *  @param {string} text                    Исходный текст, допускающий переносы `\n`.
+ *  @param {number} marginLeft              Координата X первой строки.
+ *  @param {number} marginTop               Координата Y первой строки.
+ *  @param {number} maxWidth                Максимальная ширина строки.
+ *  @param {number|null} lineSpacing        Межстрочный интервал.
+ *  @param {boolean} calcOnly               Только посчет без вывода
+ *  @returns {{width: number, height: number}}  Итоговая высота и ширина блока текста.
  */
-export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0, lineSpacing=1.15 }){
+export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0, lineSpacing=1.25, calcOnly=false }){
 
     // Вычисляем высоту строки
     const metrics = ctx.measureText("M")
     //const effectiveLineHeight = ((metrics.fontBoundingBoxAscent ?? 0) + (metrics.fontBoundingBoxDescent ?? 0))*1.25
-    const effectiveLineHeight = metrics.fontBoundingBoxDescent*lineSpacing
+    // const effectiveLineHeight = metrics.fontBoundingBoxDescent*lineSpacing
+    const lineHeight = metrics.actualBoundingBoxDescent * lineSpacing
 
     let cursorY = marginTop
+    const result = { width: 0, height: 0 }
 
     /**
      * Фиксирует текущую строку на канве и смещает курсор на следующую.
      * @param {string} line Строка, которую нужно нарисовать.
      */
     const commitLine = (line) => {
-        ctx.fillText(line, marginLeft, cursorY)
-        cursorY += effectiveLineHeight
+        const m = ctx.measureText(line)
+        // обновление результирущих данных
+        result.width = Math.max(result.width, m.width)
+        result.height = m.actualBoundingBoxDescent + cursorY - marginTop
+        if(!calcOnly) ctx.fillText(line, marginLeft, cursorY)
+        cursorY += lineHeight
     }
 
     const paragraphs = String(text ?? "").split(/\r?\n/)
-
     for (const paragraph of paragraphs){
         let line = ""
-        const words = paragraph.split(" ")
+        const words = paragraph.trim().split(" ")
 
         for (const word of words){
             const testLine = line + word
@@ -90,7 +96,6 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
         commitLine(line.trimEnd())
     }
 
-    // Финальная высота — разница между текущей и начальной координатой по Y.
-    return cursorY - marginTop
-
+    return result
 }
+

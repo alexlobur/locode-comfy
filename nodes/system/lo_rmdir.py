@@ -18,6 +18,7 @@ class LoRmDir:
         - путь к директории (STRING). Путь может быть относительным.
     """
 
+    EXPERIMENTAL = True
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):

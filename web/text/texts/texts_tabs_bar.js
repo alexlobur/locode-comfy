@@ -52,16 +52,27 @@ export class TextsTabsBar{
             attributes: { "tabIndex": index }
         })
 
+        // Пропущено из-за disabled
+        let skipped = 0
+
         for (let index = 0; index < this.#tabsIterrator.tabs.length; index++){
             const tabData = this.#tabsIterrator.tabs[index]
+
+            // Если Таб отключен, увеличиваем число пропущенных
+            if(tabData.disabled) skipped++
+
+            // скипаем если включен режим hideDisabled
+            if(this.#tabsIterrator.hideDisabled) continue
+
             // Добавляем dragTarget
             nodes.push(createDragTarget(index))
 
             // Добавляем Закладку
             nodes.push(
                 createTabElement({
-                    tabData:    tabData,
-                    tabIndex:   index,
+                    tabData:        tabData,
+                    displayIndex:   index-skipped,
+                    tabIndex:       index,
                     isActive:   index == this.#tabsIterrator.activeIndex,
                     onSelect:   () => this.#tabsIterrator.set({ activeIndex: index }),
                     onAdd:      () => this.#tabsIterrator.addTab(index+1, { title: "", text: "", activeIndex: index+1 }),
@@ -69,7 +80,11 @@ export class TextsTabsBar{
                     onRemove:   this.#tabsIterrator.tabs.length>1
                         ? () => this.#tabsIterrator.removeTab(index)
                         : null,
-                    onRename:    this.#renameHandler,
+                    onRename:   () => this.#renameHandler(index),
+                    onDisableToggle: ()=>{
+                        tabData.disabled = !tabData.disabled
+                        this.#tabsIterrator.notify()
+                    },
                     onDragStart: this.#dragStartHandler,
                     onDragEnd:   (_, e) => this.#dragEndHandler(e, index),
                 })
@@ -104,7 +119,7 @@ export class TextsTabsBar{
     /**
      *  Обработчик переименования Таба
      */
-    #renameHandler = async(e, index) => {
+    #renameHandler = async(index) => {
         const tabData = this.#tabsIterrator.tabs[index]
         tabData.title = await showInputDialog({ value: tabData.title })
         this.#tabsIterrator.notify()
@@ -152,6 +167,7 @@ export class TextsTabsBar{
  */
 function createTabElement({
     tabData,
+    displayIndex,
     tabIndex,
     isActive,
     onSelect,
@@ -161,34 +177,40 @@ function createTabElement({
     onRename,
     onDragStart,
     onDragEnd,
+    onDisableToggle,
     parent=null
 }){
-    const name = tabData.title || String(tabIndex)
+    const name = tabData.title || ( tabData.disabled ? "-" : String(displayIndex) )
+    const title = tabData.disabled ? `[-] ${tabData.title}` : `[${displayIndex}] ${tabData.title}`
+
     const tab = createElement("div", {
         parent:     parent,
-        classList:  [ "tab", isActive ? "active" : null ],
+        classList:  [ "tab", isActive ? "active" : null, tabData.disabled ? "disabled" : null ],
         content: `
-            <span class="name" title="[${tabIndex}] ${tabData.title}">
+            <span class="name" title="${title}">
                 ${name}
             </span>
             <div class="locode-widget-menu">
                 <button name="remove">Remove</button>
                 <button name="add">Add</button>
                 <button name="clone">Clone</button>
+                <button name="toggle_disable">${ tabData.disabled ? "Enable" : "Disable" }</button>
                 <button name="rename">Rename</button>
             </div>
         `,
         events: {
             "click": (e) => haltEvent(e, ()=>onSelect?.(e, tabIndex))
         }
-    });
+    })
 
     // Добавление событий
-    tab.querySelector('button[name="add"]').addEventListener("click", (e)=> haltEvent(e, ()=>onAdd?.(e, tabIndex)) )
-    tab.querySelector('button[name="clone"]').addEventListener("click", (e)=> haltEvent(e, ()=>onClone?.(e, tabIndex)) )
-    tab.querySelector('button[name="rename"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRename?.(e, tabIndex)) )
+    tab.querySelector('button[name="add"]').addEventListener("click", (e)=> haltEvent(e, ()=>onAdd?.(e)) )
+    tab.querySelector('button[name="clone"]').addEventListener("click", (e)=> haltEvent(e, ()=>onClone?.(e)) )
+    tab.querySelector('button[name="rename"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRename?.(e)) )
+    tab.querySelector('button[name="toggle_disable"]').addEventListener("click", (e)=>haltEvent(e, ()=>onDisableToggle?.(e)) )
+
     onRemove!=null
-        ? tab.querySelector('button[name="remove"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRemove?.(e, tabIndex)) )
+        ? tab.querySelector('button[name="remove"]').addEventListener("click", (e)=>haltEvent(e, ()=>onRemove?.(e)) )
         : tab.querySelector('button[name="remove"]').setAttribute("disabled", "true")
 
     // Перетаскивание

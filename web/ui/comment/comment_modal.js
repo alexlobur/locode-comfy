@@ -1,7 +1,8 @@
+import { TextData } from "../../.core/entity/TextData.js"
 import { showModal } from "../../.core/ui/modal/show_modal.js"
 import Logger from "../../.core/utils/Logger.js"
 import { createElement, importCss } from "../../.core/utils/dom_utils.js"
-import { CommentData } from "./comment_data.js"
+import { CommentData } from "./CommentData.js"
 
 importCss("comment_modal.css", import.meta)
 
@@ -20,36 +21,55 @@ export async function openCommentModal(data){
 		const form = createElement("FORM", {
 			content: `
 				<label>
-					<div class="label">Title:</div>
-					<input type="text" name="title" value="${data.title}">
+					<input type="text" name="header" placeholder="Header" title="Header" value="${data.header.value}">
 				</label>
+				<div class="font header-font">
+					<label>
+						<input type="text"
+							placeholder="Header Font" title="Header Font"
+							name="headerFont" value="${data.header.font}"
+						>
+					</label>
+					<label class="row">
+						<input type="text" name="headerColor" placeholder="Header Color" title="Header Color" value="${data.header.color}">
+					</label>
+					<label class="row">
+						<input type="number" name="headerLineSpacing" placeholder="Header Line Spacing" title="Header Line Spacing" min=0 step=0.05 value="${data.header.lineSpacing}"/>
+					</label>
+					<label class="row">
+						<input type="number" name="headerGap" placeholder="Space After" title="Space After" min="0" step="0.5" value="${data.headerGap}">
+					</label>
+				</div>
+
 				<label>
-					<div class="label">Text:</div>
-					<textarea name="text">${data.text}</textarea>
+					<textarea name="text" placeholder="Text" title="Text">${data.text.value}</textarea>
 				</label>
-				<label class="row">
-					<div class="label">Padding:</div>
-					<input type="number" min="0" name="padding" value="${data.padding}">
-				</label>
-				<hr>
-				<label class="row">
-					<div class="label">Title Font:</div>
-					<input type="text" name="titleFont" value="${data.titleFont}">
-				</label>
-				<label class="row">
-					<div class="label">Text Font:</div>
-					<input type="text" name="textFont" value="${data.textFont}">
-				</label>
-				<hr>
-				<label class="row">
-					<div class="label">Title Color:</div>
-					<input type="text" name="titleColor" value="${data.titleColor}">
-				</label>
-				<label class="row">
-					<div class="label">Text Color:</div>
-					<input type="text" name="textColor" value="${data.textColor}"/>
-				</label>
-				<hr>
+				<div class="font text-font">
+					<label>
+						<input type="text"
+							placeholder="Text Font" title="Text Font"
+							name="textFont" value="${data.text.font}"
+						>
+					</label>
+					<label class="row">
+						<input type="text" name="textColor" value="${data.text.color}"/>
+					</label>
+					<label class="row">
+						<input type="number" name="textLineSpacing" min=0 step=0.05 value="${data.text.lineSpacing}"/>
+					</label>
+				</div>
+
+				<div class="-r-1-1">
+					<label class="row">
+						<div class="label">Padding:</div>
+						<input type="number" min="0" name="padding" step="0.5" value="${data.padding}">
+					</label>
+					<label class="row">
+						<div class="label">Border Radius:</div>
+						<input type="number" name="borderRadius" min="0" step="1" value="${data.borderRadius}">
+					</label>
+				</div>
+
 				<label class="row">
 					<div class="label">Background Color:</div>
 					<input type="text" name="bgColor" value="${data.bgColor}">
@@ -60,7 +80,11 @@ export async function openCommentModal(data){
 				</label>
 				<label class="row">
 					<div class="label">Border Size:</div>
-					<input type="number" min="0" name="borderSize" value="${data.borderSize}">
+					<input type="number" min="0" name="borderSize" step="0.5" value="${data.borderSize}">
+				</label>
+				<label class="chbox">
+					<input type="checkbox" name="hugContent" ${data.hugContent ? "checked" : ""}>
+					<div class="label">Hug Content</div>
 				</label>
 				<input type="submit" hidden />
 			`,
@@ -69,32 +93,49 @@ export async function openCommentModal(data){
 					e.preventDefault()
 					e.stopPropagation()
 					modal.close()
-				}
+				},
+				"input": (e)=> updateForm()
 			}
 		})
 
+		const updateForm = () => {
+			form.classList.toggle( "no-header", !form.header.value )
+			form.classList.toggle( "no-text", !form.text.value )
+		}
+
 		const modal = showModal({
 			className:	"locode-comment-modal",
-			title:		"Set Comment",
+			header:		"Set Comment",
 			content:	form,
 			closeByClickingOutside: true,
 			onClosed: ()=> {
 				resolve(
-					new CommentData({
-						title:			form.title.value,
-						titleColor:		form.titleColor.value.trim(),
-						titleFont:		form.titleFont.value.trim(),
-						text:			form.text.value,
-						textColor:		form.textColor.value.trim(),
-						textFont:		form.textFont.value.trim(),
-						bgColor:	  	form.bgColor.value.trim(),
-						borderColor:  	form.borderColor.value.trim(),
-						borderSize:  	Number(form.borderSize.value),
-						padding:		Number(form.padding.value),
+					data.copyWith({
+						header: new TextData({
+							value:			form.header.value,
+							color:			form.headerColor.value,
+							font:			form.headerFont.value,
+							lineSpacing:	form.headerLineSpacing.value,
+						}),
+						text: new TextData({
+							value:			form.text.value,
+							color:			form.textColor.value,
+							font:			form.textFont.value,
+							lineSpacing:	form.textLineSpacing.value,
+						}),
+						bgColor:	  	form.bgColor.value,
+						borderColor:  	form.borderColor.value,
+						borderRadius:  	form.borderRadius.value,
+						borderSize:  	form.borderSize.value,
+						padding:		form.padding.value,
+						headerGap:			form.headerGap.value,
+						hugContent:		form.hugContent.checked
 					})
 				)
 			}
 		})
+
+		updateForm()		
 
 	})
 

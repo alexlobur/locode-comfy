@@ -1,5 +1,6 @@
 import { app } from "../../../scripts/app.js"
 import { listToNamedObject, clamp } from "../.core/utils/nodes_utils.js"
+import Logger from "../.core/utils/Logger.js"
 
 
 /**
@@ -10,65 +11,66 @@ app.registerExtension({
 
     // При регистрации типа — перехватить onWidgetChanged, чтобы реагировать на изменение max_minor
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "LoCounter") return;
+        if (nodeType.comfyClass !== "LoCounter") return;
 
         // Изменение виджета
         // если меняется max_minor — пересчитать границы
-        const _onWidgetChanged = nodeType.prototype.onWidgetChanged;
+        const _onWidgetChanged = nodeType.prototype.onWidgetChanged
         nodeType.prototype.onWidgetChanged = function(name) {
             const ret = _onWidgetChanged ? _onWidgetChanged.apply(this, arguments) : undefined
             if (name === "max_minor") applyMinMax(this)
             return ret
-        };
+        }
 
         // При загрузке конфига (импорт воркфлоу) — тоже применить
-        const _onConfigure = nodeType.prototype.onConfigure;
+        const _onConfigure = nodeType.prototype.onConfigure
         nodeType.prototype.onConfigure = function (){
             const ret = _onConfigure ? _onConfigure.apply(this, arguments) : undefined
             applyMinMax(this)
             return ret
-        };
+        }
     },
 
     // При создании конкретного инстанса — выставить границы сразу
     async nodeCreated(node, app){
-        const cls = node?.constructor?.comfyClass || node?.comfyClass || node?.type;
-        if (cls !== "LoCounter") return;
-        applyMinMax(node);
+        const cls = node?.constructor?.comfyClass || node?.comfyClass || node?.type
+        if (cls !== "LoCounter") return
+        applyMinMax(node)
     },
 
     // Setup
     async setup(app){
         app.api.addEventListener("execution_success", (ev) => {
+            Logger.debug("LoCounterNode: execution_success", ev.type, ev)
             updateNodesValues(app)
-        });
-        // app.api.socket.addEventListener("message", (ev) => {
-        //     console.debug("message", ev.type, ev);
-        // });
+        })
+        app.api.socket.addEventListener("message", (ev) => {
+            // Logger.debug("message", ev.type, ev)
+        })
     }
 
-});
-
+})
 
 
 function updateNodesValues(app){
-    if (!app?.graph?._nodes) return;
+    if (!app?.graph?._nodes) return
 
     for (const node of app.graph._nodes) {
-        const comfyClass = node?.constructor?.comfyClass || node?.comfyClass || node?.type;
-        if (comfyClass !== "LoCounter") continue;
+        const comfyClass = node?.constructor?.comfyClass || node?.comfyClass || node?.type
+        if (comfyClass !== "LoCounter") continue
         try{
             const widgets = listToNamedObject(node.widgets)
             widgets.minor.value++
             if (widgets.minor.value > widgets.max_minor.value){
-                widgets.minor.value = 0;
-                widgets.major.value++;
+                widgets.minor.value = 0
+                widgets.major.value++
             }
+            Logger.debug("LoCounter", widgets.minor.value, widgets.major.value)
         } catch(e){
-            console.warn(e)
+            Logger.warn(e)
         }
     }
-    app.graph.setDirtyCanvas(true, true);
+    app.graph.setDirtyCanvas(true, true)
 }
 
 
@@ -84,7 +86,7 @@ function applyMinMax(node){
         widgets.minor.value = clamp(widgets.minor.value, 0, widgets.max_minor.value)
 
     } catch (e){
-        console.warn(e)
+        Logger.warn(e)
     }
     node.graph?.setDirtyCanvas?.(true, true)
 }

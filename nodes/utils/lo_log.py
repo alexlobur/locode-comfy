@@ -31,7 +31,7 @@ class LoLog:
 
     @classmethod
     def INPUT_TYPES(cls):
-        sounds = list(play_sound.SOUNDS.keys())
+        sounds = list[str](play_sound.SOUNDS.keys())
         sounds.insert(0, "none")
 
         return {
@@ -52,7 +52,7 @@ class LoLog:
     # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     NODE_MAPPINGS = ("LoLog", "Lo:Log")
 
-    CATEGORY = "locode/helpers"
+    CATEGORY = "locode/utils"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Prints any value to the console.

@@ -20,6 +20,12 @@ export class TabsIterrator extends ChangeNotifier {
     #tabs=[ new TabData() ]
     get tabs(){ return Array.from(this.#tabs) }
 
+    /**
+     * @type {boolean}
+     */
+    #hideDisabled = false
+    get hideDisabled(){ return this.#hideDisabled }
+
 
     /**
      * @type {TabData}
@@ -32,9 +38,12 @@ export class TabsIterrator extends ChangeNotifier {
      *  @param {Number|undefined} activeIndex
      *  @returns {this}
      */
-    set({ tabs, activeIndex }){
+    set({ tabs, activeIndex, hideDisabled }){
         if(tabs != undefined){
             this.#tabs = Array.from(tabs??[]).map( data => new TabData(data) )
+        }
+        if(hideDisabled != undefined ){
+            this.#hideDisabled = hideDisabled
         }
         this.#setActiveIndex(activeIndex)
         this.notifyListeners(new TabsIterratorEvent("set"))
@@ -117,8 +126,9 @@ export class TabsIterrator extends ChangeNotifier {
     fromJson(json, append=false){
         const tabs = Array.from(json['tabs']??[]).map( data => new TabData(data) )
         this.set({
-            tabs: append ? [...this.#tabs, ...tabs] : tabs,
-            activeIndex: json['activeIndex']??0
+            tabs:           append ? [...this.#tabs, ...tabs] : tabs,
+            activeIndex:    json['activeIndex']??0,
+            hideDisabled:   json['hideDisabled']??false,
         })
         return this
     }
@@ -128,6 +138,7 @@ export class TabsIterrator extends ChangeNotifier {
         return {
             tabs:           this.#tabs,
             activeIndex:    this.#activeIndex,
+            hideDisabled:   this.#hideDisabled
         }
     }    
 
@@ -141,16 +152,17 @@ export class TabData {
 
     uid
     title
-    active
+    text
+    disabled
 
-    constructor({uid=null, title='', text='' }={}){
+    constructor({uid=null, title='', text='', disabled=false }={}){
         this.uid = uid || genUid()
         this.title = title
         this.text = text
+        this.disabled = disabled
     }
 
 }
-
 
 
 
@@ -161,3 +173,4 @@ class TabsIterratorEvent{
     }
 
 }
+

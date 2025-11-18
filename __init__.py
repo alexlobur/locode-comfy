@@ -3,30 +3,32 @@ from .nodes.calc.lo_random_num import LoRandomNum
 from .nodes.calc.lo_random_bool import LoRandomBool
 from .nodes.calc.lo_compare_num import LoCompareNum
 from .nodes.calc.lo_is_empty import LoIsEmpty
-from .nodes.calc.lo_not_bool import LoNotBool
-from .nodes.calc.lo_counter import LoCounter
 
-from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
-from .nodes.params.lo_get_from_list import LoGetFromList
-from .nodes.params.lo_from_list import LoFromList
-from .nodes.params.lo_str_list import LoStrList
-from .nodes.params.lo_str_list_join import LoStrListJoin
-from .nodes.params.lo_num_list import LoNumList
-from .nodes.params.lo_to_int import LoToInt
-from .nodes.params.lo_to_float import LoToFloat
-from .nodes.params.lo_any_list import LoAnyList
-from .nodes.params.lo_to_str import LoToStr
-from .nodes.params.lo_replace_abc import LoReplaceAbc
-from .nodes.params.lo_replace_any import LoReplaceAny
+from .nodes.lists.lo_from_list import LoFromList
+from .nodes.lists.lo_str_list import LoStrList
+from .nodes.lists.lo_list_join import LoListJoin
+from .nodes.lists.lo_num_list import LoNumList
+from .nodes.lists.lo_any_list import LoAnyList
+from .nodes.lists.lo_list_len import LoListLen
+from .nodes.lists.lo_set_list import LoSetList
 
-from .nodes.texts.lo_text_array_2 import LoTextArray2
+from .nodes.convert.lo_to_int import LoToInt
+from .nodes.convert.lo_to_float import LoToFloat
+from .nodes.convert.lo_to_str import LoToStr
+from .nodes.convert.lo_not_bool import LoNotBool
+
 from .nodes.texts.lo_texts import LoTexts
-from .nodes.texts.replacers import Replacers
 
-from .nodes.helpers.lo_log import LoLog
-from .nodes.helpers.lo_beep import LoBeep
-from .nodes.helpers.lo_switcher import LoSwitcher
-from .nodes.helpers.lo_switcher2 import LoSwitcher2
+from .nodes.replacers.lo_replace_vars import LoReplaceVars
+from .nodes.replacers.lo_replace_any import LoReplaceAny
+from .nodes.replacers.replacers import Replacers
+from .nodes.replacers.use_replacers import UseReplacers
+
+from .nodes.utils.lo_log import LoLog
+from .nodes.utils.lo_beep import LoBeep
+from .nodes.utils.lo_switcher import LoSwitcher
+from .nodes.utils.lo_counter import LoCounter
+from .nodes.utils.lo_video_props import LoSetVideoProps, LoGetVideoProps
 
 from .nodes.system.lo_mkdir import LoMkDir
 from .nodes.system.lo_readdir import LoReadDir
@@ -39,32 +41,28 @@ from .nodes.system.lo_rmdir import LoRmDir
 NODE_CLASS_MAPPINGS = {
     "LoIsEmpty":         LoIsEmpty,
     "LoNotBool":         LoNotBool,
-    "LoSwitcher":        LoSwitcher,
-    "LoSwitcher2":       LoSwitcher2,
     "LoCompareNum":      LoCompareNum,
+
     "LoSetVideoProps":   LoSetVideoProps,
     "LoGetVideoProps":   LoGetVideoProps,
+
     "LoRandomNum":       LoRandomNum,
     "LoRandomBool":      LoRandomBool,
-    "LoTextArray2":      LoTextArray2,
-    "LoTexts":           LoTexts,
+
     "LoStrList":         LoStrList,
-    "LoStrListJoin":     LoStrListJoin,
     "LoNumList":         LoNumList,
-    "LoGetFromList":     LoGetFromList,
     "LoFromList":        LoFromList,
+    "LoAnyList":         LoAnyList,
+
     "LoToInt":           LoToInt,
     "LoToFloat":         LoToFloat,
     "LoToStr":           LoToStr,
+
     "LoMkDir":           LoMkDir,
     "LoReadDir":         LoReadDir,
     "LoRmDir":           LoRmDir,
     "LoFileExists":      LoFileExists,
-    "LoAnyList":         LoAnyList,
     "LoCountDirImages":  LoCountDirImages,
-    "LoReplaceAbc":      LoReplaceAbc,
-    "LoReplaceAny":      LoReplaceAny,
-    "LoCounter":         LoCounter,
 }
 
 
@@ -72,37 +70,42 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "LoIsEmpty":         "Lo:IsEmpty",
     "LoNotBool":         "Lo:NotBool",
-    "LoSwitcher":        "Lo:Switcher",
-    "LoSwitcher2":       "Lo:Switcher2(Test)",
     "LoCompareNum":      "Lo:CompareNum",
+
     "LoSetVideoProps":   "Lo:SetVideoProps",
     "LoGetVideoProps":   "Lo:GetVideoProps",
+
     "LoRandomNum":       "Lo:RandomNum",
     "LoRandomBool":      "Lo:RandomBool",
-    "LoTextArray2":      "Lo:TextArray2",
-    "LoTexts":           "Lo:Texts",
+
     "LoStrList":         "Lo:StrList",
-    "LoStrListJoin":     "Lo:StrListJoin",
     "LoNumList":         "Lo:NumList",
-    "LoGetFromList":     "Lo:GetFromList",
     "LoFromList":        "Lo:FromList",
+    "LoAnyList":         "Lo:AnyList",
+
     "LoToInt":           "Lo:ToInt",
     "LoToFloat":         "Lo:ToFloat",
     "LoToStr":           "Lo:ToStr",
+
     "LoMkDir":           "Lo:MkDir",
     "LoReadDir":         "Lo:ReadDir",
     "LoRmDir":           "Lo:RmDir",
     "LoFileExists":      "Lo:FileExists",
-    "LoAnyList":         "Lo:AnyList",
     "LoCountDirImages":  "Lo:CountDirImages",
-    "LoReplaceAbc":      "Lo:ReplaceAbc",
-    "LoReplaceAny":      "Lo:ReplaceAny",
-    "LoCounter":         "Lo:Counter",
 }
 
 
 # Автоматическая регистрация классов с NODE_MAPPINGS
-classes = [ Replacers, LoTexts, LoLog, LoBeep, LoEval ]
+classes = [
+    # replacers
+    Replacers, UseReplacers, LoReplaceVars, LoReplaceAny,
+    # texts
+    LoTexts,
+    # utils
+    LoLog, LoBeep, LoEval, LoSwitcher, LoCounter,
+    # lists
+    LoSetList, LoListLen, LoListJoin
+]
 
 for cls in classes:
     mapping = getattr(cls, "NODE_MAPPINGS", None)

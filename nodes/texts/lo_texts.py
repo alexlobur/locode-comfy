@@ -58,6 +58,8 @@ Outputs:
     #
     def execute(self, index_seed: int, widget_data: str) -> tuple[str, str, list[str]]:
 
+        print(widget_data)
+
         # Разбираем JSON
         try:
             data = json.loads(widget_data) if isinstance(widget_data, str) else (widget_data or {})
@@ -69,8 +71,8 @@ Outputs:
         tabs = data.get("tabs") or []
         active_index = data.get("activeIndex", 0)
 
-        # Формируем список текстов из вкладок
-        texts: list[str] = [(t.get("text") or "") for t in tabs if isinstance(t, dict)]
+        # Формируем список текстов из вкладок без disabled
+        texts: list[str] = [(t.get("text") or "") for t in tabs if isinstance(t, dict) and not t.get("disabled")]        
 
         # Если список пуст — возвращаем пустые значения
         if len(texts) == 0:

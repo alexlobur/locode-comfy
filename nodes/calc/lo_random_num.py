@@ -6,11 +6,11 @@ import random
 #
 #---
 class LoRandomNum:
-    """Сгенерировать случайное число.
-    Правила:
-      - На вход принимаются минимальное и максимальное значения.
-      - На выходе будет число типа INT и FLOAT.
-    """
+
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
+        return True
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -26,10 +26,6 @@ class LoRandomNum:
     FUNCTION = "compute"
     CATEGORY = "locode/calc"
 
-    @classmethod
-    def IS_CHANGED(cls):
-        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
-        return True
 
     def compute(self, min, max):
         result = min +random.random() * (max - min)

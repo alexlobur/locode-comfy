@@ -1,4 +1,3 @@
-import {coreInit} from "../../.core/core_init.js"
 import {app} from "../../../../scripts/app.js"
 import {importCss, createElement} from "../../.core/utils/dom_utils.js"
 import Logger from "../../.core/utils/Logger.js"
@@ -6,8 +5,6 @@ import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
 import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
 import { ReplacersInputs } from "./replacers_inputs.js"
 
-// Инициализация ядра
-coreInit()
 
 // Подключаем CSS стили
 importCss("replacers.css", import.meta)
@@ -15,8 +12,6 @@ importCss("replacers.css", import.meta)
 // Конфиг узла
 const NODE_CFG = {
     type:       "LoReplacers",
-	color:      "#2f3544",
-	bgcolor:    "#3a435e"
 }
 
 
@@ -170,8 +165,6 @@ app.registerExtension({
         nodeType.prototype.onNodeCreated = function() {
             // создаём и сохраняем ссылку на виджет
             this.__replacers = new ReplacersWidget(this, "replacers", nodeData, app)
-			this.color = NODE_CFG.color
-            this.bgcolor = NODE_CFG.bgcolor
             return onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
         }
 

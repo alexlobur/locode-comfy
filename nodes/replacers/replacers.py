@@ -9,6 +9,15 @@ from ...utils.anytype import any_type
 #---
 class Replacers:
 
+    NODE_MAPPINGS = ("LoReplacers", "Lo:Replacers") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    CATEGORY = "locode/replacers"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Builds a list of replacement pairs in the format [["find", "replace"], ...].
+"""
+
+    #----
+
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return True
@@ -28,22 +37,12 @@ class Replacers:
     RETURN_NAMES = ("STRING", "replacers")
     FUNCTION = "execute"
 
-    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    NODE_MAPPINGS = ("LoReplacers", "Lo:Replacers")
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-Builds a list of replacement pairs in the format [["find", "replace"], ...].
-"""
 
     #
     #   Вычисляем значение
     #
     def execute(self, string: str="", replacers: str=""):
-
         data = json.loads(replacers) if isinstance(replacers, str) else (replacers or [])
-
-        print(f"replacers: {data}")
 
         # замена в строке
         if string.lstrip()!="":

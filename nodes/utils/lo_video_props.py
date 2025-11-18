@@ -35,9 +35,7 @@ class LoSetVideoProps:
     # Функция для вычисления параметров видео
     #
     def execute(self, width=0, height=0, duration=0.0, fps=0.0):
-
         video_props = LoVideoProps(width, height, duration, fps)
-
         # возвращаем параметры
         return video_props.get_params()
 
@@ -106,8 +104,6 @@ class LoVideoProps:
 
         # считаем окончательную продолжительность
         self.durationFinal = round(self.frames / self.fps, 2)
-
-        print(self)
 
 
     # 

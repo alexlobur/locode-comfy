@@ -1,14 +1,11 @@
-import {coreInit} from "../../.core/core_init.js"
 import Logger from "../../.core/utils/Logger.js"
 import {app} from "../../../../scripts/app.js"
 import {showInputDialog} from "../../.core/ui/dialogs/show_input_dialog.js"
-import {importCss, createElement, haltEvent} from "../../.core/utils/dom_utils.js"
+import {importCss, createElement} from "../../.core/utils/dom_utils.js"
 import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 
-// Инициализация ядра
-coreInit()
 
 // Подключаем CSS стили
 importCss("texts_widget.css", import.meta)
@@ -17,8 +14,6 @@ importCss("texts_widget.css", import.meta)
 const NODE_CFG = {
     type:       "LoTexts",
     minSize:    [250, 200],
-    color:      "#2f3544",
-    bgcolor:    "#3a435e",
 }
 
 
@@ -146,16 +141,6 @@ class TextsWidget {
 
     /*** ACTIONS ***/
 
-
-    /**
-     *  Добавление таба
-     */
-    #addTabHandler = (e) => {
-        haltEvent(e)
-        this.#tabsIterrator.addTab()
-    }
-
-
     /**
      *  Обработчик изменения текста.
      *  сохраняем текст текущей вкладки и обновляем значение узла
@@ -184,14 +169,14 @@ class TextsWidget {
     /**
      *  Обработчик загрузки из файла
      */
-    loadData = async() => {
+    loadData = async(append=false) => {
         const jsonData = await loadFileFromUser({ accept: ".json" })
         try{
             const data = JSON.parse(jsonData)
             if(data.version==null || data.version>0){
                 throw new Error("Bad file version")
             }
-            this.#tabsIterrator.fromJson(data.data, true)
+            this.#tabsIterrator.fromJson(data.data, append)
         } catch (e){
             Logger.error("loadData", data)
         }
@@ -199,7 +184,16 @@ class TextsWidget {
 
 
     /**
-     *  Обрабтчик изменения Итерратора
+     *  Изменение отображения неактивных табов
+     *  @param {*} data 
+     */
+    toggleShowDisable = ()=>{
+        this.#tabsIterrator.set({ hideDisabled: !this.#tabsIterrator.hideDisabled })
+    }
+
+
+    /**
+     *  Обработчик изменения Итерратора
      *  @param {*} data 
      */
     #tabsIterratorHandler = (data) => {
@@ -254,8 +248,6 @@ app.registerExtension({
         nodeType.prototype.onNodeCreated = function() {
             // создаём и сохраняем ссылку на виджет
             this.__widget = new TextsWidget(this, "widget_data", nodeData, app)
-            this.color = NODE_CFG.color
-            this.bgcolor = NODE_CFG.bgcolor
             return onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
         }
 
@@ -264,15 +256,23 @@ app.registerExtension({
         const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions
         nodeType.prototype.getExtraMenuOptions = function(canvas, menu) {
             menu = menu ?? []
+            Logger.debug(menu)
             menu.push(...[
                 {
+                    content: "Toggle Disabled Texts",
+                    callback: this.__widget.toggleShowDisable
+                },{
                     content: "Save Texts",
                     callback: this.__widget.saveData
                 },{
+                    content: "Load Texts",
+                    callback: ()=> this.__widget.loadData()
+                },{
                     content: "Load & Append Texts",
-                    callback: this.__widget.loadData
+                    callback: ()=> this.__widget.loadData(true)
                 },
-            ])
+                null
+        ])
             return getExtraMenuOptions ? getExtraMenuOptions.apply(this, [canvas, menu]) : undefined
         }
 

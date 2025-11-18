@@ -18,6 +18,9 @@ class LoAnyList:
     """
 
 
+    DEPRECATED = True
+
+
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return True

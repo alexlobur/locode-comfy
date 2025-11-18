@@ -8,9 +8,11 @@
 
     /* переменные для закладок */
     --tab-bg:              color-mix(in srgb, var(--p-surface-900) 25%, transparent);
-    --tab-fg:              color-mix(in srgb, var(--p-text-color) 25%, transparent);
+    --tab-fg:              color-mix(in srgb, var(--p-text-color) 50%, transparent);
     --tab-active-bg:       color-mix(in srgb, var(--p-surface-900) 50%, transparent);
     --tab-active-fg:       var(--p-text-color);
+    --tab-disabled-bg:     color-mix(in srgb, var(--p-text-color) 5%, transparent);
+    --tab-disabled-fg:     color-mix(in srgb, var(--p-text-color) 15%, transparent);
     --tab-hover-bg:        color-mix(in srgb, var(--p-surface-900) 100%, transparent);
     --tab-hover-fg:        var(--p-text-color);
     --gragged-color:        color-mix(in srgb, var(--p-text-color) 50%, transparent);
@@ -53,6 +55,12 @@
 .lo-texts-widget .tabs .tab:HOVER {
     background-color: var(--tab-hover-bg);
     color: var(--tab-hover-fg);
+}
+
+.lo-texts-widget .tabs .tab.disabled{
+    color: var(--tab-disabled-fg);
+    background-color: var(--tab-disabled-bg);
+    outline-offset: -1px;
 }
 
 /* tab-menu */

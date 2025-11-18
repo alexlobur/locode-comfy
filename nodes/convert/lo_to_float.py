@@ -41,6 +41,5 @@ class LoToFloat:
     #   Вычисляем значение
     #
     def execute(self, any_type: any_type):
-
         return (float(any_type),)
 

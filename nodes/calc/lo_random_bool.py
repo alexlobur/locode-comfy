@@ -6,11 +6,13 @@ import random
 #
 #---
 class LoRandomBool:
-    """Сгенерировать случайное логическое значение.
-    Правила:
-      - На вход принимается вероятность появления true.
-      - На выходе будет число типа BOOLEAN.
-    """
+
+
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
+        return True
+
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -20,15 +22,12 @@ class LoRandomBool:
             },
         }
 
+
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("boolean",)
     FUNCTION = "compute"
     CATEGORY = "locode/calc"
 
-    @classmethod
-    def IS_CHANGED(cls):
-        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
-        return True
 
     def compute(self, true_weight):
         result = random.random() < true_weight
