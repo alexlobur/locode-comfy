@@ -22,30 +22,51 @@ Outputs:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "expression": ("STRING", {"default": "a + b" }),
+                "expression": ("STRING", {"default": "x0 + x1", "multiline" : True }),
             }
         }
 
-    RETURN_TYPES = ("INT", "FLOAT")
-    RETURN_NAMES = ("int", "float")
+    RETURN_TYPES = ("INT", "FLOAT", "BOOLEAN")
+    RETURN_NAMES = ("INT", "FLOAT", "BOOL")
     FUNCTION = "execute"
 
 
     def execute(self, expression: str, **kwargs):
+        try:
 
-        # for key, value in kwargs.items():
-        # variables = { "a": a, }
-        variables = kwargs.items()
+            # Преобразуем переменные в числа где возможно
+            variables = {}
+            for k, v in kwargs.items():
+                if k != 'expression' and not k.startswith('_'):
+                    variables[k] = self._prepare_number(v)
 
-        # Ограничим доступ к builtins и передадим переменные как locals
-        safe_globals = {"__builtins__": {}}
+            # Безопасный eval с ограниченным контекстом
+            safe_globals = {"__builtins__": {}}
+            safe_locals = variables
+            expression = expression.replace("\n", " ")
 
-        result_float = float( eval(expression, safe_globals, variables) )
-        result_int = int(round(result_float))
+            # Eval
+            result = eval(expression, safe_globals, safe_locals)
+            result_float = float(result)
+            result_int = int(round(result_float))
+            result_bool = bool(result)
 
-        # Печатаем результат
-        print(f"LoEval2: {expression} = {result_float} (INT: {result_int})")
+            # Печатаем результат
+            print(f"LoEval2: {expression} = {result}")
+            return (result_int, result_float, result_bool)
 
-        # Возвращаем результат как INT и FLOAT
-        return (result_int, result_float)
+        except Exception as e:
+            error_msg = f"LoEval2 Error: {str(e)}"
+            print(error_msg)
+            raise e
 
+
+    def _prepare_number(self, value):
+        """Преобразует значение в число если возможно, иначе возвращает как есть"""
+        if isinstance(value, (int, float)):
+            return value
+        elif isinstance(value, bool):
+            return 1 if value else 0
+        else:
+            # Для других типов пробуем преобразовать в строку и затем в число
+            return float(str(value))

@@ -99,3 +99,22 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
     return result
 }
 
+
+
+/**
+ *  Обновление динамических инпутов в таких нодах как Switcher, Eval, ReplaceVars
+ * @param {*} node 
+ * @param {*} prefix 
+ */
+export function updateDynamicInputs(node, prefix="any"){
+    // список активных инпутов
+    const linkedInputs = Array.from(node.inputs)
+        .filter( input => input.name.startsWith(prefix) && input.isConnected )
+
+    // переименование инпутов
+    linkedInputs.forEach( (item, index) => item.name = `${prefix}${index}` )
+    // замена инпутов узла и добавление пустого
+    node.inputs = linkedInputs
+    node.addInput(`${prefix}${linkedInputs.length}`, "*",)
+
+}

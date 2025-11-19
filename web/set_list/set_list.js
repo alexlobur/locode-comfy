@@ -22,10 +22,9 @@ app.registerExtension({
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function(){
-
-            // Начальные инпуты
+            const ret = onNodeCreated?.apply(this, arguments)
             updateInputs(this)
-            return onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
+            return ret
         }
 
         //

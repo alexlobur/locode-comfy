@@ -1,4 +1,6 @@
 import {app} from "../../../scripts/app.js"
+import {updateDynamicInputs} from "../.core/utils/nodes_utils.js"
+
 
 // Конфиг узла
 const NODE_CFG = {
@@ -11,6 +13,7 @@ const NODE_CFG = {
 //---
 //
 // Регистрация фронтенд-расширения ComfyUI:
+// TODO: Код повторяется, Можно перенести в одно для узлов Eval, Switcher, ReplaceVars
 //
 app.registerExtension({
     name: NODE_CFG.extName,
@@ -22,17 +25,18 @@ app.registerExtension({
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function(){
-            updateInputs(this)
-            return onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
+            const ret = onNodeCreated?.apply(this, arguments)
+            updateDynamicInputs(this, NODE_CFG.inputPrefix)
+            return ret
         }
 
         //
         // При изменении соединений
-        const originalOnConnectionsChange = nodeType.prototype.onConnectionsChange
+        const originalOnConnectionsChange = nodeType.prototype.onConnectionsChange;
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output) {
             const ret = originalOnConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>updateInputs(this), 10 )
+            setTimeout( ()=>updateDynamicInputs(this, NODE_CFG.inputPrefix), 10 )
             return ret
         }
 
@@ -40,18 +44,3 @@ app.registerExtension({
 })
 
 
-/**
- *  Обновление инпутов
- */
-function updateInputs(node){
-    // список активных инпутов
-    const linkedInputs = Array.from(node.inputs)
-        .filter( input => input.name.startsWith(NODE_CFG.inputPrefix) && input.isConnected )
-
-    // переименование инпутов
-    linkedInputs.forEach( (item, index) => item.name = `${NODE_CFG.inputPrefix}${index}` )
-    // замена инпутов узла и добавление пустого
-    node.inputs = linkedInputs
-    node.addInput(`${NODE_CFG.inputPrefix}${linkedInputs.length}`, "*",)
-
-}
