@@ -1,5 +1,5 @@
-import {createElement, makeDraggable, haltEvent} from "../../.core/utils/dom_utils.js"
-import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
+import {createElement, makeDraggable, haltEvent} from "../.core/utils/dom_utils.js"
+import { showInputDialog } from "../.core/ui/dialogs/show_input_dialog.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 
 /**

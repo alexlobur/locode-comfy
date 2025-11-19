@@ -8,15 +8,19 @@ import os
 
 
 class LoFileExists:
-    """
-    Проверка наличия директории.
 
-    Правила:
-      - На вход принимаются:
-        - путь к директории (STRING).
-      - На выходе:
-        - логическое значение.
-    """
+    NODE_MAPPINGS = ("LoReadDir", "Lo:ReadDir")
+    CATEGORY = "locode/system"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Reads the contents of a directory.
+Outputs:
+- `all`: List of files and directories in the directory.
+- `files`: List of files in the directory.
+- `dirs`: List of directories in the directory.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod

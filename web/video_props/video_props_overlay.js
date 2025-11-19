@@ -1,7 +1,6 @@
 import { app } from "../../../scripts/app.js"
 
 
-
 /**
  * Регистрация расширения
  * 
@@ -10,8 +9,8 @@ import { app } from "../../../scripts/app.js"
  * @param {*} appInst 
  */
 app.registerExtension({
-    name: "LoSetVideoPropsOverlay",
-    async beforeRegisterNodeDef(nodeType, nodeData, appInst) {
+    name: "locode.SetVideoProps",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
 
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeData.name !== "LoSetVideoProps") return;

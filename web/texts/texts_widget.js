@@ -1,8 +1,8 @@
-import Logger from "../../.core/utils/Logger.js"
-import {app} from "../../../../scripts/app.js"
-import {showInputDialog} from "../../.core/ui/dialogs/show_input_dialog.js"
-import {importCss, createElement} from "../../.core/utils/dom_utils.js"
-import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
+import Logger from "../.core/utils/Logger.js"
+import {app} from "../../../scripts/app.js"
+import {showInputDialog} from "../.core/ui/dialogs/show_input_dialog.js"
+import {importCss, createElement} from "../.core/utils/dom_utils.js"
+import {loadFileFromUser, saveFile} from "../.core/utils/files_utils.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 

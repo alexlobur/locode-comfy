@@ -1,5 +1,4 @@
-import Logger from "../../.core/utils/Logger.js"
-import {createElement, haltEvent} from "../../.core/utils/dom_utils.js"
+import {createElement, haltEvent} from "../.core/utils/dom_utils.js"
 
 
 /**---

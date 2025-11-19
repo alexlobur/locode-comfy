@@ -15,8 +15,8 @@ class LoReplaceAny:
 Replace a value with any type in a string.
 """
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    #----
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):

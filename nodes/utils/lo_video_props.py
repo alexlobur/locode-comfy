@@ -8,12 +8,16 @@ from random import randint
 #
 #---
 class LoSetVideoProps:
-    """Задать параметры видео.
 
-    Правила:
-      - Задает высоту, ширину, продолжительность, fps.
-      - На выходе будут параматры видео + количество кадров + параметры видео
+    NODE_MAPPINGS = ("LoSetVideoProps", "Lo:SetVideoProps")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/utils"
+    DESCRIPTION = """
+Set Video parameters
     """
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -29,7 +33,7 @@ class LoSetVideoProps:
     RETURN_TYPES = ("INT", "INT", "FLOAT", "FLOAT", "INT", "LO_VIDEO_PROPS")
     RETURN_NAMES = ("width", "height", "duration", "fps", "frames", "video_props")
     FUNCTION = "execute"
-    CATEGORY = "locode/params"
+
 
     # 
     # Функция для вычисления параметров видео
@@ -47,11 +51,16 @@ class LoSetVideoProps:
 #
 #---
 class LoGetVideoProps:
-    """Получить параметры видео.
 
-    Правила:
-      - На выходе будет параметры видео.
+    NODE_MAPPINGS = ("LoGetVideoProps", "Lo:GetVideoProps")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/utils"
+    DESCRIPTION = """
+Get Video parameters
     """
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -64,7 +73,6 @@ class LoGetVideoProps:
     RETURN_TYPES = ("INT", "INT", "FLOAT", "FLOAT", "INT", "LO_VIDEO_PROPS")
     RETURN_NAMES = ("width", "height", "duration", "fps", "frames", "video_props")
     FUNCTION = "execute"
-    CATEGORY = "locode/params"
 
     # 
     # Функция для получения параметров видео

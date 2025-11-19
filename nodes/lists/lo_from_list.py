@@ -8,17 +8,17 @@ from ...utils.anytype import any_type
 #
 #---
 class LoFromList:
-    """
-    Получить значение из списка.
 
-    Правила:
-      - На вход принимаются:
-        - индекс (INT).
-        - список значений (LIST).
-        - использовать остаток числа % (BOOLEAN).
-      - На выходе:
-        - значение из списка.
-    """
+    NODE_MAPPINGS = ("LoFromList", "Lo:FromList")
+    CATEGORY = "locode/lists"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Returns value from a list by the `index`.
+If modulo and the index is out of bounds in either direction, the index is wrapped using modulo.
+So if index=10 and list has 7 items, then the result index will be 10 % 7 = 3.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -40,16 +40,6 @@ class LoFromList:
     RETURN_TYPES = ( any_type, )
     RETURN_NAMES = ("any",)
     FUNCTION = "execute"
-
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-Selects value from a list by the `index`.
-If modulo and the index is out of bounds in either direction, the index is wrapped using modulo.
-So if index=10 and list has 7 items, then the result index will be 10 % 7 = 3.
-Outputs:
-- `VALUE`: Value from the list.
-"""
 
 
     #

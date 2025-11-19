@@ -1,4 +1,5 @@
-import {app} from "../../../../scripts/app.js"
+import {app} from "../../../scripts/app.js"
+
 
 // Конфиг узла
 const NODE_CFG = {

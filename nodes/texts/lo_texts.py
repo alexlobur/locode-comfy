@@ -10,8 +10,20 @@ from ...utils.utils import fit_val
 #---
 class LoTexts:
 
-    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     NODE_MAPPINGS = ("LoTexts", "Lo:Texts")
+    CATEGORY = "locode/utils"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Selects text from an array of texts by the `index_seed`.
+If the index is out of bounds in either direction, the index is wrapped using modulo.
+Outputs:
+- `ACTIVE_STRING`: Text of the active tab.
+- `INDEX_STRING`: Text at the given index.
+- `STRINGS_LIST`: All texts joined into a single string with the delimiter.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
@@ -37,20 +49,10 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
             }
         }
 
+
     RETURN_TYPES = ("STRING", "STRING", "LIST")
     RETURN_NAMES = ("ACTIVE_STRING", "INDEX_STRING", "STRINGS_LIST")
     FUNCTION = "execute"
-
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-Selects text from an array of texts by the `index_seed`.
-If the index is out of bounds in either direction, the index is wrapped using modulo.
-Outputs:
-- `ACTIVE_STRING`: Text of the active tab.
-- `INDEX_STRING`: Text at the given index.
-- `STRINGS_LIST`: All texts joined into a single string with the delimiter.
-"""
 
 
     #

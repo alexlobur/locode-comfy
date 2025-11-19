@@ -7,12 +7,13 @@ from ...utils.anytype import any_type
 #
 #---
 class LoCompareNum:
-    """Сравнение двух чисел на выходе будет логическое значение.
 
-    Правила:
-      - На вход принимаются любые типы данных.
-      - На выходе будет логическое значение.
-    """
+    NODE_MAPPINGS = ("LoCompareNum", "Lo:CompareNum")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/calc"
+    DESCRIPTION = """
+Compare two values. Values will be converted to number.
+"""
 
 
     @classmethod
@@ -29,13 +30,11 @@ class LoCompareNum:
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("BOOLEAN",)
     FUNCTION = "compare"
-    CATEGORY = "locode/calc"
-    OUTPUT_NODE = True
+
 
     def compare(self, a, b, operation: str = "a=b"):
         result = compare(a, b, operation)
         return (result,)
-
 
 
 #---

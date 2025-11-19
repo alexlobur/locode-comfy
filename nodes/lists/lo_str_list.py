@@ -4,15 +4,15 @@
 #
 #---
 class LoStrList:
-    """
-    Формирует список строк из строки.
 
-    Правила:
-      - На вход принимаются:
-        - строка (STRING).
-      - На выходе:
-        - список значений.
-    """
+    NODE_MAPPINGS = ("LoStrList", "Lo:LoStrList")
+    CATEGORY = "locode/lists"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Converts a String into a list of Strings.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -33,12 +33,6 @@ class LoStrList:
     RETURN_TYPES = ( "LIST", )
     RETURN_NAMES = ("list",)
     FUNCTION = "execute"
-
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Converts a string of strings into a list of strings.
-"""
 
 
     #

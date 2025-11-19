@@ -1,5 +1,4 @@
-import {app} from "../../../../scripts/app.js"
-import Logger from "../.core/utils/Logger.js"
+import {app} from "../../../scripts/app.js"
 
 // Конфиг узла
 const NODE_CFG = {

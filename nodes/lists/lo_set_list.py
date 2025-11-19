@@ -7,12 +7,15 @@ from ...utils.anytype import any_type
 #
 #---
 class LoSetList:
+
     NODE_MAPPINGS = ("LoSetList", "Lo:LoSetList") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Converts any types into a list of any types.
 """
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod

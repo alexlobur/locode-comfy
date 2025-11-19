@@ -7,17 +7,19 @@ import os
 #---
 
 class LoReadDir:
-    """
-    Читает содержимое директории.
 
-    Правила:
-      - На вход принимаются:
-        - путь к директории (STRING). Путь может быть относительным
-      - На выходе:
-        - список файлов и директорий в директории.
-        - список файлов в директории.
-        - список директорий в директории.
-    """
+    NODE_MAPPINGS = ("LoReadDir", "Lo:ReadDir")
+    CATEGORY = "locode/system"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Reads the contents of a directory.
+Outputs:
+- `all`: List of files and directories in the directory.
+- `files`: List of files in the directory.
+- `dirs`: List of directories in the directory.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -36,17 +38,6 @@ class LoReadDir:
     RETURN_TYPES = ( "LIST", "LIST", "LIST" )
     RETURN_NAMES = ("all", "files", "dirs")
     FUNCTION = "execute"
-
-    CATEGORY = "locode/system"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Reads the contents of a directory.
-    Outputs:
-    - `all`: List of files and directories in the directory.
-    - `files`: List of files in the directory.
-    - `dirs`: List of directories in the directory.
-"""
-
 
     #
     #   Вычисляем значение

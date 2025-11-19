@@ -1,3 +1,9 @@
+.locode-comment-modal{
+
+    --anim-duration: 0.3s;
+
+}
+
 
 .locode-comment-modal .lomodal-window{
     background: var(--p-surface-900) !important;
@@ -38,6 +44,7 @@
 .locode-comment-modal FORM TEXTAREA{
     height: 180px;
     resize: none;
+    transition: var(--anim-duration) height;
 }
 .locode-comment-modal FORM .chbox{
     padding: 8px; border-radius: 8px;
@@ -59,7 +66,7 @@
     gap: 16px;
     margin-bottom: 24px;
     max-height: 200px;
-    transition: 0.5s all;
+    transition: var(--anim-duration) all;
 }
 
 .locode-comment-modal .no-header .header-font,
@@ -69,6 +76,11 @@
     max-height: 0px;
     margin-bottom: 0px;
 }
+
+.locode-comment-modal .no-text TEXTAREA{
+    height: 56px;
+}
+
 
 .locode-comment-modal .font LABEL:nth-child(1){
     grid-column: span 3;

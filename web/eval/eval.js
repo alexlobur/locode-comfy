@@ -1,10 +1,10 @@
-import {app} from "../../../../scripts/app.js"
-import Logger from "../.core/utils/Logger.js"
+import {app} from "../../../scripts/app.js"
 
 // Конфиг узла
 const NODE_CFG = {
-    type:           "LoSetList",
-    inputPrefix:    "any"
+    type:           "LoEval2",
+    extName:        "locode.LoEval2",
+    inputPrefix:    "x"
 }
 
 
@@ -13,7 +13,7 @@ const NODE_CFG = {
 // Регистрация фронтенд-расширения ComfyUI:
 //
 app.registerExtension({
-    name: "locode.LoSetList",
+    name: NODE_CFG.extName,
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeType.comfyClass !== NODE_CFG.type) return
@@ -22,8 +22,6 @@ app.registerExtension({
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function(){
-
-            // Начальные инпуты
             updateInputs(this)
             return onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined
         }
@@ -39,7 +37,6 @@ app.registerExtension({
         }
 
     }
-
 })
 
 
@@ -48,7 +45,8 @@ app.registerExtension({
  */
 function updateInputs(node){
     // список активных инпутов
-    const linkedInputs = Array.from(node.inputs).filter( input => input.name.startsWith(NODE_CFG.inputPrefix) && input.isConnected )
+    const linkedInputs = Array.from(node.inputs)
+        .filter( input => input.name.startsWith(NODE_CFG.inputPrefix) && input.isConnected )
 
     // переименование инпутов
     linkedInputs.forEach( (item, index) => item.name = `${NODE_CFG.inputPrefix}${index}` )

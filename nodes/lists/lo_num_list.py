@@ -8,15 +8,19 @@ import re
 
 
 class LoNumList:
-    """
-    Формирует список чисел из строки.
 
-    Правила:
-      - На вход принимаются:
-        - строка (STRING).
-      - На выходе:
-        - список значений.
-    """
+    NODE_MAPPINGS = ("LoNumList", "Lo:NumList")
+    CATEGORY = "locode/lists"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Converts a string of numbers into a list of integers and floats.
+The delimiter is a comma.
+Outputs:
+- `int`: List of integers.
+- `float`: List of floats.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -35,16 +39,6 @@ class LoNumList:
     RETURN_TYPES = ( "LIST", "LIST" )
     RETURN_NAMES = ("int_list", "float_list")
     FUNCTION = "execute"
-
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Converts a string of numbers into a list of integers and floats.
-    The delimiter is a comma.
-    Outputs:
-    - `int`: List of integers.
-    - `float`: List of floats.
-"""
 
 
     #

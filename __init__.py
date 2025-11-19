@@ -1,21 +1,22 @@
+
 from .nodes.calc.lo_eval import LoEval
+from .nodes.calc.lo_eval2 import LoEval2
+from .nodes.calc.lo_compare_num import LoCompareNum
 from .nodes.calc.lo_random_num import LoRandomNum
 from .nodes.calc.lo_random_bool import LoRandomBool
-from .nodes.calc.lo_compare_num import LoCompareNum
 from .nodes.calc.lo_is_empty import LoIsEmpty
+
+from .nodes.convert.lo_not_bool import LoNotBool
+from .nodes.convert.lo_to_int import LoToInt
+from .nodes.convert.lo_to_float import LoToFloat
+from .nodes.convert.lo_to_str import LoToStr
 
 from .nodes.lists.lo_from_list import LoFromList
 from .nodes.lists.lo_str_list import LoStrList
 from .nodes.lists.lo_list_join import LoListJoin
 from .nodes.lists.lo_num_list import LoNumList
-from .nodes.lists.lo_any_list import LoAnyList
 from .nodes.lists.lo_list_len import LoListLen
 from .nodes.lists.lo_set_list import LoSetList
-
-from .nodes.convert.lo_to_int import LoToInt
-from .nodes.convert.lo_to_float import LoToFloat
-from .nodes.convert.lo_to_str import LoToStr
-from .nodes.convert.lo_not_bool import LoNotBool
 
 from .nodes.texts.lo_texts import LoTexts
 
@@ -39,25 +40,6 @@ from .nodes.system.lo_rmdir import LoRmDir
 
 # Регистрируем узлы
 NODE_CLASS_MAPPINGS = {
-    "LoIsEmpty":         LoIsEmpty,
-    "LoNotBool":         LoNotBool,
-    "LoCompareNum":      LoCompareNum,
-
-    "LoSetVideoProps":   LoSetVideoProps,
-    "LoGetVideoProps":   LoGetVideoProps,
-
-    "LoRandomNum":       LoRandomNum,
-    "LoRandomBool":      LoRandomBool,
-
-    "LoStrList":         LoStrList,
-    "LoNumList":         LoNumList,
-    "LoFromList":        LoFromList,
-    "LoAnyList":         LoAnyList,
-
-    "LoToInt":           LoToInt,
-    "LoToFloat":         LoToFloat,
-    "LoToStr":           LoToStr,
-
     "LoMkDir":           LoMkDir,
     "LoReadDir":         LoReadDir,
     "LoRmDir":           LoRmDir,
@@ -68,25 +50,6 @@ NODE_CLASS_MAPPINGS = {
 
 # Регистрируем отображаемые имена узлов
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "LoIsEmpty":         "Lo:IsEmpty",
-    "LoNotBool":         "Lo:NotBool",
-    "LoCompareNum":      "Lo:CompareNum",
-
-    "LoSetVideoProps":   "Lo:SetVideoProps",
-    "LoGetVideoProps":   "Lo:GetVideoProps",
-
-    "LoRandomNum":       "Lo:RandomNum",
-    "LoRandomBool":      "Lo:RandomBool",
-
-    "LoStrList":         "Lo:StrList",
-    "LoNumList":         "Lo:NumList",
-    "LoFromList":        "Lo:FromList",
-    "LoAnyList":         "Lo:AnyList",
-
-    "LoToInt":           "Lo:ToInt",
-    "LoToFloat":         "Lo:ToFloat",
-    "LoToStr":           "Lo:ToStr",
-
     "LoMkDir":           "Lo:MkDir",
     "LoReadDir":         "Lo:ReadDir",
     "LoRmDir":           "Lo:RmDir",
@@ -97,15 +60,18 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
 # Автоматическая регистрация классов с NODE_MAPPINGS
 classes = [
+    # lists
+    LoSetList, LoListLen, LoListJoin, LoStrList, LoNumList, LoFromList,
     # replacers
     Replacers, UseReplacers, LoReplaceVars, LoReplaceAny,
-    # texts
-    LoTexts,
+    # calc
+    LoEval, LoEval2, LoCompareNum, LoIsEmpty, LoRandomNum, LoRandomBool,
+    # convert
+    LoNotBool, LoToInt, LoToFloat, LoToStr,
     # utils
-    LoLog, LoBeep, LoEval, LoSwitcher, LoCounter,
-    # lists
-    LoSetList, LoListLen, LoListJoin
+    LoLog, LoBeep, LoSwitcher, LoCounter, LoSetVideoProps, LoGetVideoProps, LoTexts,
 ]
+
 
 for cls in classes:
     mapping = getattr(cls, "NODE_MAPPINGS", None)

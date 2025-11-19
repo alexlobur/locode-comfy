@@ -12,7 +12,7 @@ class LoListJoin:
 Count items in list
 """
 
-    # ---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod

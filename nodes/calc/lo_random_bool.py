@@ -7,10 +7,18 @@ import random
 #---
 class LoRandomBool:
 
+    NODE_MAPPINGS = ("LoRandomBool", "Lo:RandomBool")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/calc"
+    DESCRIPTION = """
+Generate random Bool value
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
         return True
 
 
@@ -22,13 +30,11 @@ class LoRandomBool:
             },
         }
 
-
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("boolean",)
-    FUNCTION = "compute"
-    CATEGORY = "locode/calc"
+    FUNCTION = "execute"
 
 
-    def compute(self, true_weight):
+    def execute(self, true_weight):
         result = random.random() < true_weight
         return (result,)

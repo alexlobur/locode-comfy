@@ -7,10 +7,18 @@ import random
 #---
 class LoNotBool:
 
+    NODE_MAPPINGS = ("LoNotBool", "Lo:NotBool")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/convert"
+    DESCRIPTION = """
+Returns inverted Bool value
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
         return True
 
 
@@ -22,11 +30,13 @@ class LoNotBool:
             },
         }
 
+
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("bool",)
-    FUNCTION = "compute"
+    FUNCTION = "execute"
     CATEGORY = "locode/calc"
 
-    def compute(self, value: bool):
+
+    def execute(self, value: bool):
         return (not value,)
 

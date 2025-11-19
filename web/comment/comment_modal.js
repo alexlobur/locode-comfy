@@ -1,7 +1,6 @@
-import { TextData } from "../../.core/entity/TextData.js"
-import { showModal } from "../../.core/ui/modal/show_modal.js"
-import Logger from "../../.core/utils/Logger.js"
-import { createElement, importCss } from "../../.core/utils/dom_utils.js"
+import { TextData } from "../.core/entity/TextData.js"
+import { showModal } from "../.core/ui/modal/show_modal.js"
+import { createElement, importCss } from "../.core/utils/dom_utils.js"
 import { CommentData } from "./CommentData.js"
 
 importCss("comment_modal.css", import.meta)
@@ -13,8 +12,6 @@ importCss("comment_modal.css", import.meta)
  *	@returns 
  */
 export async function openCommentModal(data){
-
-	Logger.debug("openCommentModal", data)
 
 	return new Promise((resolve)=>{
 
@@ -94,15 +91,21 @@ export async function openCommentModal(data){
 					e.stopPropagation()
 					modal.close()
 				},
-				"input": (e)=> updateForm()
+				"input": (e)=> updateFormState()
 			}
 		})
 
-		const updateForm = () => {
+		// Обновление состояи формы
+		const updateFormState = (setFocus=false) => {
 			form.classList.toggle( "no-header", !form.header.value )
 			form.classList.toggle( "no-text", !form.text.value )
+			// Фокус
+			if(setFocus && form.text.value) form.text.focus()
+			if(setFocus && form.header.value) form.header.focus()
 		}
 
+
+		//
 		const modal = showModal({
 			className:	"locode-comment-modal",
 			header:		"Set Comment",
@@ -135,7 +138,8 @@ export async function openCommentModal(data){
 			}
 		})
 
-		updateForm()		
+		// Начальный запуск и установка фокуса
+		updateFormState(true)
 
 	})
 

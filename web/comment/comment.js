@@ -1,8 +1,8 @@
-import { app } from "../../../../scripts/app.js"
-import { wrapCanvasText } from "../../.core/utils/nodes_utils.js"
+import { app } from "../../../scripts/app.js"
+import { wrapCanvasText } from "../.core/utils/nodes_utils.js"
+import { TextData } from "../.core/entity/TextData.js"
 import { openCommentModal } from "./comment_modal.js"
 import { CommentData } from "./CommentData.js"
-import { TextData } from "../../.core/entity/TextData.js"
 
 
 // Конфиг узла

@@ -8,13 +8,21 @@ import math
 #---
 
 class LoToInt:
-    """
-    Преобразует любой тип в целое число.
-    """
+
+    NODE_MAPPINGS = ("LoToInt", "Lo:ToInt")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/convert"
+    DESCRIPTION = """
+Converts any type to an Integer.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return True
+
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -25,17 +33,10 @@ class LoToInt:
             },
         }
 
+
     RETURN_TYPES = ( "INT", )
     RETURN_NAMES = ("int", )
     FUNCTION = "execute"
-
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Converts any type to an integer.
-    Outputs:
-    - `int`: Integer value.
-"""
 
 
     #

@@ -10,7 +10,7 @@ class LoReplaceVars:
 Replace a values in a string. Set value in curly bracers: `Hello, {var0}!`
 """
 
-    #----
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod

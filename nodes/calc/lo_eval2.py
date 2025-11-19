@@ -5,9 +5,9 @@ from ...utils.anytype import any_type
 #   Вычислить результат выражения с переменными.
 #
 #---
-class LoEval:
+class LoEval2:
 
-    NODE_MAPPINGS = ("LoEval", "Lo:Eval")
+    NODE_MAPPINGS = ("LoEval2", "Lo:Eval2")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
@@ -23,12 +23,7 @@ Outputs:
         return {
             "required": {
                 "expression": ("STRING", {"default": "a + b" }),
-            },
-            "optional": {
-                "a" : (any_type, ),
-                "b" : (any_type, ),
-                "c" : (any_type, ),
-            },
+            }
         }
 
     RETURN_TYPES = ("INT", "FLOAT")
@@ -36,12 +31,12 @@ Outputs:
     FUNCTION = "execute"
 
 
-    def execute(self, expression, a=None, b=None, c=None):
-        variables = {
-            "a": a,
-            "b": b,
-            "c": c,
-        }
+    def execute(self, expression: str, **kwargs):
+
+        # for key, value in kwargs.items():
+        # variables = { "a": a, }
+        variables = kwargs.items()
+
         # Ограничим доступ к builtins и передадим переменные как locals
         safe_globals = {"__builtins__": {}}
 
@@ -49,7 +44,7 @@ Outputs:
         result_int = int(round(result_float))
 
         # Печатаем результат
-        print(f"LoEval: {expression} = {result_float} (INT: {result_int})")
+        print(f"LoEval2: {expression} = {result_float} (INT: {result_int})")
 
         # Возвращаем результат как INT и FLOAT
         return (result_int, result_float)

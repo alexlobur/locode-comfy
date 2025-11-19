@@ -1,8 +1,8 @@
-import {app} from "../../../../scripts/app.js"
-import {importCss, createElement} from "../../.core/utils/dom_utils.js"
-import Logger from "../../.core/utils/Logger.js"
-import { showInputDialog } from "../../.core/ui/dialogs/show_input_dialog.js"
-import {loadFileFromUser, saveFile} from "../../.core/utils/files_utils.js"
+import {app} from "../../../scripts/app.js"
+import {importCss, createElement} from "../.core/utils/dom_utils.js"
+import { showInputDialog } from "../.core/ui/dialogs/show_input_dialog.js"
+import {loadFileFromUser, saveFile} from "../.core/utils/files_utils.js"
+import Logger from "../.core/utils/Logger.js"
 import { ReplacersInputs } from "./replacers_inputs.js"
 
 

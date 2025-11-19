@@ -16,7 +16,8 @@ class Replacers:
 Builds a list of replacement pairs in the format [["find", "replace"], ...].
 """
 
-    #----
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):

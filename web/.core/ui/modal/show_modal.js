@@ -75,8 +75,6 @@ export function showModal({ title, content, actions, closeByClickingOutside=true
         createElement("div", { classList: ["lomodal-actions"], content: actions }),
     ])
 
-    console.debug(element)
-
     // События
     // Закрытие при нажатии вовне
     element.querySelector(".lomodal-container").addEventListener("click", (e)=>{

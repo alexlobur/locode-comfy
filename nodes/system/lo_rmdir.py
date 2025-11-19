@@ -10,13 +10,15 @@ from ...utils.anytype import any_type
 #---
 
 class LoRmDir:
-    """
-    Удаляет директорию.
 
-    Правила:
-      - На вход принимаются:
-        - путь к директории (STRING). Путь может быть относительным.
-    """
+    NODE_MAPPINGS = ("LoRmDir", "Lo:RmDir")
+    CATEGORY = "locode/system"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Removes a directory.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     EXPERIMENTAL = True
 
@@ -42,9 +44,6 @@ class LoRmDir:
 
     CATEGORY = "locode/system"
     AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Removes a directory.
-"""
 
 
     #

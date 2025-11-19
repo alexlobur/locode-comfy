@@ -8,6 +8,15 @@ from ...utils.anytype import any_type
 #---
 class LoIsEmpty:
 
+    NODE_MAPPINGS = ("LoIsEmpty", "Lo:IsEmpty")
+    AUTHOR = "LoCode"
+    CATEGORY = "locode/calc"
+    DESCRIPTION = """
+Check value of any type for Empty.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -16,13 +25,10 @@ class LoIsEmpty:
             },
         }
 
-    # Один выход (логическое значение)
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("BOOLEAN",)
-    FUNCTION = "compare"
-    CATEGORY = "locode/calc"
-    # OUTPUT_NODE = True
+    FUNCTION = "execute"
 
-    def compare(self, any):
+    def execute(self, any):
         is_empty = any is None or (isinstance(any, str) and any.strip() == "")
         return (is_empty,)

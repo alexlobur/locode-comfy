@@ -7,13 +7,17 @@ import os
 #---
 
 class LoMkDir:
-    """
-    Создает директорию если не существует.
 
-    Правила:
-      - На вход принимаются:
-        - путь к директории (STRING). Путь может быть относительным
-    """
+    NODE_MAPPINGS = ("LoMkDir", "Lo:MkDir")
+    CATEGORY = "locode/system"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Creates a directory if it doesn't exist.
+Outputs:
+- `created`: True if the directory was created, False otherwise.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -32,14 +36,6 @@ class LoMkDir:
     RETURN_TYPES = ( "STRING", "BOOLEAN", )
     RETURN_NAMES = ( "path", "created", )
     FUNCTION = "execute"
-
-    CATEGORY = "locode/system"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Creates a directory if it doesn't exist.
-    Outputs:
-    - `created`: True if the directory was created, False otherwise.
-"""
 
 
     #

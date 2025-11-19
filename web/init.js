@@ -31,6 +31,7 @@ const NODES_DEFAULTS = {
     // beta
     "LoCounter" : COLORS_DEF.beta,
     "LoRmDir"   : COLORS_DEF.beta,
+    "LoEval2"   : COLORS_DEF.beta,
 }
 
 

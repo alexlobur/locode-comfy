@@ -1,4 +1,4 @@
-import {TextData} from "../../.core/entity/TextData.js";
+import {TextData} from "../.core/entity/TextData.js";
 
 /**
  *  Данные комментария
