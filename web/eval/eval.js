@@ -28,7 +28,7 @@ app.registerExtension({
 
         //
         // При изменении соединений
-        const originalOnConnectionsChange = nodeType.prototype.onConnectionsChange;
+        const originalOnConnectionsChange = nodeType.prototype.onConnectionsChange
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output) {
             const ret = originalOnConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
