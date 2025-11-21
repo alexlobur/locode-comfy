@@ -11,10 +11,7 @@ class LoCounter:
     DESCRIPTION = """
 Two-position counter.
 When minor becomes greater than max_minor, it resets to zero, and major is incremented.
-    """
-
-    EXPERIMENTAL = True
-
+"""
 
     # ---
 

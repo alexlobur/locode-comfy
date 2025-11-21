@@ -107,14 +107,19 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
  * @param {*} prefix 
  */
 export function updateDynamicInputs(node, prefix="any"){
-    // список активных инпутов
+    // список активных инпутов начинающихся с префикса
     const linkedInputs = Array.from(node.inputs)
         .filter( input => input.name.startsWith(prefix) && input.isConnected )
 
+    // список прочих инпутов
+    const otherInputs = Array.from(node.inputs)
+        .filter( input => !input.name.startsWith(prefix) )
+
     // переименование инпутов
     linkedInputs.forEach( (item, index) => item.name = `${prefix}${index}` )
-    // замена инпутов узла и добавление пустого
-    node.inputs = linkedInputs
+
+    // замена инпутов узла с сохранением прочих, и добавление пустого
+    node.inputs = [...otherInputs, ...linkedInputs]
     node.addInput(`${prefix}${linkedInputs.length}`, "*",)
 
 }

@@ -9,15 +9,13 @@ import os
 
 class LoFileExists:
 
-    NODE_MAPPINGS = ("LoReadDir", "Lo:ReadDir")
+    NODE_MAPPINGS = ("LoFileExists", "Lo:FileExists")
     CATEGORY = "locode/system"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Reads the contents of a directory.
-Outputs:
-- `all`: List of files and directories in the directory.
-- `files`: List of files in the directory.
-- `dirs`: List of directories in the directory.
+    Checks if a file or directory exists.
+    Outputs:
+    - `exists`: True if the file or directory exists, False otherwise.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -39,15 +37,6 @@ Outputs:
     RETURN_TYPES = ( "BOOLEAN", "BOOLEAN" )
     RETURN_NAMES = ("exists", "is_dir")
     FUNCTION = "execute"
-
-    CATEGORY = "locode/system"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Checks if a file or directory exists.
-    Outputs:
-    - `exists`: True if the file or directory exists, False otherwise.
-"""
-
 
     #
     #   Вычисляем значение

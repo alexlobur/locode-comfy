@@ -11,7 +11,7 @@ from ...utils.utils import fit_val
 class LoTexts:
 
     NODE_MAPPINGS = ("LoTexts", "Lo:Texts")
-    CATEGORY = "locode/utils"
+    CATEGORY = "locode/misc"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Selects text from an array of texts by the `index_seed`.

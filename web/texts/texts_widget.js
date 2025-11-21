@@ -3,6 +3,7 @@ import {app} from "../../../scripts/app.js"
 import {showInputDialog} from "../.core/ui/dialogs/show_input_dialog.js"
 import {importCss, createElement} from "../.core/utils/dom_utils.js"
 import {loadFileFromUser, saveFile} from "../.core/utils/files_utils.js"
+import {clipboardWrite, clipboardRead} from "../.core/utils/clipboard.js"
 import {TabsIterrator} from "./tabs_iterrator.js"
 import {TextsTabsBar} from "./texts_tabs_bar.js"
 
@@ -151,6 +152,24 @@ class TextsWidget {
 
 
     /**
+     *  Копирование в Буфер
+     */
+    copyData = async() => {
+        const data = JSON.stringify(this.#tabsIterrator.toJson())
+        await clipboardWrite(data)
+    }
+
+
+    /**
+     *  Вставка из Буфера
+     */
+    pasteData = async() => {
+        const data = JSON.parse(await clipboardRead())
+        this.#tabsIterrator.fromJson(data, true)
+    }
+
+
+    /**
      *  Обработчик сохранения файла
      */
     saveData = async() => {
@@ -259,32 +278,28 @@ app.registerExtension({
             Logger.debug(menu)
             menu.push(...[
                 {
-                    content: "Toggle Disabled Texts",
+                    content: "Lo:Texts > Hide/Show Disabled",
                     callback: this.__widget.toggleShowDisable
                 },{
-                    content: "Save Texts",
+                    content: "Lo:Texts > Copy to Clipboard",
+                    callback: this.__widget.copyData
+                },{
+                    content: "Lo:Texts > Paste from Clipboard",
+                    callback: this.__widget.pasteData
+                },{
+                    content: "Lo:Texts > Save",
                     callback: this.__widget.saveData
                 },{
-                    content: "Load Texts",
+                    content: "Lo:Texts > Load",
                     callback: ()=> this.__widget.loadData()
                 },{
-                    content: "Load & Append Texts",
+                    content: "Lo:Texts > Load & Append",
                     callback: ()=> this.__widget.loadData(true)
                 },
                 null
         ])
             return getExtraMenuOptions ? getExtraMenuOptions.apply(this, [canvas, menu]) : undefined
         }
-
-
-        //
-        // Сериализация: гарантируем сохранение значений
-        // const onSerialize = nodeType.prototype.onSerialize
-        // nodeType.prototype.onSerialize = function(o) {
-        //     const ret = onSerialize ? onSerialize.apply(this, arguments) : undefined
-        //     console.debug("SERIALIZE", this, arguments)
-        //     return ret
-        // }
 
     }
 

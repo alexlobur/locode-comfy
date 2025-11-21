@@ -8,15 +8,19 @@ import os
 
 
 class LoCountDirImages:
-    """
-    Подсчитывает количество изображений в директории.
 
-    Правила:
-      - На вход принимаются:
-        - путь к директории (STRING). Путь может быть относительным
-      - На выходе:
-        - количество изображений в директории.
-    """
+    NODE_MAPPINGS = ("LoCountDirImages", "Lo:CountDirImages")
+    CATEGORY = "locode/system"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+    Counts the number of images (png, jpg, jpeg, webp) in a directory.
+    If the directory does not exist, or error occurs, returns -1.
+    Outputs:
+    - `count`: Number of images in the directory.
+"""
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -36,14 +40,6 @@ class LoCountDirImages:
     RETURN_NAMES = ("count",)
     FUNCTION = "execute"
 
-    CATEGORY = "locode/system"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Counts the number of images (png, jpg, jpeg, webp) in a directory.
-    If the directory does not exist, or error occurs, returns -1.
-    Outputs:
-    - `count`: Number of images in the directory.
-"""
 
 
     #

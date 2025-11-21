@@ -5,7 +5,7 @@
 #---
 class LoStrList:
 
-    NODE_MAPPINGS = ("LoStrList", "Lo:LoStrList")
+    NODE_MAPPINGS = ("LoStrList", "Lo:StrList")
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """

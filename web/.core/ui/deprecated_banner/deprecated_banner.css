@@ -1,0 +1,104 @@
+.deprecated_banner {
+    position: relative;
+    color: #ffffffCC;
+    user-select: none;
+
+    --bg-color: hsl(0 74.71% 25.23%);
+}
+
+.deprecated_banner .banner_button{
+    position: relative;
+    width: 22px; height: 22px;
+    background: var(--bg-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+.deprecated_banner .banner_button > span{
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    color: #FFF;
+    font-size: 12px;
+}
+
+
+.deprecated_banner .banner_window{
+    position: absolute; z-index: 100000;
+    transform: translate(-50%, 6px);
+    /* display: flex; */
+    display: none;
+    gap: 16px; flex-direction: column;
+    min-width: 260px;
+    padding: 16px 16px 8px 16px;
+    border-radius:  8px;
+    background: var(--bg-color);
+    color: #ffffffCC;
+    box-shadow: -4px 4px 16px rgba(0,0,0,0.5);
+}
+
+.deprecated_banner.active .banner_window{
+    display: flex;
+}
+
+
+.deprecated_banner .banner_window > .title{
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+/* actions */
+
+.deprecated_banner .banner_window > .actions {
+    position: absolute; right: 8px; top: 8px;
+    display: flex; gap: 2px;
+}
+
+.deprecated_banner .banner_window > .actions > DIV {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    opacity: 0.5;
+    cursor: pointer;
+    fill: currentColor;
+}
+
+.deprecated_banner .banner_window > .actions > DIV:HOVER{
+    opacity: 1.0;
+}
+
+.deprecated_banner .banner_window > .actions > DIV SVG{
+    fill: currentColor;
+    width: 18px; height: 18px;
+}
+
+.deprecated_banner .banner_window > .actions > DIV:HOVER{
+    background-color: #ffffff22;
+}
+
+
+/* items */
+.deprecated_banner .banner_window > .items{
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    font-size: 14px;
+}
+
+.deprecated_banner .banner_window > .items .id{}
+
+.deprecated_banner .banner_window > .items .id::before{
+    content: "#";
+}
+
+.deprecated_banner .banner_window > .items .title{
+    font-weight: bold;
+}
+
+.deprecated_banner .banner_window > .items > DIV{
+    border-top: 1px solid #ffffff33;
+    padding: 8px;
+}
+

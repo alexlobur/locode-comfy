@@ -1,4 +1,4 @@
-from ...utils.anytype import *
+from ...utils.anytype import any_type
 
 
 class LoSwitcher:

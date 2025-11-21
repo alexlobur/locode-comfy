@@ -17,6 +17,8 @@ Outputs:
 - `float`: Float result.
     """
 
+    DEPRECATED = True
+
 
     @classmethod
     def INPUT_TYPES(cls):

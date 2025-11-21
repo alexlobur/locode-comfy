@@ -1,19 +1,18 @@
 import {app} from "../../../scripts/app.js"
 import {updateDynamicInputs} from "../.core/utils/nodes_utils.js"
+import {InputsLabelsWidget} from "../.core/widgets/InputsLabelsWidget.js"
 
 
 // Конфиг узла
 const NODE_CFG = {
-    type:           "LoEval2",
-    extName:        "locode.LoEval2",
-    inputPrefix:    "x"
+    type:           "LoEvals",
+    extName:        "locode.LoEvals",
 }
 
 
 //---
 //
 // Регистрация фронтенд-расширения ComfyUI:
-// TODO: Код повторяется, Можно перенести в одно для узлов Eval, Switcher, ReplaceVars
 //
 app.registerExtension({
     name: NODE_CFG.extName,
@@ -21,12 +20,19 @@ app.registerExtension({
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeType.comfyClass !== NODE_CFG.type) return
 
+        const INPUTS_PREFIX = nodeData.input.hidden['inputs_prefix']??"a"
+
         //
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function(){
             const ret = onNodeCreated?.apply(this, arguments)
-            updateDynamicInputs(this, NODE_CFG.inputPrefix)
+
+            // добавление скрытого виджета для сбора меток
+            this.addCustomWidget(new InputsLabelsWidget(this, "labels_of_vars", INPUTS_PREFIX ))
+            // Обновление динамических инпутов
+            updateDynamicInputs(this, INPUTS_PREFIX)
+
             return ret
         }
 
@@ -36,7 +42,7 @@ app.registerExtension({
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output) {
             const ret = originalOnConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>updateDynamicInputs(this, NODE_CFG.inputPrefix), 10 )
+            setTimeout( ()=>updateDynamicInputs(this, INPUTS_PREFIX), 10 )
             return ret
         }
 

@@ -62,7 +62,7 @@ export class TextsTabsBar{
             if(tabData.disabled) skipped++
 
             // скипаем если включен режим hideDisabled
-            if(this.#tabsIterrator.hideDisabled) continue
+            if(tabData.disabled && this.#tabsIterrator.hideDisabled) continue
 
             // Добавляем dragTarget
             nodes.push(createDragTarget(index))

@@ -3,12 +3,12 @@ from ...utils.anytype import any_type
 
 #---
 #
-#   UseReplacers
+#   ReplacersUpply
 #
 #---
-class UseReplacers:
+class ReplacersApply:
 
-    NODE_MAPPINGS = ("LoUseReplacers", "Lo:UseReplacers") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoReplacersApply", "Lo:ReplacersApply") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/replacers"
     AUTHOR = "LoCode"
     DESCRIPTION = """

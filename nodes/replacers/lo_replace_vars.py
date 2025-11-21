@@ -7,7 +7,9 @@ class LoReplaceVars:
     CATEGORY = "locode/replacers"
     AUTHOR = "LoCode"
     DESCRIPTION ="""
-Replace a values in a string. Set value in curly bracers: `Hello, {var0}!`
+Replaces parameters in a string enclosed in curly braces, for example: `Hello, {var0}!`.
+The parameter name is taken from the input name (or label, if exists).
+You can redefine the parameter (input label) name using the context menu > "Rename Slot".
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -23,6 +25,10 @@ Replace a values in a string. Set value in curly bracers: `Hello, {var0}!`
         return {
             "required": {
                 "string": ("STRING", {"default": "Hello, {var0}!", "multiline": True }),
+            },
+            "hidden": {
+                "labels_of_vars": ("DICT", ),
+                "inputs_prefix": "var"
             }
         }
 
@@ -31,14 +37,19 @@ Replace a values in a string. Set value in curly bracers: `Hello, {var0}!`
     FUNCTION = "execute"
 
 
-    def execute(self, string: str, **kwargs):
+    def execute(self, string: str, labels_of_vars: dict, **kwargs):
         result = string
+
+        print(string, labels_of_vars, kwargs.items())
 
         # производим замену значений
         for key, value in kwargs.items():
+            # получаем значение имени (если есть key в labels_of_vars, то будет взято из label)
+            name = labels_of_vars.get(key, key)
+
             # Преобразуем значение в строку
             replace = str(value) if value is not None else ""
-            result = result.replace("{"+key+"}", replace)
+            result = result.replace("{"+name+"}", replace)
 
         # Возвращаем результат
         return (result,)

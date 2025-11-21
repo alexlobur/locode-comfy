@@ -127,8 +127,8 @@ export class TabsIterrator extends ChangeNotifier {
         const tabs = Array.from(json['tabs']??[]).map( data => new TabData(data) )
         this.set({
             tabs:           append ? [...this.#tabs, ...tabs] : tabs,
-            activeIndex:    json['activeIndex']??0,
-            hideDisabled:   json['hideDisabled']??false,
+            activeIndex:    append ? undefined : json['activeIndex']??0,
+            hideDisabled:   append ? undefined : json['hideDisabled']??false,
         })
         return this
     }
@@ -150,13 +150,11 @@ export class TabsIterrator extends ChangeNotifier {
  */
 export class TabData {
 
-    uid
     title
     text
     disabled
 
-    constructor({uid=null, title='', text='', disabled=false }={}){
-        this.uid = uid || genUid()
+    constructor({title='', text='', disabled=false }={}){
         this.title = title
         this.text = text
         this.disabled = disabled

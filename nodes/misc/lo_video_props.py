@@ -11,7 +11,7 @@ class LoSetVideoProps:
 
     NODE_MAPPINGS = ("LoSetVideoProps", "Lo:SetVideoProps")
     AUTHOR = "LoCode"
-    CATEGORY = "locode/utils"
+    CATEGORY = "locode/misc"
     DESCRIPTION = """
 Set Video parameters
     """
@@ -36,7 +36,7 @@ Set Video parameters
 
 
     # 
-    # Функция для вычисления параметров видео
+    # Вычисление параметров видео
     #
     def execute(self, width=0, height=0, duration=0.0, fps=0.0):
         video_props = LoVideoProps(width, height, duration, fps)

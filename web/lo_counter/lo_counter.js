@@ -3,21 +3,27 @@ import { listToNamedObject, clamp } from "../.core/utils/nodes_utils.js"
 import Logger from "../.core/utils/Logger.js"
 
 
+// Конфиг узла
+const NODE_CFG = {
+    type:           "LoCounter",
+    extName:        "locode.LoCounter",
+    inputPrefix:    "any",
+}
+
+
 /**
  * Регистрация расширения
  */
 app.registerExtension({
-    name: "LoCounterNode",
-
-    // При регистрации типа — перехватить onWidgetChanged, чтобы реагировать на изменение max_minor
+    name: NODE_CFG.extName,
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeType.comfyClass !== "LoCounter") return;
+        if (nodeType.comfyClass !== NODE_CFG.type) return;
 
         // Изменение виджета
         // если меняется max_minor — пересчитать границы
         const _onWidgetChanged = nodeType.prototype.onWidgetChanged
         nodeType.prototype.onWidgetChanged = function(name) {
-            const ret = _onWidgetChanged ? _onWidgetChanged.apply(this, arguments) : undefined
+            const ret = _onWidgetChanged?.apply(this, arguments)
             if (name === "max_minor") applyMinMax(this)
             return ret
         }
@@ -25,39 +31,61 @@ app.registerExtension({
         // При загрузке конфига (импорт воркфлоу) — тоже применить
         const _onConfigure = nodeType.prototype.onConfigure
         nodeType.prototype.onConfigure = function (){
-            const ret = _onConfigure ? _onConfigure.apply(this, arguments) : undefined
+            const ret = _onConfigure?.apply(this, arguments)
+            applyMinMax(this)
+            return ret
+        }
+
+        // При создании Нода
+        const _onNodeCreated = nodeType.prototype.onNodeCreated
+        nodeType.prototype.onNodeCreated = function (){
+            const ret = _onNodeCreated?.apply(this, arguments)
+
+            // hack: убираем инпут с "max_minor"
+            const maxMinorIndex = this.inputs.findIndex( input => input.name = "max_minor" )
+            this.inputs = this.inputs.splice(maxMinorIndex, 1)
+
+            // обновляем min/max
             applyMinMax(this)
             return ret
         }
     },
 
-    // При создании конкретного инстанса — выставить границы сразу
-    async nodeCreated(node, app){
-        const cls = node?.constructor?.comfyClass || node?.comfyClass || node?.type
-        if (cls !== "LoCounter") return
-        applyMinMax(node)
-    },
-
     // Setup
     async setup(app){
-        app.api.addEventListener("execution_success", (ev) => {
-            Logger.debug("LoCounterNode: execution_success", ev.type, ev)
+        // Пытаемся увеличивать счетчик
+        // app.api.addEventListener("execution_start", (ev) => {
+        //     Logger.debug("LoCounterNode: execution_start", ev.type, ev)
+        //     updateNodesValues(app)
+        // })
+        // переопределение queuePrompt
+        const _queuePrompt = app.api.queuePrompt
+        app.api.queuePrompt = async function(){
+            // Logger.debug(app.api)
             updateNodesValues(app)
-        })
-        app.api.socket.addEventListener("message", (ev) => {
-            // Logger.debug("message", ev.type, ev)
-        })
+            return await _queuePrompt.apply(this, arguments)
+        }
+        // return await original_queuePrompt.call(api, number, { output, workflow });
+        // app.api.socket.addEventListener("message", (ev) => {
+        //     Logger.debug("message", ev.type, ev)
+        // })
     }
 
 })
 
 
+
+/* FUNCTIONS */
+
+/**
+ *  Обновление значений узлов счетчиков
+ */
 function updateNodesValues(app){
     if (!app?.graph?._nodes) return
 
     for (const node of app.graph._nodes) {
         const comfyClass = node?.constructor?.comfyClass || node?.comfyClass || node?.type
-        if (comfyClass !== "LoCounter") continue
+        if (comfyClass !== NODE_CFG.type) continue
         try{
             const widgets = listToNamedObject(node.widgets)
             widgets.minor.value++
@@ -65,7 +93,6 @@ function updateNodesValues(app){
                 widgets.minor.value = 0
                 widgets.major.value++
             }
-            Logger.debug("LoCounter", widgets.minor.value, widgets.major.value)
         } catch(e){
             Logger.warn(e)
         }
@@ -74,6 +101,9 @@ function updateNodesValues(app){
 }
 
 
+/**
+ *  переопределение границ
+ */
 function applyMinMax(node){
     try{
         const widgets = listToNamedObject(node.widgets)

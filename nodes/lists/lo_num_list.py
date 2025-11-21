@@ -32,7 +32,7 @@ Outputs:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "1, 2, 3", "multiline": False }),
+                "string": ("STRING", {"default": "1, 2, 3", "multiline": True }),
             },
         }
 
