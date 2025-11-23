@@ -1,6 +1,6 @@
 import {app} from "../../../scripts/app.js"
 import coreInit from "./.core/core_init.js"
-import {showDeprecatedBanner} from "./.core/ui/deprecated_banner/deprecated_banner.js"
+import {updateDeprecatedBanner} from "./.core/ui/deprecated_banner/deprecated_banner.js"
 import Logger from "./.core/utils/Logger.js"
 
 
@@ -66,16 +66,24 @@ const NODES_DEFAULTS = {
 }
 
 
+const DEPRECATED_TYPES = new Set()
+
 //---
 //  Начальные значения для всех узлов LoCode
 //
 app.registerExtension({
     name: "locode.init",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        // Проверяем, что имя узла соответствует нужному типу
-        if (!Object.keys(NODES_DEFAULTS).includes(nodeType.comfyClass)) return
+        // список устаревших нодов
+        if(nodeData.deprecated){
+            DEPRECATED_TYPES.add(nodeType.comfyClass)
+        }
 
+        //-- Установка начальных значений
+        // Проверяем, что имя узла соответствует нужному типу
         const nodeDefaults = NODES_DEFAULTS[nodeType.comfyClass]
+        if (!nodeDefaults) return
+
         //
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
@@ -87,30 +95,53 @@ app.registerExtension({
             // Тут apply делаем после переопределений
             return onNodeCreated?.apply(this, arguments)
         }
-    }
-})
-
-
-//---
-//  Список DEPRECATED типов
-//
-const DEPRECATED_TYPES = new Set()
-app.registerExtension({
-    name: "locode.deprecated",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if(nodeData.deprecated) DEPRECATED_TYPES.add(nodeType.comfyClass)
     },
+    async setup(app){
+        // Подключение баннера устаревших нодов
+        updateDeprecatedBanner(DEPRECATED_TYPES)
+
+        // Инициализация событий
+        initEvents( app, {
+            onEvent: function(type){
+                // обновление баннера устаревших нодов
+                updateDeprecatedBanner(DEPRECATED_TYPES)
+            }
+        })
+
+    }
+
 })
 
 
-// Цепляемся к loadGraphData чтобы отследить загрузку узлов
-const _loadGraphData = app.loadGraphData
-app.loadGraphData = function (){
-    if(DEPRECATED_TYPES.size>0){
-        setTimeout(()=>{
-            Logger.debug("DEPRECATED_TYPES", DEPRECATED_TYPES)
-            showDeprecatedBanner(DEPRECATED_TYPES)
-        }, 100)
+/**
+ *  
+ */
+function initEvents(app, { onEvent }){
+    Logger.debug(app)
+
+    // Цепляемся к loadGraphData чтобы отследить загрузку узлов
+    const _loadGraphData = app.loadGraphData
+    app.loadGraphData = function(){
+        const ret = _loadGraphData?.apply(this, arguments)
+        onEvent?.call(this, "graph_load", ...arguments)
+        return ret
     }
-    return _loadGraphData.apply(this, arguments)
+
+    // Отслеживаем добавление узла к графу
+    const _onNodeAdded = app.graph.onNodeAdded
+    app.graph.onNodeAdded = function(){
+        const ret = _onNodeAdded?.apply(this, arguments)
+        onEvent?.call(this, "graph_node_added", ...arguments)
+        return ret
+    }
+
+    // Отслеживаем удаление узла из графа
+    const _onNodeRemoved = app.graph.onNodeRemoved
+    app.graph.onNodeRemoved = function(){
+        const ret = _onNodeRemoved?.apply(this, arguments)
+        onEvent?.call(this, "graph_node_removed", ...arguments)
+        return ret
+    }
+
 }
+

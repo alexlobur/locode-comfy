@@ -262,7 +262,7 @@ app.registerExtension({
         if (nodeData.name !== NODE_CFG.type) return
 
         //
-        // Создание узла и инициализация виджета
+        // Создание узла
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function() {
             // создаём и сохраняем ссылку на виджет
@@ -275,7 +275,6 @@ app.registerExtension({
         const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions
         nodeType.prototype.getExtraMenuOptions = function(canvas, menu) {
             menu = menu ?? []
-            Logger.debug(menu)
             menu.push(...[
                 {
                     content: "Lo:Texts > Hide/Show Disabled",

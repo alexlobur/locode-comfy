@@ -66,19 +66,6 @@
     fill: currentColor;
 }
 
-.deprecated_banner .banner_window > .actions > DIV:HOVER{
-    opacity: 1.0;
-}
-
-.deprecated_banner .banner_window > .actions > DIV SVG{
-    fill: currentColor;
-    width: 18px; height: 18px;
-}
-
-.deprecated_banner .banner_window > .actions > DIV:HOVER{
-    background-color: #ffffff22;
-}
-
 
 /* items */
 .deprecated_banner .banner_window > .items{
@@ -87,10 +74,26 @@
     font-size: 14px;
 }
 
-.deprecated_banner .banner_window > .items .id{}
+.deprecated_banner .banner_window > .items .id{
+    font-size: 12px;
+}
 
 .deprecated_banner .banner_window > .items .id::before{
     content: "#";
+}
+
+.deprecated_banner .banner_window > .items .id > SPAN{
+    display: inline-block;
+}
+
+.deprecated_banner .banner_window > .items .id > SPAN:after{
+    content: ">"; transform: scale(75%);
+    opacity: 0.5;
+    display: inline-block;
+    padding: 0 1.5px;
+}
+.deprecated_banner .banner_window > .items .id > SPAN:last-child:after{
+    display: none;
 }
 
 .deprecated_banner .banner_window > .items .title{

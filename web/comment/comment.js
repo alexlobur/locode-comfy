@@ -268,7 +268,7 @@ LGraphCanvas.prototype.drawNode = function (node, ctx) {
  */
 app.registerExtension({
 	name: "locode.Comment",
-	registerCustomNodes() {
+	registerCustomNodes(){
 		LoCommentNode.setUp()
 	},
 });
