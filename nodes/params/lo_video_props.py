@@ -11,7 +11,7 @@ class LoSetVideoProps:
 
     NODE_MAPPINGS = ("LoSetVideoProps", "Lo:SetVideoProps")
     AUTHOR = "LoCode"
-    CATEGORY = "locode/misc"
+    CATEGORY = "locode/params"
     DESCRIPTION = """
 Set Video parameters
     """
@@ -54,7 +54,7 @@ class LoGetVideoProps:
 
     NODE_MAPPINGS = ("LoGetVideoProps", "Lo:GetVideoProps")
     AUTHOR = "LoCode"
-    CATEGORY = "locode/utils"
+    CATEGORY = "locode/params"
     DESCRIPTION = """
 Get Video parameters
     """

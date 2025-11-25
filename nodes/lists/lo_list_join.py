@@ -38,12 +38,6 @@ Count items in list
     RETURN_NAMES = ("string",)
     FUNCTION = "execute"
 
-    CATEGORY = "locode/params"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-    Converts a list of strings into a string.
-"""
-
 
     #
     #   Вычисляем значение

@@ -1,6 +1,8 @@
 import {app} from "../../../../../scripts/app.js"
 import { importCss, createElement } from "../../utils/dom_utils.js"
 import Logger from "../../utils/Logger.js"
+import { foreachNodes } from "../../utils/nodes_utils.js"
+
 
 importCss("deprecated_banner.css", import.meta)
 
@@ -87,26 +89,12 @@ function createBannerElement(deprecatedTypes){
  *  Получение данных списка устаревших узлов
  */
 function getDeprecatedNodesData(deprecatedTypes, nodes=null, parentNodeIds=[]){
-    nodes = nodes ?? app.graph.nodes
     const result = []
-    for (const node of nodes){
-        // сабграф
-        if(node.subgraph!=null){
-            result.push(
-                ...getDeprecatedNodesData(
-                    deprecatedTypes,
-                    node.subgraph._nodes,
-                    [...parentNodeIds, node.id]
-                )
-            )
-            continue
-        }
+    foreachNodes(app.graph.nodes, (node, parentNodeIds)=>{
         // устаревший нод
         if(deprecatedTypes.has(node.type)){
             result.push({ ids: [...parentNodeIds, node.id], title: node.title, type: node.type, node: node })
-            continue
         }
-    }
+    })
     return result
-
 }

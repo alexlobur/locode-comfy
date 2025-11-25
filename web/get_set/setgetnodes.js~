@@ -39,6 +39,7 @@ function showAlert(message) {
     life: 5000,
   })
 }
+
 app.registerExtension({
 	name: "SetNode",
 	registerCustomNodes() {
@@ -210,7 +211,8 @@ app.registerExtension({
 
 				this.findGetters = function(graph, checkForPreviousName) {
 					const name = checkForPreviousName ? this.properties.previousName : this.widgets[0].value;
-					return graph._nodes.filter(otherNode => otherNode.type === 'GetNode' && otherNode.widgets[0].value === name && name !== '');
+					return graph._nodes
+						.filter(otherNode => otherNode.type === 'GetNode' && otherNode.widgets[0].value === name && name !== '');
 				}
 
 				
@@ -465,7 +467,8 @@ app.registerExtension({
 
 				this.findSetter = function(graph) {
 					const name = this.widgets[0].value;
-					const foundNode = graph._nodes.find(otherNode => otherNode.type === 'SetNode' && otherNode.widgets[0].value === name && name !== '');
+					const foundNode = graph._nodes
+						.find(otherNode => otherNode.type === 'SetNode' && otherNode.widgets[0].value === name && name !== '');
 					return foundNode;
 				};
 

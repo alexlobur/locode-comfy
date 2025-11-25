@@ -54,3 +54,22 @@ class FlexibleOptionalInputType(dict):
     """Always contain a key, and we'll always return the tuple above when asked for it."""
     return True
 
+
+# author: ImpactPack --->
+class ByPassTypeTuple(tuple):
+    """ Какая-то хрень которая дает делать неограниченных output.
+        Взято из кода ImpactPack, х.з. как работает, но работает!
+    """
+    def __getitem__(self, index):
+        if index > 0:
+            index = 0
+        item = super().__getitem__(index)
+        # if isinstance(item, str):
+        #     return TautologyStr(item)
+        return item
+
+
+# author: Trung0246 --->
+class TautologyStr(str):
+    def __ne__(self, other):
+        return False

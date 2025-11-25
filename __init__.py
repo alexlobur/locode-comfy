@@ -27,8 +27,9 @@ from .nodes.utils.lo_beep import LoBeep
 from .nodes.utils.lo_switcher import LoSwitcher
 from .nodes.utils.lo_counter import LoCounter
 
-from .nodes.misc.lo_texts import LoTexts
-from .nodes.misc.lo_video_props import LoSetVideoProps, LoGetVideoProps
+from .nodes.params.lo_set_get_props import LoSetProps, LoGetProps
+from .nodes.params.lo_texts import LoTexts
+from .nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
 
 from .nodes.system.lo_mkdir import LoMkDir
 from .nodes.system.lo_readdir import LoReadDir
@@ -36,7 +37,6 @@ from .nodes.system.lo_file_exists import LoFileExists
 from .nodes.system.lo_count_dir_images import LoCountDirImages
 from .nodes.system.lo_rmdir import LoRmDir
 
-from .nodes.test.test import LoTest
 
 
 # Регистрируем узлы
@@ -57,13 +57,13 @@ classes = [
     # convert
     LoNotBool, LoToInt, LoToFloat, LoToStr, LoToBool,
     # utils
-    LoLog, LoBeep, LoSwitcher, LoCounter, LoSetVideoProps, LoGetVideoProps, LoTexts,
+    LoLog, LoBeep, LoSwitcher, LoCounter,
 
     # system
     LoMkDir, LoReadDir, LoRmDir, LoFileExists, LoCountDirImages,
 
-    # test
-    LoTest
+    # params
+    LoSetProps, LoGetProps, LoSetVideoProps, LoGetVideoProps, LoTexts,
 ]
 
 

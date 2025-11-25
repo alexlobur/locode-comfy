@@ -1,3 +1,41 @@
+import {app} from "../../../../scripts/app.js"
+
+
+/**
+ *  Проход по списку всех узлов графа (по дереву)
+ * 
+ * @param {{}[]} nodes
+ * @param {?function(node, parentNodeIds)} callBack Колбэк функция при проходе каждого нода. Вернет нод и список id родителей
+ * @param {Number[]} parentNodeIds
+ * @returns 
+ */
+export function foreachNodes(nodes, callBack=null, parentNodeIds=[]){
+    const result = []
+    for (const node of nodes){
+        // сабграф
+        if(node.subgraph!=null){
+            result.push(
+                ...foreachNodes( node.subgraph._nodes, callBack, [...parentNodeIds, node.id] )
+            )
+            continue
+        }
+        // нод
+        callBack?.(node, parentNodeIds)
+        result.push(node)
+    }
+    return result
+
+}
+
+
+/**
+ *  Пытается перейти к узлу
+ */
+export function gotoNode(node, select = true){
+    if(!node) return
+    app.canvas.centerOnNode(node)
+    if(select) app.canvas.selectNode(node, false)
+}
 
 
 /**
@@ -12,30 +50,6 @@ export function listToNamedObject( namedList ){
         resut[item.name] = item
     }
     return resut
-}
-
-
-/**
- */
-export function clamp(val, min, max){
-    if (min != null && val < min) return min;
-    if (max != null && val > max) return max;
-    return val;
-}
-
-
-/**
- *  Создает уникальный UID
- *  @param {Number} length 
- */
-export function genUid(length = 8){
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    let uid = ""
-    for (let i = 0; i < length; i++){
-        const index = Math.floor(Math.random() * chars.length)
-        uid += chars[index]
-    }
-    return uid
 }
 
 
@@ -123,3 +137,5 @@ export function updateDynamicInputs(node, prefix="any"){
     node.addInput(`${prefix}${linkedInputs.length}`, "*",)
 
 }
+
+
