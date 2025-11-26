@@ -19,16 +19,11 @@ export function LoSetPropsExtends(proto){
     const _onNodeCreated = proto.onNodeCreated
     proto.onNodeCreated = function(){
         const ret = _onNodeCreated?.apply(this, arguments)
-        try {
-            // Начальные значения
-            this.title = NODE_CFG.title
 
-            // Параметры выхода
-            setObjectParams(this.outputs[0], NODE_CFG.outputProps)
-        } catch(e){
-            Logger.error(e, this)
-        }
-        Logger.debug(this)
+        this.title = NODE_CFG.title     // Начальные значения
+        this._addEmptyInput()           // Узел
+        setObjectParams(this.outputs[0], NODE_CFG.outputProps)  // Параметры выхода
+
         return ret
     }
 
@@ -39,12 +34,8 @@ export function LoSetPropsExtends(proto){
     const _onConfigure = proto.onConfigure
     proto.onConfigure = function(){
         const ret = _onConfigure?.apply(this, arguments)
-        try{
-            // Нормализация инпутов
-            this.normalizeInputs()
-        } catch(e){
-            Logger.error(e, this)
-        }
+        // Нормализация инпутов
+        this.normalizeInputs()
         return ret
     }
 
@@ -55,17 +46,38 @@ export function LoSetPropsExtends(proto){
     const _onConnectionsChange = proto.onConnectionsChange
     proto.onConnectionsChange = function (side, index, connected, link, slot){
         const ret = _onConnectionsChange?.apply(this, arguments)
+        // input
+        if(side==1){
+            this._onInputConnecionChange(index, connected, link, slot)
+        } else {
+        // output
+            vm.onSetOutputChanged(this, index, slot)
+        }
+        return ret
+    }
+
+
+    /**
+     *  Обработка изменения соединения инпута
+     *  @param {number} index - индекс инпута
+     *  @param {boolean} connected - соединен ли инпут
+     *  @param {object} link - ссылка на соединение
+     *  @param {object} input - инпут
+     */
+    proto._onInputConnecionChange = function(index, connected, link, input){
         setTimeout(()=>{ // задержка, чтобы успели обновиться слоты
 
             // входы
-            if(side==1){
-                this.normalizeInputs()
-                // оповещение об изменении
-                vm.onSetInputChanged(this, index, slot)
+            if(connected && link){
+                const originNode = app.graph.getNodeById(link.origin_id)
+                this.inputs[index].name = originNode.outputs[link.origin_slot].type
             }
+            this.normalizeInputs()
+
+            // оповещение об изменении
+            vm.onSetInputChanged(this, index, input)
 
         }, 10)
-        return ret
     }
 
 
@@ -100,20 +112,16 @@ export function LoSetPropsExtends(proto){
             index++
         }
         // Добавление свободного
+        this._addEmptyInput()
+    }
+
+
+    /**
+     *  Типовой пустой инпут
+     */
+    proto._addEmptyInput = function(){
         this.addInput(`${NODE_CFG.inputPrefix}${this.inputs.length}`, "*",)
     }
 
 }
 
-
-
-
-
-function override(protoFn, fn){
-    const _protoFn = protoFn
-    protoFn = function(){
-        const ret = _protoFn?.apply(this, arguments)
-        fn()
-        return ret
-    }
-}

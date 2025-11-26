@@ -58,7 +58,8 @@ GetSetProps.events.onAny( (e, d)=> Logger.debug(e, d) )
     + onDropItem : DOM item dropped over the node
     + onDropFile : file dropped over the node
     + onConnectInput : if returns false the incoming connection will be canceled
-    + onConnectionsChange : a connection changed (new one or removed) (NodeSlotType.INPUT or NodeSlotType.OUTPUT, slot, true if connected, link_info, input_info )
+    + onConnectionsChange : a connection changed (new one or removed)
+        (NodeSlotType.INPUT or NodeSlotType.OUTPUT, slot, true if connected, link_info, input_info )
     + onAction: action slot triggered
     + getExtraMenuOptions: to add option to context menu
 

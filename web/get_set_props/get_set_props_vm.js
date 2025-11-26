@@ -33,9 +33,27 @@ export const _CFG = {
 class _GetSetPropsVM{
     events = new EventEmitter()
 
+
     onSetInputChanged(node, index, input){
-        this.events.emit("input_changed", { node, index, input })
+        this.events.emit("set_input_changed", { node, index, input })
     }
+
+
+    onSetOutputChanged(node, index, input){
+        this.events.emit("set_output_changed", { node, index, input })
+    }
+
+
+    /**
+	 *	Выдает список инпутов рефера, без учета последнего
+	 */
+    getReferActiveInputs(referNode){
+		if(!referNode) return null
+		// Только один инпут
+		if(referNode.inputs.length<=1) return []
+		// Активные инпуты
+		return referNode.inputs.slice(0, referNode.inputs.length-1)
+	}
 
 
     /**
@@ -55,16 +73,27 @@ class _GetSetPropsVM{
 	}
 
 
-	/**
-	 *	Выдает список инпутов рефера, без учета последнего
-	 */
-    getReferActiveInputs(referNode){
-		if(!referNode) return null
-		// Только один инпут
-		if(referNode.inputs.length<=1) return []
-		// Активные инпуты
-		return referNode.inputs.slice(0, referNode.inputs.length-1)
-	}
+    /**
+     *  Ищет все узлы геттера по дереву ссылок, начиная с текущего узла
+     *
+     *  @param {*} setNode
+     *  @return {*[]} getNodes
+     */
+    findLinkedGetNodes(setNode){
+        const link = setNode.output[0].link
+    }
+
+
+    /**
+     *  Ищет все узлы сеттера по дереву ссылок, начиная с текущего узла
+     *
+     *  @param {*} getNode
+     *  @return {*[]} setNodes
+     */
+    findLinkedSetNodes(getNode){
+        const link = getNode.inputs[0].link
+    }
+
 
 
 }
