@@ -31,7 +31,7 @@ Generate random Bool value
         }
 
     RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("boolean",)
+    RETURN_NAMES = ("bool",)
     FUNCTION = "execute"
 
 

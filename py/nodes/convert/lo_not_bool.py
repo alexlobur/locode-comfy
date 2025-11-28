@@ -17,6 +17,8 @@ Returns inverted Bool value
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+    DEPRECATED = True
+
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return True

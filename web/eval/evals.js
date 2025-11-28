@@ -1,5 +1,5 @@
 import {app} from "../../../scripts/app.js"
-import {updateDynamicInputs} from "../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeNodeInputs} from "../.core/utils/nodes_utils.js"
 import {InputsLabelsWidget} from "../.core/widgets/InputsLabelsWidget.js"
 
 
@@ -7,6 +7,8 @@ import {InputsLabelsWidget} from "../.core/widgets/InputsLabelsWidget.js"
 const NODE_CFG = {
     type:           "LoEvals",
     extName:        "locode.LoEvals",
+    inputPrefix:    "x",
+    applyDelay:     100,
 }
 
 
@@ -20,8 +22,6 @@ app.registerExtension({
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeType.comfyClass !== NODE_CFG.type) return
 
-        const INPUTS_PREFIX = nodeData.input.hidden['inputs_prefix']??"a"
-
         //
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
@@ -29,10 +29,10 @@ app.registerExtension({
             const ret = onNodeCreated?.apply(this, arguments)
 
             // добавление скрытого виджета для сбора меток
-            this.addCustomWidget(new InputsLabelsWidget(this, "labels_of_vars", INPUTS_PREFIX ))
-            // Обновление динамических инпутов
-            updateDynamicInputs(this, INPUTS_PREFIX)
+            this.addCustomWidget(new InputsLabelsWidget(this, "labels_of_vars", NODE_CFG.inputPrefix ))
 
+            // Обновление динамических инпутов
+            _normalizeInputs(this)
             return ret
         }
 
@@ -42,11 +42,19 @@ app.registerExtension({
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output) {
             const ret = originalOnConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>updateDynamicInputs(this, INPUTS_PREFIX), 10 )
+            setTimeout( ()=>_normalizeInputs(this), NODE_CFG.applyDelay )
             return ret
         }
 
     }
 })
 
+
+function _normalizeInputs(node){
+    normalizeNodeInputs( node, { addDefaultEmptyInput: false })
+    addEmptyNodeInput( node, {
+        prefix: NODE_CFG.inputPrefix,
+        label: NODE_CFG.inputPrefix+node.inputs.length
+    })
+}
 

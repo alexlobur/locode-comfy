@@ -38,7 +38,6 @@ export const LO_NODES_DEFAULTS = {
     "LoReplaceVars"     : LO_COLORS_DEF.basic,
     "LoReplacers"       : LO_COLORS_DEF.basic,
     "LoReplacersApply"  : LO_COLORS_DEF.basic,
-    "LoReplaceAny"      : LO_COLORS_DEF.basic,
 
     // lists
     "LoSetList"     : LO_COLORS_DEF.basic,
@@ -61,5 +60,65 @@ export const LO_NODES_DEFAULTS = {
     "LoGet"         : { ...LO_COLORS_DEF.params, shape: 1 },
     "LoSetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
     "LoGetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
+
+}
+
+
+/**
+ *  Переопределение границы минимальной ширины узла (computeSize)
+ */
+export const LO_NODES_MIN_WIDTH_OVERRIDES = {
+
+    // misc
+    // "LoTexts"           : 140,
+
+    // calc
+    "LoEvals"       : 200,
+    "LoCompareNum"  : 200,
+    "LoRandomNum"   : 200,
+    "LoRandomBool"  : 200,
+    "LoNotBool"     : 140,
+    "LoIsEmpty"     : 140,
+
+    // utils
+    "LoSwitcher"    : 180,
+    "LoCounter"     : 180,
+    "LoLog"         : 180,
+    "LoBeep"        : 180,
+
+    // convert
+    "LoToInt"       : 140,
+    "LoToStr"       : 140,
+    "LoToFloat"     : 140,
+    "LoToBool"      : 140,
+
+    // replacers
+    "LoReplaceVars"     : 200,
+    "LoReplacers"       : 200,
+    // "LoReplacersApply"  : 140,
+
+    // lists
+    "LoSetList"     : 140,
+    "LoFromList"    : 200,
+    "LoStrList"     : 140,
+    "LoNumList"     : 140,
+    "LoListLen"     : 140,
+    "LoListJoin"    : 140,
+    "LoListsMerge"  : 200,
+
+    // system
+    "LoMkDir"           : 200,
+    "LoRmDir"           : 200,
+    "LoReadDir"         : 200,
+    "LoFileExists"      : 200,
+    "LoCountDirImages"  : 200,
+
+    // props
+    "LoSet"             : 140,
+    "LoGet"             : 140,
+    "LoSetProps"        : 160,
+    "LoGetProps"        : 160,
+    "LoGetVideoProps"   : 200,
+    "LoSetVideoProps"   : 200,
 
 }

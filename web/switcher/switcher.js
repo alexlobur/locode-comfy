@@ -1,5 +1,5 @@
 import {app} from "../../../scripts/app.js"
-import {updateDynamicInputs} from "../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeNodeInputs} from "../.core/utils/nodes_utils.js"
 
 
 // Конфиг узла
@@ -7,6 +7,7 @@ const NODE_CFG = {
     type:           "LoSwitcher",
     extName:        "locode.LoSwitcher",
     inputPrefix:    "any",
+    applyDelay:     100,
 }
 
 
@@ -25,7 +26,7 @@ app.registerExtension({
         const onNodeCreated = nodeType.prototype.onNodeCreated
         nodeType.prototype.onNodeCreated = function(){
             const ret = onNodeCreated?.apply(this, arguments)
-            updateDynamicInputs(this, NODE_CFG.inputPrefix)
+            _normalizeInputs(this)
             return ret
         }
 
@@ -35,10 +36,19 @@ app.registerExtension({
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output) {
             const ret = originalOnConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>updateDynamicInputs(this, NODE_CFG.inputPrefix), 10 )
+            setTimeout( ()=>_normalizeInputs(this), NODE_CFG.applyDelay )
             return ret
         }
 
     }
 })
+
+
+function _normalizeInputs(node){
+    normalizeNodeInputs(node, { addDefaultEmptyInput: false })
+    addEmptyNodeInput( node, {
+        prefix: NODE_CFG.inputPrefix,
+        label: NODE_CFG.inputPrefix+node.inputs.length
+    })
+}
 

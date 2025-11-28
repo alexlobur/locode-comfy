@@ -147,10 +147,11 @@ export function updateDynamicInputs(node, prefix="any"){
  *  Удаление пустых, добавление свободного
  * 
  *  @param {LGraphNode} node 
- *  @param {(node: LGraphNode, index: number, input: INodeInputSlot)=>void} onInputChanged - функция для обработки изменений
+ *  @param {(node, index, input)=>void} onLabelChanged - функция для обработки изменений Label
+ *  @param {boolean} addDefaultEmptyInput - добавлять пустой инпут в конец
  *  @returns {void}
  */
-export function normalizeNodeInputs(node, { onInputChanged }={}){
+export function normalizeNodeInputs(node, { onLabelChanged=null, addDefaultEmptyInput=true }={}){
 
     // удаление инпутов без соединения
     node.inputs = node.inputs.filter( input => input.isConnected )
@@ -165,14 +166,16 @@ export function normalizeNodeInputs(node, { onInputChanged }={}){
             input.type = originNode?.outputs[link.origin_slot].type??"*"
         }
         // вешаем слушатель на label
-        watchSlotLabel( input, {
-                onChanged: (input) => onInputChanged?.(node, index, input)
-        })
+        if(onLabelChanged){
+            watchSlotLabel( input, {
+                onChanged: (input) => onLabelChanged?.(node, index, input)
+            })
+        }
         index++
     }
 
-    // Добавление пустого инпута
-    addEmptyNodeInput(node)
+    // Добавление пустого инпута в конец
+    if(addDefaultEmptyInput) addEmptyNodeInput(node)
 
 }
 
@@ -187,7 +190,7 @@ export function normalizeNodeInputs(node, { onInputChanged }={}){
  *  @returns {INodeInputSlot}
  */
 export function addEmptyNodeInput(node, { prefix="any", type="*", label="*", options={} }={}){
-    const name = makeUniqueName( prefix, node.inputs.map( input => input.name ) )
+    const name = makeUniqueName( prefix, node.inputs.map( input => input.name ))
     return node.addInput(name, type, { label: label, ...options })
 }
 
@@ -211,4 +214,66 @@ export function watchSlotLabel(slot, { onSet, onChanged }={}){
         get(){ return slot._label }
     })
     return slot
+}
+
+
+/**
+ *  Переопределение присоединения к слоту.
+ * 
+ *  @param {LGraphNode} proto Узел или Прототип
+ *  @param {bool} setTypeFromOutput — заменить тип из выхода
+ *  @param {bool} setLabelFromOutput — заменить label из выхода
+ *  @param {(index, type, outputSlot, outputNode, outputIndex)=>boolean} callbackBefore — функция для обработки перед изменениями
+ *  @param {(index, type, outputSlot, outputNode, outputIndex)=>boolean} callbackAfter — функция для обработки после изменений
+ */
+export function overrideOnConnectInput( proto, {
+    callbackBefore = ()=>true,
+    callbackAfter = ()=>true,
+    setTypeFromOutput = true,
+    setLabelFromOutput = true,
+}){
+    proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
+
+        // Вызов callbackBefore
+        if(!callbackBefore.call(this, index, type, outputSlot, outputNode, outputIndex))
+            return false
+
+        // Получаем инпут слота
+        const input = this.inputs[index]
+
+        // Берем тип из output
+        if(setTypeFromOutput) input.type = type
+
+        // Замена Label
+        if(setLabelFromOutput){
+            input.label = makeUniqueName(
+                outputSlot.label || outputSlot.name,
+                this.inputs.map( item => item.label )
+            )
+        }
+
+        // Вызов callbackAfter
+        return callbackAfter.call(this, index, type, outputSlot, outputNode, outputIndex)
+
+    }
+
+}
+
+
+
+
+/**
+ *  Переопределение границы минимальной ширины узла (computeSize).
+ * 
+ *  @param {LGraphNode} proto
+ *  @param {number} minWidth
+ *  @returns {void}
+ */
+export function overrideComputeSizeMinWidth( proto, minWidth=140 ){
+    const _computeSize = proto.computeSize
+    proto.computeSize = function(){
+        const ret = _computeSize?.apply(this, arguments)
+        ret[0] = Math.min(minWidth, ret[0])
+        return ret
+    }
 }

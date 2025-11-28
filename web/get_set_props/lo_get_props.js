@@ -100,17 +100,6 @@ export function LoGetPropsExtends(proto){
     }
 
 
-	/**
-     *  Переопределение computeSize
-     */
-    const _computeSize = proto.computeSize
-    proto.computeSize = function(){
-        const ret = _computeSize?.apply(this, arguments)
-        ret[0] = NODE_CFG.minWidth
-        return ret
-    }
-
-
 	/* METHODS */
 
 

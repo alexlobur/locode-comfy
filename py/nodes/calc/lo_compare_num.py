@@ -28,7 +28,7 @@ Compare two values. Values will be converted to number.
 
     # Один выход (логическое значение)
     RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("BOOLEAN",)
+    RETURN_NAMES = ("bool",)
     FUNCTION = "compare"
 
 

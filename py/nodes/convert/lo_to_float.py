@@ -27,7 +27,7 @@ Converts any type to Float number.
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "any_type": (any_type, ),
+                "any": (any_type, ),
             },
         }
 

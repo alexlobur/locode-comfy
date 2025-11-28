@@ -28,7 +28,7 @@ Converts any type to a string.
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "any_type": (any_type, ),
+                "any": (any_type, ),
             },
         }
 

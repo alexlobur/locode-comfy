@@ -26,7 +26,7 @@ Check value of any type for Empty.
         }
 
     RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("BOOLEAN",)
+    RETURN_NAMES = ("bool",)
     FUNCTION = "execute"
 
     def execute(self, any):

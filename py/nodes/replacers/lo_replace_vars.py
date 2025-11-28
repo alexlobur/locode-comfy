@@ -27,20 +27,17 @@ You can redefine the parameter (input label) name using the context menu > "Rena
                 "string": ("STRING", {"default": "Hello, {var0}!", "multiline": True }),
             },
             "hidden": {
-                "labels_of_vars": ("DICT", ),
-                "inputs_prefix": "var"
+                "labels_of_vars": ("DICT", )
             }
         }
 
     RETURN_TYPES = ( "STRING", )
-    RETURN_NAMES = ("STRING",)
+    RETURN_NAMES = ("string", )
     FUNCTION = "execute"
 
 
     def execute(self, string: str, labels_of_vars: dict, **kwargs):
         result = string
-
-        print(string, labels_of_vars, kwargs.items())
 
         # производим замену значений
         for key, value in kwargs.items():

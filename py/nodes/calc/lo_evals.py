@@ -23,20 +23,17 @@ You can redefine the variable name (input label) using the context menu > "Renam
                 "expression": ("STRING", {"default": "x0 + x1", "multiline" : True }),
             },
             "hidden": {
-                "labels_of_vars": ("DICT", ),
-                "inputs_prefix": "x"
+                "labels_of_vars": ("DICT", )
             }
         }
 
     RETURN_TYPES = ("INT", "FLOAT", "BOOLEAN")
-    RETURN_NAMES = ("INT", "FLOAT", "BOOL")
+    RETURN_NAMES = ("int", "float", "bool")
     FUNCTION = "execute"
 
 
     def execute(self, expression: str, labels_of_vars: dict, **kwargs):
-
-        print(expression, labels_of_vars, kwargs.items())
-
+        # print(expression, labels_of_vars, kwargs.items())
         try:
 
             # Преобразуем переменные в числа где возможно

@@ -1,9 +1,10 @@
+import Logger from "./.core/utils/Logger.js"
 import {app} from "../../../scripts/app.js"
 import coreInit from "./.core/core_init.js"
 import {updateDeprecatedBanner} from "./.core/ui/deprecated_banner/deprecated_banner.js"
-import Logger from "./.core/utils/Logger.js"
+import { overrideComputeSizeMinWidth } from "./.core/utils/nodes_utils.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
-import { LO_NODES_DEFAULTS } from "./config.js"
+import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
 
 
 // Инициализиция ядра
@@ -31,6 +32,12 @@ app.registerExtension({
 
         // Установка начальных значений
         setLocodeDefaults(nodeType)
+
+        // Переопределение границы минимальной ширины узла (computeSize)
+        // Не сработает с виртуальными нодами - для них нужно переопределять computeSize напрямую
+        if(LO_NODES_MIN_WIDTH_OVERRIDES[nodeType.comfyClass]){
+            overrideComputeSizeMinWidth(nodeType.prototype, LO_NODES_MIN_WIDTH_OVERRIDES[nodeType.comfyClass])
+        }
 
     },
 

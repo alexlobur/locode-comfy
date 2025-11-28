@@ -28,7 +28,7 @@ Converts any type to an Integer.
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "any_type": (any_type, ),
+                "any": (any_type, ),
                 "method": (["floor", "ceil", "round"], {"default": "floor"}),
             },
         }
