@@ -44,7 +44,7 @@ Converts a String into a list of Strings.
         delimiter = delimiter.replace("\\n", "\n").replace("\\t", "\t")
 
         # Разделяем строку на строки
-        strings = string.split(delimiter)
+        strings = string.strip().split(delimiter)
 
         # Убираем пустые строки
         # strings = [string for string in strings if string.strip()]

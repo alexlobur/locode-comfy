@@ -1,5 +1,5 @@
 import {app} from "../../../scripts/app.js"
-import {updateDynamicInputs} from "../.core/utils/nodes_utils.js"
+import {normalizeNodeInputs} from "../.core/utils/nodes_utils.js"
 
 // Конфиг узла
 const NODE_CFG = {
@@ -18,8 +18,6 @@ app.registerExtension({
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeType.comfyClass !== NODE_CFG.type) return
 
-        const INPUTS_PREFIX = nodeData.input.hidden['inputs_prefix']??"any"
-
         //
         // Создание узла и инициализация виджета
         const onNodeCreated = nodeType.prototype.onNodeCreated
@@ -27,7 +25,7 @@ app.registerExtension({
             const ret = onNodeCreated?.apply(this, arguments)
 
             // Обновление динамических инпутов
-            updateDynamicInputs(this, INPUTS_PREFIX)
+            normalizeNodeInputs(this)
 
             return ret
         }
@@ -38,7 +36,7 @@ app.registerExtension({
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output){
             const ret = _onConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>updateDynamicInputs(this, INPUTS_PREFIX), 10 )
+            setTimeout( ()=>normalizeNodeInputs(this), 10 )
             return ret
         }
 

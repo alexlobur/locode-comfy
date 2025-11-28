@@ -47,6 +47,7 @@ export const LO_NODES_DEFAULTS = {
     "LoNumList"     : LO_COLORS_DEF.basic,
     "LoListLen"     : LO_COLORS_DEF.basic,
     "LoListJoin"    : LO_COLORS_DEF.basic,
+    "LoListsMerge"  : LO_COLORS_DEF.basic,
 
     // system
     "LoMkDir"           : LO_COLORS_DEF.system,
@@ -56,9 +57,9 @@ export const LO_NODES_DEFAULTS = {
     "LoCountDirImages"  : LO_COLORS_DEF.system,
 
     // props
-    "LoSet"         : LO_COLORS_DEF.params,
-    "LoGet"         : LO_COLORS_DEF.params,
-    "LoSetProps"    : LO_COLORS_DEF.params,
-    "LoGetProps"    : LO_COLORS_DEF.params,
+    "LoSet"         : { ...LO_COLORS_DEF.params, shape: 1 },
+    "LoGet"         : { ...LO_COLORS_DEF.params, shape: 1 },
+    "LoSetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
+    "LoGetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
 
 }

@@ -6,23 +6,26 @@ export const _CFG = {
     extName:        "locode.GetSetProps",
     setNode: {
         type:           "LoSetProps",
-        title:          "Set:",
+        // title:          "Set:",
         inputPrefix:    "in",
         outputProps: {
             color_on:   "#FFF",
             color_off:  "#000",
-        }
+            name:       "props",
+        },
+        minWidth:       140
     },
     getNode: {
         type:           "LoGetProps",
-        title:          "Get:",
+        // title:          "Get:",
         outputPrefix:   "out",
         inputProps: {
             color_on:   "#FFF",
             color_off:  "#000",
-        }
+            label:      "props"
+        },
+        minWidth:       140
     },
-    
 }
 
 
@@ -33,71 +36,76 @@ export const _CFG = {
 class _GetSetPropsVM{
     events = new EventEmitter()
 
-
-    onSetInputChanged(node, index, input){
-        this.events.emit("set_input_changed", { node, index, input })
-    }
-
-
-    onSetOutputChanged(node, index, input){
-        this.events.emit("set_output_changed", { node, index, input })
-    }
-
-
-    /**
-	 *	Выдает список инпутов рефера, без учета последнего
-	 */
-    getReferActiveInputs(referNode){
-		if(!referNode) return null
-		// Только один инпут
-		if(referNode.inputs.length<=1) return []
-		// Активные инпуты
-		return referNode.inputs.slice(0, referNode.inputs.length-1)
-	}
+    // SETTER EVENTS
+    setterCreated = (node) =>
+        this.events.emit("setter_created", { node })
+    setterConfigured = (node) =>
+        this.events.emit("setter_configured", { node })
+    setterInputChanged = (node, index, input) =>
+        this.events.emit("setter_input_changed", { node, index, input })
+    setterOutputConnectChanged = (node, output) =>
+        this.events.emit("setter_output_connect_changed", { node, output })
+    setterOutputRenamed = (node) =>
+        this.events.emit("setter_output_renamed", { node })
+    setterAfterRemoved = (node) =>
+        this.events.emit("setter_removed", { node })
 
 
     /**
-	 *	Валидация линков на соответствие типов
-	 *	@param {*} output 
-	 */
-     validateOutputLink = function(output){
-		if(!output.links) return
-		const badLinks = []
-		const links = output.links.forEach( linkId => {
-			const link = app.graph.getLink(linkId)
-			if(link.type!=output.type){
-				badLinks.push(link)
-			}
-		})
-		return badLinks
-	}
-
-
-    /**
-     *  Ищет все узлы геттера по дереву ссылок, начиная с текущего узла
+     *  Ищет все узлы сеттера по дереву ссылок, начиная с parentNode
      *
-     *  @param {*} setNode
-     *  @return {*[]} getNodes
+     *  @param {{}} parentNode
+     *  @return {{}[]} setters
      */
-    findLinkedGetNodes(setNode){
-        const link = setNode.output[0].link
+    findLinkedSetters(parentNode){
+        if (!parentNode || !Array.isArray(parentNode.inputs)) return []
+        
+        const skipTypes = [
+            "STRING", "INT", "FLOAT", "BOOLEAN",
+            "IMAGE", "MASK", "LATENT",
+            "LATENT_IMAGE", "LATENT_MASK", "LATENT_IMAGE_MASK",
+            "METADATA_RAW", "JSON"
+        ]
+
+        const result = []
+        const links = parentNode.inputs
+            .map(input => input?.link ? app.graph.getLink(input.link) : null)
+            .filter(link => !!link)
+            .filter(link => !skipTypes.includes(link.origin_type))
+
+            for (const link of links){
+            const node = app.graph.getNodeById(link.origin_id)
+            if (node.type == _CFG.setNode.type){
+                result.push(node)
+            } else {
+                result.push(...this.findLinkedSetters(node))
+            }
+        }
+         return result
     }
 
 
     /**
-     *  Ищет все узлы сеттера по дереву ссылок, начиная с текущего узла
-     *
-     *  @param {*} getNode
-     *  @return {*[]} setNodes
+     *  Получение всех cеттеров
+     *  @returns
      */
-    findLinkedSetNodes(getNode){
-        const link = getNode.inputs[0].link
+    findSetters(){
+		return app.graph.findNodesByType(_CFG.setNode.type)
     }
 
 
+    /**
+     *	Выдает список инпутов сеттера, без последнего
+     */
+    getSetterActiveInputs(setterNode){
+        if(!setterNode) return []
+        // Только один инпут
+        if(setterNode.inputs.length<=1) return []
+        // Активные инпуты
+        return setterNode.inputs.slice(0, setterNode.inputs.length-1)
+    }
 
 }
-
 
 const GetSetPropsVM = new _GetSetPropsVM()
 export default GetSetPropsVM

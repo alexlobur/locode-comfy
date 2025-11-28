@@ -51,7 +51,7 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
 
 
     RETURN_TYPES = ("STRING", "STRING", "LIST")
-    RETURN_NAMES = ("ACTIVE_STRING", "INDEX_STRING", "STRINGS_LIST")
+    RETURN_NAMES = ("ACTIVE_STRING", "INDEX_STRING", "LIST")
     FUNCTION = "execute"
 
 

@@ -1,7 +1,13 @@
-import {app} from "../../../scripts/app.js"
 import Logger from "../.core/utils/Logger.js"
-import {setObjectParams} from "../.core/utils/base_utils.js"
-import GetSetPropsVM, { _CFG } from "./get_set_props_vm.js"
+import {app} from "../../../scripts/app.js"
+import {setObjectParams, makeUniqueName} from "../.core/utils/base_utils.js"
+import {HiddenWidget} from "../.core/widgets/HiddenWidget.js"
+import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
+import {addEmptyNodeInput, normalizeNodeInputs, watchSlotLabel} from "../.core/utils/nodes_utils.js"
+
+
+const VM = GetSetPropsVM
+const {setNode: NODE_CFG} = _CFG
 
 
 /**---
@@ -9,21 +15,35 @@ import GetSetPropsVM, { _CFG } from "./get_set_props_vm.js"
  *  Расширение прототипа
  */
 export function LoSetPropsExtends(proto){
-    const {setNode: NODE_CFG} = _CFG
-	const vm = GetSetPropsVM
 
+    // создаем сеттеры/геттеры для типа данных
+	Object.defineProperty( proto, "propsName", {
+		get() { return this.outputs[0]?.label??this.outputs[0]?.localized_name??null },
+	})
+
+
+    /* NODE EVENTS */
 
     /**
-     * Создание узла и инициализация виджета
+     *  Создание узла и инициализация виджета
      */
     const _onNodeCreated = proto.onNodeCreated
     proto.onNodeCreated = function(){
         const ret = _onNodeCreated?.apply(this, arguments)
 
-        this.title = NODE_CFG.title     // Начальные значения
-        this._addEmptyInput()           // Узел
-        setObjectParams(this.outputs[0], NODE_CFG.outputProps)  // Параметры выхода
+        // Начальные значения
+        this.title = NODE_CFG.title
+        // Добавление начального инпута
+        addEmptyNodeInput(this)
 
+        // Добавление виджета списка типов данных
+        this._typesWidget = createSetterTypesWidget(this)
+
+        // Параметры выхода
+        this._setOutputParams()
+
+        // оповещение об изменении
+        VM.setterCreated(this)
         return ret
     }
 
@@ -34,9 +54,32 @@ export function LoSetPropsExtends(proto){
     const _onConfigure = proto.onConfigure
     proto.onConfigure = function(){
         const ret = _onConfigure?.apply(this, arguments)
-        // Нормализация инпутов
-        this.normalizeInputs()
+
+        // Параметры выхода
+        this._setOutputParams()
+
+        // оповещение об изменении
+        VM.setterConfigured(this)
         return ret
+    }
+
+
+    /**
+     *  При присоединении
+     */
+    proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
+        const input = this.inputs[index]
+        input.type = type
+        input.label = makeUniqueName(
+            outputSlot.label || outputSlot.name,
+            this.inputs.map( item => item.label )
+        )
+        // нормализуем с задержкой после добавления линка
+        setTimeout(()=>{
+            normalizeNodeInputs(this, { onInputChanged: VM.setterInputChanged })
+            VM.setterInputChanged(this, index, input)
+        }, 100 )
+        return true
     }
 
 
@@ -48,80 +91,166 @@ export function LoSetPropsExtends(proto){
         const ret = _onConnectionsChange?.apply(this, arguments)
         // input
         if(side==1){
-            this._onInputConnecionChange(index, connected, link, slot)
+            if(!connected){
+                normalizeNodeInputs(this, { onInputChanged: VM.setterInputChanged })
+                VM.setterInputChanged(this, index, slot)    // оповещение об изменении
+            }
         } else {
         // output
-            vm.onSetOutputChanged(this, index, slot)
+            VM.setterOutputConnectChanged(this, slot)       // оповещение об изменении
         }
+
         return ret
     }
 
 
     /**
-     *  Обработка изменения соединения инпута
-     *  @param {number} index - индекс инпута
-     *  @param {boolean} connected - соединен ли инпут
-     *  @param {object} link - ссылка на соединение
-     *  @param {object} input - инпут
+     *  Удаление узла
      */
-    proto._onInputConnecionChange = function(index, connected, link, input){
-        setTimeout(()=>{ // задержка, чтобы успели обновиться слоты
+    const _onRemoved = proto.onRemoved
+    proto.onRemoved = function (side, index, connected, link, slot){
+        const ret = _onRemoved?.apply(this, arguments)
+        // вызываем с задержкой, чтобы узел успел удалиться из графа
+        setTimeout(()=> VM.setterAfterRemoved(this), 100)
+        return ret
+    }
 
-            // входы
-            if(connected && link){
-                const originNode = app.graph.getNodeById(link.origin_id)
-                this.inputs[index].name = originNode.outputs[link.origin_slot].type
+
+
+    /**
+     *  Клонирование узла
+     */
+    const _clone = proto.clone
+    proto.clone = function (){
+        const cloned = _clone?.apply(this, arguments)
+        if(cloned){
+            normalizeNodeInputs(cloned, { onInputChanged: VM.setterInputChanged })
+            cloned.size = cloned.computeSize()
+            if(cloned.outputs[0].label){
+                cloned.outputs[0].label = makeUniqueName( this.outputs[0].label, VM.findSetters().map( item => item.propsName ) )
             }
-            this.normalizeInputs()
+            return cloned
+        }
+    }
+
+
+    /**
+     *  Переопределение computeSize
+     */
+    const _computeSize = proto.computeSize
+    proto.computeSize = function(...args){
+        const ret = _computeSize?.apply(this, arguments)
+        ret[0] = NODE_CFG.minWidth
+        return ret
+    }
+
+
+    /* METHODS */
+
+
+    /**
+     *  Устанавливает параметры инпута на основе соединения
+     */
+    proto._setInputFromConnection = function(index, link=null){
+
+        const input = this.inputs[index]
+        link = link ?? app.graph.getLink(input.link)
+
+        const originNode = app.graph.getNodeById(link.origin_id)
+        .name = makeUniqueName(
+            originNode.outputs[link.origin_slot].type,
+            this.inputs.map( item => item.name ),
+            {
+                excludeIndex: index 
+            }
+        )
+    }
+
+
+    /**
+     *  Обновление параметров выхода
+     */
+    proto._setOutputParams = function (){
+        // отложенно, т.к. иначе - неверный id
+        setTimeout(() => {
+            setObjectParams(this.outputs[0], {
+                ...NODE_CFG.outputProps,
+                localized_name: `${NODE_CFG.outputProps.name}_${this.id}`,
+            })
+
+            // вешаем слушатель на label
+            watchSlotLabel( this.outputs[0], {
+                onChanged: (_) => VM.setterOutputRenamed(this),
+                onSet: (value) => {
+                    return makeUniqueName(value, VM.findSetters().map( item => item.propsName ))
+                }
+            })
 
             // оповещение об изменении
-            vm.onSetInputChanged(this, index, input)
+            VM.setterOutputRenamed(this)
 
-        }, 10)
+        }, 100)
     }
+
 
 
     /**
-     *  Нормализация Инпутов
+     *	Дополнительные опции
      */
-    proto.normalizeInputs = function(){
-        const that = this
+     proto.getExtraMenuOptions = function(_, options){
+		// Опции будут наверху
+		options.unshift(
+			{
+				content: "Lo:SetProps > Create Getter",
+                callback: () => {
+                    const getter = LiteGraph.createNode("LoGetProps")
+                    if (!getter) return
 
-        // Нормализация инпутов - удаление пустых, добавление свободного
-        this.inputs = this.inputs.filter( input => input.isConnected )
+                    // ставим рядом с текущим узлом
+                    getter.pos = [this.pos[0] + this.size[0] + 50, this.pos[1]]
+                    app.graph.add(getter)
 
-        // Обновление типов
-        let index=0
-        for (const input of this.inputs){
-            const link = app.graph.getLink(input.link)
-            const originNode = app.graph.getNodeById(link.origin_id)
-            input.type = originNode.outputs[link.origin_slot].type
+                    // Установка текущего сеттера
+                    getter.updateSetterId(this.id)
 
-            // создаем get/set для label
-            if(!input._label){
-                input._label = input.label
-                Object.defineProperty( input, "label", {
-                    set(value) {
-                        this._label = value
-                        // оповещение об изменении
-                        vm.onSetInputChanged(that, index, input)
-                    },
-                    get(){ return this._label }
-                })
-            }
-            index++
-        }
-        // Добавление свободного
-        this._addEmptyInput()
-    }
+                    // Создание ссылки между выходом сеттера и входом геттера
+                    try{
+                        this.connect(0, getter, 0)
+                    } catch(e){
+                        Logger.error(e, this)
+                    }
 
 
-    /**
-     *  Типовой пустой инпут
-     */
-    proto._addEmptyInput = function(){
-        this.addInput(`${NODE_CFG.inputPrefix}${this.inputs.length}`, "*",)
-    }
+                    app.graph.setDirtyCanvas(true, true)
+                },
+			},
+			null
+		)
+	}
 
+}
+
+
+/*
+------
+
+    WIDGETS
+
+------
+*/
+
+
+/**
+ *	Создает скрытый виджет списка типов данных.
+ *	@param {*} node 
+ */
+ function createSetterTypesWidget(node){
+	const widget = node.addCustomWidget(
+		new HiddenWidget( node, "props_types", {
+			type: "list",
+			getValue: () => node.inputs.map(input => input.type),
+		})
+	)
+	return widget
 }
 

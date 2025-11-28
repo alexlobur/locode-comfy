@@ -41,7 +41,7 @@ The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items
 
     # проверяем, что есть хотя бы одно значение
     if values_count == 0:
-        raise ValueError("No values provided")
+      raise ValueError("No values provided")
 
     # возвращаем значение из списка по индексу
     return (values[index_seed % values_count],)

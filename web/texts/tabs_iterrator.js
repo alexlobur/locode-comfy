@@ -103,6 +103,17 @@ export class TabsIterrator extends ChangeNotifier {
 
 
     /**
+     *  Сброс до начального состояния
+     */
+    reset(){
+        this.#tabs=[ new TabData() ]
+        this.#setActiveIndex(0)
+        this.notifyListeners(new TabsIterratorEvent("reset"))
+        return this
+    }
+
+
+    /**
      *  Уставновка активного индекса и приведение к границам
      */
     #setActiveIndex(index=null){

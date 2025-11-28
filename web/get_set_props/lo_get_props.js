@@ -1,7 +1,12 @@
 import {app} from "../../../scripts/app.js"
 import Logger from "../.core/utils/Logger.js"
 import {setObjectParams} from "../.core/utils/base_utils.js"
-import GetSetPropsVM, { _CFG } from "./get_set_props_vm.js"
+import {HiddenWidget} from "../.core/widgets/HiddenWidget.js"
+import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
+
+
+const VM = GetSetPropsVM
+const {getNode: NODE_CFG} = _CFG
 
 
 /**---
@@ -9,15 +14,18 @@ import GetSetPropsVM, { _CFG } from "./get_set_props_vm.js"
  *  Расширение прототипа
  */
 export function LoGetPropsExtends(proto){
-	const {getNode: NODE_CFG} = _CFG
-	const vm = GetSetPropsVM
 
-
-	// создаем сеттеры/геттеры для referId
-	Object.defineProperty( proto, "referId", {
-		get() { return this.properties.referId },
+	// создаем сеттеры/геттеры для setterId
+	Object.defineProperty( proto, "setterId", {
+		get() { return this.properties?.setterId??-1 },
+		set(value) {
+			this.properties = this.properties || {}
+			this.properties.setterId = value
+		}
 	})
 
+
+	/* NODE EVENTS */
 
 	/**
      * Создание узла и инициализация виджета
@@ -26,18 +34,28 @@ export function LoGetPropsExtends(proto){
     proto.onNodeCreated = function(){
         const ret = _onNodeCreated?.apply(this, arguments)
 		try{
+
 			// Начальные значения
 			this.title = NODE_CFG.title
 			this.serialize_widgets = true
 
+			// Виджеты
+			this._setterWidget = createSetterSelectWidget( this, (s) => this.updateSetterId(s))
+			this._typesWidget = createGetterTypesWidget(this)
+
 			// Свойства
-			this.properties = this.properties || {}
-			this.properties.referId = ""
+			this.setterId = -1
 
-			// Параметры входа
-			setObjectParams(this.inputs[0], NODE_CFG.inputProps)
+			// Начальные параметры входа
+			this._setInputParams()
 
-		} catch(e){
+			// Начальные выходы
+			this._updateOutputsFromRefer()
+
+			// слушатели событий
+			this._setEventsHandlers()
+
+		} catch(e) {
 			Logger.error(e, this)
 		}
         return ret
@@ -51,35 +69,86 @@ export function LoGetPropsExtends(proto){
     proto.onConfigure = function(){
         const ret = _onConfigure?.apply(this, arguments)
         try{
+
 			// Нормализация выходов
-			this.normalizeOutputs()
-        } catch(e){
+			this._updateOutputsFromRefer()
+
+		} catch(e) {
             Logger.error(e, this)
         }
         return ret
     }
 
 
+    /**
+     *  При присоединении
+     */
+    proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
+		// проверка типа
+		if(type == this.inputs[index].type){
+			this.updateSetterId(outputNode.id)
+			return true
+		}
+		// если тип "*", поиск подходящих узлов по дереву
+		const setters = VM.findLinkedSetters(outputNode)
+		Logger.debug("findLinkedSetters", setters)
+		if(setters.length>0){
+			this.updateSetterId(setters[0].id)
+			return true
+		}
+		return false
+    }
+
+
 	/**
-	 *	Ищет рефер по ссылкам
+     *  Переопределение computeSize
+     */
+    const _computeSize = proto.computeSize
+    proto.computeSize = function(){
+        const ret = _computeSize?.apply(this, arguments)
+        ret[0] = NODE_CFG.minWidth
+        return ret
+    }
+
+
+	/* METHODS */
+
+
+	/**
+	 *	Установка слушателей settera
 	 */
-	proto.findReferNode = function(){
-		// TODO: ....
+	proto._setEventsHandlers = function(){
+		VM.events.on("setter_created",			()=> this._setterWidget._updateValues() )
+		VM.events.on("setter_configured",		()=> this._setterWidget._updateValues() )
+		VM.events.on( "setter_output_renamed",	()=> this.updateSetterId(this.setterId) )
+		VM.events.on("setter_removed",			()=> this._setterWidget._updateValues() )
+		VM.events.on("setter_input_changed",	()=> this._updateOutputsFromRefer(true) )
+		VM.events.on("setter_output_connect_changed", ()=>{})
 	}
 
 
 	/**
-	 *	Обновление выходов на основе узла-рефера
+	 *	Обновление установки значения setterId
+	 *	@param {?number} setterId ID сеттера
 	 */
-	proto.updateOutputsFromRefer = function(fitSize=false){
-		const referInputs = vm.getReferActiveInputs(app.graph.getNodeById(this.referId))
-		if(!referInputs) return
+	proto.updateSetterId = function(setterId){
+		this.setterId = setterId??-1
+		this._setterWidget._updateValues(this.setterId)
+		this._updateOutputsFromRefer(true)
+		this._setInputParams()
+		this.setDirtyCanvas(true, true)
+	}
 
-		const badLinks = []
+
+	/**
+	 *	Обновление выходов на основе узла-сеттера
+	 */
+	proto._updateOutputsFromRefer = function(fitSize=false){
+		const setterInputs = VM.getSetterActiveInputs(app.graph.getNodeById(this.setterId))
 
 		// обновление выходов
-		for (let index = 0; index < referInputs.length; index++){
-			const input = referInputs[index]
+		for (let index = 0; index < setterInputs.length; index++){
+			const input = setterInputs[index]
 
 			// создание / обновление выхода
 			const output = !this.outputs[index]
@@ -87,62 +156,90 @@ export function LoGetPropsExtends(proto){
 				: this.outputs[index]
 			output.label = input.label || input.name
 			output.type = input.type
-
-			// Валидация линков
-			badLinks.push(vm.validateOutputLink(output))
 		}
 
 		// Удаление узлов, которые выходят за границы
-		while(this.outputs[referInputs.length]!=null){
-			this.removeOutput(referInputs.length)
+		while(this.outputs[setterInputs.length]!=null){
+			this.removeOutput(setterInputs.length)
 		}
-
-		// this.title = "Lo:Get > "+node.title.replace("Lo:Set", "")
-		// this.setDirtyCanvas(true, true)
 
 		if(fitSize) this.setSize(this.computeSize())
 	}
 
 
 	/**
-     *	Дополнительные опции
+     *  Обновление параметров входа
      */
-	// proto.getExtraMenuOptions = function(_, options){
-	// 	// список LoSet нодов
-	// 	const setNodes = app.graph.findNodesByType(cfg.setNode.type)
-
-	// 	// Подменю
-	// 	const submenuOptions = setNodes.map( node => ({
-	// 		content: `${this.referId==node.id ? "&rArr; " : ""} #${node.id} ${node.title}`,
-	// 		callback: () => {
-	// 			this.setOutputsFromRefer(node)
-	// 		}
-	// 	}))
-	// 	submenuOptions.push({
-	// 		content: `None`,
-	// 		callback: () => {
-	// 			this.properties.referId = ""
-	// 			this.normalizeOutputs()
-	// 		}
-	// 	})
-
-	// 	// Опции будут наверху
-	// 	options.unshift(
-	// 		{
-	// 			content: "Lo:Get > Outputs From...",
-	// 			// callback: () => {},
-	// 			has_submenu: true,
-	// 			submenu: {
-	// 				title: "Set Outputs From:",
-	// 				options: submenuOptions
-	// 			},
-	// 		},
-	// 		{
-	// 			content: "Lo:Get > Update Outputs",
-	// 			callback: () => this.normalizeOutputs(),
-	// 		},
-	// 		null
-	// 	)
-	// }
+    proto._setInputParams = function (){
+        // узел сеттера
+		const setter = app.graph.getNodeById(this.setterId)
+		const params = {
+			...NODE_CFG.inputProps,
+			label:	setter?.propsName??NODE_CFG.inputProps.label,
+		}
+		setObjectParams(this.inputs[0], params)
+    }
 
 }
+
+
+
+/*
+------
+
+    WIDGETS
+
+------
+*/
+
+
+/**
+ *	Создает виджет выбора типа данных
+ *
+ *	@param {LGraphNode} node
+ *	@param {(setterId: number, propsType: string)=>void} onSetValue Функция для установки значения
+ *	@returns {*}
+ */
+function createSetterSelectWidget(node, onSetValue){
+
+	// виджет выбора сеттера
+	const widget = node.addWidget( "combo", "props", "",
+		function(val){
+			onSetValue(this._values.get(val), val)
+		},
+		{ values: [] }
+	)
+
+	// обновление combo значений виджета
+	widget._updateValues = function(setterId=null){
+		const setters = VM.findSetters()
+		// сохраняем в узел пару тип -> id узла
+		this._values = new Map( setters.map( node => [ node.propsName, node.id ] ))
+		this.options.values = [...this._values.keys(), "..."]
+
+		// установка значения, если задан setterId
+		if(setterId){
+			this.value = setters.find( node => node.id==setterId )?.propsName??""
+		}
+		return this
+	}
+	return widget._updateValues()
+}
+
+
+/**
+ *	Создает скрытый виджет списка типов данных.
+ *	Должен передавать типы данных из сеттера.
+ *	@param {LGraphNode} node
+ *	@returns {*}
+ */
+ function createGetterTypesWidget(node){
+	const widget = node.addCustomWidget(
+		new HiddenWidget( node, "props_types", {
+			type: "list",
+			getValue: () => node.outputs.map(output => output.type),
+		})
+	)
+	return widget
+}
+

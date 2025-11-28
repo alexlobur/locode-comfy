@@ -44,6 +44,9 @@ class TextsWidget {
     #tabsBar
 
 
+    get disabledHidden(){ return this.#tabsIterrator.hideDisabled }
+
+
     /**
      * constructor
      * 
@@ -163,9 +166,14 @@ class TextsWidget {
     /**
      *  Вставка из Буфера
      */
-    pasteData = async() => {
+    pasteData = async(append=false) => {
         const data = JSON.parse(await clipboardRead())
-        this.#tabsIterrator.fromJson(data, true)
+        this.#tabsIterrator.fromJson(data, append)
+    }
+
+
+    clearData = () => {
+        this.#tabsIterrator.reset()
     }
 
 
@@ -275,25 +283,47 @@ app.registerExtension({
         const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions
         nodeType.prototype.getExtraMenuOptions = function(canvas, menu) {
             menu = menu ?? []
-            menu.push(...[
+            menu.unshift(...[
+                null,
                 {
-                    content: "Lo:Texts > Hide/Show Disabled",
-                    callback: this.__widget.toggleShowDisable
-                },{
-                    content: "Lo:Texts > Copy to Clipboard",
-                    callback: this.__widget.copyData
-                },{
-                    content: "Lo:Texts > Paste from Clipboard",
-                    callback: this.__widget.pasteData
-                },{
-                    content: "Lo:Texts > Save",
-                    callback: this.__widget.saveData
-                },{
-                    content: "Lo:Texts > Load",
-                    callback: ()=> this.__widget.loadData()
-                },{
-                    content: "Lo:Texts > Load & Append",
-                    callback: ()=> this.__widget.loadData(true)
+                    content: "Lo:Texts > ",
+                    has_submenu: true,
+                    submenu: {
+                        // title: "",
+                        options: [ 
+                            {
+                                content: `${this.__widget.disabledHidden ? "Show Disabled" : "Hide Disabled" }`,
+                                callback: this.__widget.toggleShowDisable
+                            },
+                            null,
+                            {
+                                content: "Copy to Clipboard",
+                                callback: this.__widget.copyData
+                            },{
+                                content: "Append from Clipboard",
+                                callback: () => this.__widget.pasteData(true)
+                            },{
+                                content: "Replace from Clipboard",
+                                callback: () => this.__widget.pasteData(false)
+                            },
+                            null,
+                            {
+                                content: "Save to File",
+                                callback: this.__widget.saveData
+                            },{
+                                content: "Append from File",
+                                callback: ()=> this.__widget.loadData(true)
+                            },{
+                                content: "Replace from File",
+                                callback: ()=> this.__widget.loadData(false)
+                            },
+                            null,
+                            {
+                                content: "Clear Data",
+                                callback: ()=> this.__widget.clearData()
+                            },
+                        ]
+                    }
                 },
                 null
         ])

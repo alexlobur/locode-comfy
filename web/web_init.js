@@ -117,7 +117,7 @@ function setContextMenu(nodeType){
         // Добавляем пункт меню
         options.push(...[
             {
-                content: "Lo: Node Colors",
+                content: "Lo: Node Colors (в разработке)",
                 callback: () => {
                     console.log("Выбран нод:", this.title, this.type)
                 }

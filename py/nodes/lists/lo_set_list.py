@@ -25,11 +25,7 @@ Converts any types into a list of any types.
 
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "hidden": {
-                "inputs_prefix": "any"
-            }
-        }
+        return {}
 
     RETURN_TYPES = ("LIST", "INT")
     RETURN_NAMES = ("list", "length")

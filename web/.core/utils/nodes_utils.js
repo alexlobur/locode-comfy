@@ -1,4 +1,5 @@
 import {app} from "../../../../scripts/app.js"
+import {makeUniqueName} from "./base_utils.js"
 
 
 /**
@@ -117,8 +118,10 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
 
 /**
  *  Обновление динамических инпутов в таких нодах как Switcher, Eval, ReplaceVars
- * @param {*} node 
- * @param {*} prefix 
+ *  @param {*} node 
+ *  @param {*} prefix 
+ *  @deprecated Use normalizeNodeInputs instead
+ *  @returns {void}
  */
 export function updateDynamicInputs(node, prefix="any"){
     // список активных инпутов начинающихся с префикса
@@ -139,3 +142,73 @@ export function updateDynamicInputs(node, prefix="any"){
 }
 
 
+/**
+ *  Нормализация Инпутов
+ *  Удаление пустых, добавление свободного
+ * 
+ *  @param {LGraphNode} node 
+ *  @param {(node: LGraphNode, index: number, input: INodeInputSlot)=>void} onInputChanged - функция для обработки изменений
+ *  @returns {void}
+ */
+export function normalizeNodeInputs(node, { onInputChanged }={}){
+
+    // удаление инпутов без соединения
+    node.inputs = node.inputs.filter( input => input.isConnected )
+
+    // Обновление типов
+    let index=0
+    for (const input of node.inputs){
+        // обновление типа из выхода узла по ссылке
+        const link = app.graph.getLink(input.link)
+        if(link){
+            const originNode = app.graph.getNodeById(link.origin_id)
+            input.type = originNode?.outputs[link.origin_slot].type??"*"
+        }
+        // вешаем слушатель на label
+        watchSlotLabel( input, {
+                onChanged: (input) => onInputChanged?.(node, index, input)
+        })
+        index++
+    }
+
+    // Добавление пустого инпута
+    addEmptyNodeInput(node)
+
+}
+
+
+/**
+ *  Типовой пустой инпут
+ *  @param {LGraphNode} node
+ *  @param {string} prefix Префикс для имени инпута. Если не указан, то будет использоваться "any".
+ *  @param {string} type Тип инпута. Если не указан, то будет использоваться "*".
+ *  @param {string} label Лейбл инпута. Если не указан, то будет использоваться "*".
+ *  @param {object} options  Опции инпута.
+ *  @returns {INodeInputSlot}
+ */
+export function addEmptyNodeInput(node, { prefix="any", type="*", label="*", options={} }={}){
+    const name = makeUniqueName( prefix, node.inputs.map( input => input.name ) )
+    return node.addInput(name, type, { label: label, ...options })
+}
+
+
+/**
+ *  Отслеживание изменений label слота
+ *  @param {INodeInputSlot} slot 
+ *  @param {function(slot: INodeInputSlot)=>void} onChanged - функция для обработки изменений
+ *  @param {function(value: string)=>string} onSet - функция для установки значения
+ *  @returns {INodeInputSlot}
+ */
+export function watchSlotLabel(slot, { onSet, onChanged }={}){
+    if(slot._label) return
+
+    slot._label = slot.label
+    Object.defineProperty( slot, "label", {
+        set(value){
+            slot._label = onSet?.(value)??value
+            onChanged?.(slot)
+        },
+        get(){ return slot._label }
+    })
+    return slot
+}
