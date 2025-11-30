@@ -1,10 +1,10 @@
-import Logger from "../.core/utils/Logger.js"
-import {app} from "../../../scripts/app.js"
-import {setObjectParams, makeUniqueName} from "../.core/utils/base_utils.js"
-import {HiddenWidget} from "../.core/widgets/HiddenWidget.js"
+import Logger from "../../.core/utils/Logger.js"
+import {app} from "../../../../scripts/app.js"
+import {setObjectParams, makeUniqueName} from "../../.core/utils/base_utils.js"
+import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
-import {addEmptyNodeInput, normalizeNodeInputs, watchSlotLabel} from "../.core/utils/nodes_utils.js"
-
+import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput, watchSlotLabel}
+    from "../../.core/utils/nodes_utils.js"
 
 const VM = GetSetPropsVM
 const {setNode: NODE_CFG} = _CFG
@@ -16,9 +16,15 @@ const {setNode: NODE_CFG} = _CFG
  */
 export function LoSetPropsExtends(proto){
 
-    // создаем сеттеры/геттеры для типа данных
+    // создаем сеттеры/геттеры для названия свойств
 	Object.defineProperty( proto, "propsName", {
 		get() { return this.outputs[0]?.label??this.outputs[0]?.localized_name??null },
+	})
+
+
+    // создаем свойство заморозки
+	Object.defineProperty( proto, "frozen", {
+		get() { return this.properties?.frozen??false },
 	})
 
 
@@ -65,22 +71,9 @@ export function LoSetPropsExtends(proto){
 
 
     /**
-     *  При присоединении
+     *  Переопределение присоединения к слоту
      */
-    proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
-        const input = this.inputs[index]
-        input.type = type
-        input.label = makeUniqueName(
-            outputSlot.label || outputSlot.name,
-            this.inputs.map( item => item.label )
-        )
-        // нормализуем с задержкой после добавления линка
-        setTimeout(()=>{
-            normalizeNodeInputs(this, { onInputChanged: VM.setterInputChanged })
-            VM.setterInputChanged(this, index, input)
-        }, 100 )
-        return true
-    }
+    overrideOnConnectInput(proto)
 
 
     /**
@@ -91,10 +84,10 @@ export function LoSetPropsExtends(proto){
         const ret = _onConnectionsChange?.apply(this, arguments)
         // input
         if(side==1){
-            if(!connected){
-                normalizeNodeInputs(this, { onInputChanged: VM.setterInputChanged })
+            setTimeout(()=>{
+                this._normalizeInputs()
                 VM.setterInputChanged(this, index, slot)    // оповещение об изменении
-            }
+            }, _CFG.applyDelay )
         } else {
         // output
             VM.setterOutputConnectChanged(this, slot)       // оповещение об изменении
@@ -102,6 +95,7 @@ export function LoSetPropsExtends(proto){
 
         return ret
     }
+
 
 
     /**
@@ -124,7 +118,7 @@ export function LoSetPropsExtends(proto){
     proto.clone = function (){
         const cloned = _clone?.apply(this, arguments)
         if(cloned){
-            normalizeNodeInputs(cloned, { onInputChanged: VM.setterInputChanged })
+            this._normalizeInputs()
             cloned.size = cloned.computeSize()
             if(cloned.outputs[0].label){
                 cloned.outputs[0].label = makeUniqueName( this.outputs[0].label, VM.findSetters().map( item => item.propsName ) )
@@ -134,7 +128,48 @@ export function LoSetPropsExtends(proto){
     }
 
 
+    /**
+     *  Рисование переднего плана
+     */
+    proto.onDrawForeground = function(ctx){
+        if(this.frozen) this._drawFrozenIndicator(ctx)
+    }
+
+
+    /**
+     *  Рисование индикатора заморозки
+     */
+    proto._drawFrozenIndicator = function(ctx){
+        ctx.save()
+        ctx.fillStyle = NODE_CFG.frozenIndicator.color
+        ctx.font = NODE_CFG.frozenIndicator.font
+        ctx.fillText(
+            NODE_CFG.frozenIndicator.text,
+            this.size[0] + NODE_CFG.frozenIndicator.offset[0],
+            NODE_CFG.frozenIndicator.offset[1]
+        )
+        ctx.restore()
+    }
+
+
     /* METHODS */
+
+
+    /**
+     *  Нормализация инпутов
+     */
+    proto._normalizeInputs = function(){
+        // если заморожены, то не нормализуем
+        if(this.frozen) return
+
+        // нормализация инпутов
+        normalizeDynamicInputs(this, {
+            onLabelChanged: (node, index, input)=>VM.setterInputChanged(node, index, input)
+        })
+
+        // добавление пустого инпута в конец
+        addEmptyNodeInput(this)
+    }
 
 
     /**
@@ -182,6 +217,55 @@ export function LoSetPropsExtends(proto){
     }
 
 
+    /**
+     *  Заморозка инпутов
+     */
+    proto._freezeInputsToggle = function(){
+        this.properties = this.properties || {}
+        this.properties.frozen = !this.properties.frozen
+
+        // Если заморожено, то удаляем последний инпут, если он пустой
+        if(this.frozen && this.inputs.length > 0){
+            const lastInput = this.inputs[this.inputs.length - 1]
+            if(!lastInput.connected) this.inputs.pop()
+        }
+
+        // Нормализация инпутов
+        this._normalizeInputs()
+
+        // Обновление заголовка узла
+        // this._updateTitle()
+    }
+
+
+    /**
+     *  Создание геттера
+     */
+    proto._createGetter = function(){
+        const getter = LiteGraph.createNode(_CFG.getNode.type)
+        if (!getter) return
+
+        // ставим рядом с текущим узлом
+        getter.pos = [
+            this.pos[0] + this.size[0] + _CFG.onCreateGetterOffset[0],
+            this.pos[1] + _CFG.onCreateGetterOffset[1]
+        ]
+        app.graph.add(getter)
+
+        // Установка текущего сеттера
+        getter.updateSetterId(this.id)
+
+        // Создание ссылки между выходом сеттера и входом геттера
+        try{
+            this.connect(0, getter, 0)
+        } catch(e){
+            Logger.error(e, this)
+        }
+        app.graph.setDirtyCanvas(true, true)
+    }
+
+
+    /* MENU */
 
     /**
      *	Дополнительные опции
@@ -190,28 +274,23 @@ export function LoSetPropsExtends(proto){
 		// Опции будут наверху
 		options.unshift(
 			{
-				content: "Lo:SetProps > Create Getter",
-                callback: () => {
-                    const getter = LiteGraph.createNode("LoGetProps")
-                    if (!getter) return
-
-                    // ставим рядом с текущим узлом
-                    getter.pos = [this.pos[0] + this.size[0] + 50, this.pos[1]]
-                    app.graph.add(getter)
-
-                    // Установка текущего сеттера
-                    getter.updateSetterId(this.id)
-
-                    // Создание ссылки между выходом сеттера и входом геттера
-                    try{
-                        this.connect(0, getter, 0)
-                    } catch(e){
-                        Logger.error(e, this)
-                    }
-
-
-                    app.graph.setDirtyCanvas(true, true)
-                },
+				content:  NODE_CFG.menu.title,
+				has_submenu: true,
+				submenu: {
+					// title: NODE_CFG.menu.title,
+					options: [
+						{
+							content:   this.frozen
+                                ? NODE_CFG.menu.submenu.unfreezeInputs
+                                : NODE_CFG.menu.submenu.freezeInputs,
+							callback:  ()=> this._freezeInputsToggle()
+						},
+						{
+							content:   NODE_CFG.menu.submenu.createGetter,
+							callback:  ()=> this._createGetter()
+						},
+					],
+				},
 			},
 			null
 		)

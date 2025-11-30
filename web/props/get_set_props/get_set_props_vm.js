@@ -1,9 +1,13 @@
-import {EventEmitter} from "../.core/notify/EventEmitter.js"
+import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 
 
 // Конфиги узлов
 export const _CFG = {
+
     extName:        "locode.GetSetProps",
+    applyDelay:     100, // задержка применения изменений
+    onCreateGetterOffset: [50, 0],  // Сдвиг при создании геттера относительно сеттера [x, y]
+
     setNode: {
         type:           "LoSetProps",
         // title:          "Set:",
@@ -13,8 +17,23 @@ export const _CFG = {
             color_off:  "#000",
             name:       "props",
         },
-        minWidth:       140
+        minWidth:       140,
+        frozenIndicator: {
+            color:  "#FFFFFF66",
+            font:   "36px sans-serif",
+            text:   "*",
+            offset: [-18, 32],
+        },
+        menu: {
+            title: "Lo:SetProps",
+            submenu: {
+                freezeInputs: "Freeze Inputs",
+                unfreezeInputs: "Unfreeze Inputs",
+                createGetter: "Create Getter",
+            }
+        }
     },
+
     getNode: {
         type:           "LoGetProps",
         // title:          "Get:",

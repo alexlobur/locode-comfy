@@ -115,30 +115,36 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
 }
 
 
-
 /**
- *  Обновление динамических инпутов в таких нодах как Switcher, Eval, ReplaceVars
- *  @param {*} node 
- *  @param {*} prefix 
- *  @deprecated Use normalizeNodeInputs instead
+ *  Нормализация динамических инпутов
+ *  Удаление пустых
+ * 
+ *  @param {LGraphNode} node 
+ *  @param {(node, index, input)=>void} onLabelChanged - функция для обработки изменений Label
  *  @returns {void}
  */
-export function updateDynamicInputs(node, prefix="any"){
-    // список активных инпутов начинающихся с префикса
-    const linkedInputs = Array.from(node.inputs)
-        .filter( input => input.name.startsWith(prefix) && input.isConnected )
+export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
 
-    // список прочих инпутов
-    const otherInputs = Array.from(node.inputs)
-        .filter( input => !input.name.startsWith(prefix) )
+    // удаление инпутов без соединения
+    node.inputs = node.inputs.filter( input => input.isConnected )
 
-    // переименование инпутов
-    linkedInputs.forEach( (item, index) => item.name = `${prefix}${index}` )
-
-    // замена инпутов узла с сохранением прочих, и добавление пустого
-    node.inputs = [...otherInputs, ...linkedInputs]
-    node.addInput(`${prefix}${linkedInputs.length}`, "*",)
-
+    // Обновление типов
+    let index=0
+    for (const input of node.inputs){
+        // обновление типа из выхода узла по ссылке
+        const link = app.graph.getLink(input.link)
+        if(link){
+            const originNode = app.graph.getNodeById(link.origin_id)
+            input.type = originNode?.outputs[link.origin_slot].type??"*"
+        }
+        // вешаем слушатель на label
+        if(onLabelChanged){
+            watchSlotLabel( input, {
+                onChanged: (input) => onLabelChanged?.(node, index, input)
+            })
+        }
+        index++
+    }
 }
 
 
@@ -150,6 +156,7 @@ export function updateDynamicInputs(node, prefix="any"){
  *  @param {(node, index, input)=>void} onLabelChanged - функция для обработки изменений Label
  *  @param {boolean} addDefaultEmptyInput - добавлять пустой инпут в конец
  *  @returns {void}
+ *  @deprecated Use normalizeDynamicInputs instead
  */
 export function normalizeNodeInputs(node, { onLabelChanged=null, addDefaultEmptyInput=true }={}){
 
@@ -231,12 +238,11 @@ export function overrideOnConnectInput( proto, {
     callbackAfter = ()=>true,
     setTypeFromOutput = true,
     setLabelFromOutput = true,
-}){
+} = {}){
     proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
 
         // Вызов callbackBefore
-        if(!callbackBefore.call(this, index, type, outputSlot, outputNode, outputIndex))
-            return false
+        if(!callbackBefore.call(this, index, type, outputSlot, outputNode, outputIndex)) return false
 
         // Получаем инпут слота
         const input = this.inputs[index]
@@ -248,7 +254,10 @@ export function overrideOnConnectInput( proto, {
         if(setLabelFromOutput){
             input.label = makeUniqueName(
                 outputSlot.label || outputSlot.name,
-                this.inputs.map( item => item.label )
+                this.inputs.map( item => item.label ),
+                {
+                    excludeIndex: index
+                }
             )
         }
 
@@ -256,10 +265,7 @@ export function overrideOnConnectInput( proto, {
         return callbackAfter.call(this, index, type, outputSlot, outputNode, outputIndex)
 
     }
-
 }
-
-
 
 
 /**

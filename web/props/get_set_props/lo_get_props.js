@@ -1,7 +1,7 @@
-import {app} from "../../../scripts/app.js"
-import Logger from "../.core/utils/Logger.js"
-import {setObjectParams} from "../.core/utils/base_utils.js"
-import {HiddenWidget} from "../.core/widgets/HiddenWidget.js"
+import {app} from "../../../../scripts/app.js"
+import Logger from "../../.core/utils/Logger.js"
+import {setObjectParams} from "../../.core/utils/base_utils.js"
+import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
 
 
