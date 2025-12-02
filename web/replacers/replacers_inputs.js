@@ -93,8 +93,9 @@ export class ReplacersInputs{
     }
 
 
-    decode(data){
-        this.#data = data.map( item => new ReplacerItem(item[0], item[1]) )
+    decode(data, append=false){
+        const newData = data.map( item => new ReplacerItem(item[0], item[1]) )
+        this.#data = append ? [...this.#data, ...newData] : newData
         this.#normalizeData()
     }
 
@@ -103,6 +104,11 @@ export class ReplacersInputs{
         return this.#data
             .filter( item => !item.isEmpty )
             .map( item => [item.find, item.replace] )
+    }
+
+    reset(){
+        this.#data = [new ReplacerItem(),]
+        this.#setState()
     }
 
 }

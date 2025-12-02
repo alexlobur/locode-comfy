@@ -272,10 +272,11 @@ export function overrideOnConnectInput( proto, {
  *  Переопределение границы минимальной ширины узла (computeSize).
  * 
  *  @param {LGraphNode} proto
- *  @param {number} minWidth
+ *  @param {number|undefined} minWidth
  *  @returns {void}
  */
-export function overrideComputeSizeMinWidth( proto, minWidth=140 ){
+export function overrideComputeSizeMinWidth( proto, minWidth=undefined ){
+    if(!minWidth) return
     const _computeSize = proto.computeSize
     proto.computeSize = function(){
         const ret = _computeSize?.apply(this, arguments)
@@ -283,3 +284,26 @@ export function overrideComputeSizeMinWidth( proto, minWidth=140 ){
         return ret
     }
 }
+
+
+/**
+ *  Нормализация меню
+ *  - удаляет повторяющиеся null
+ */
+export function normalizeMenu(menu){
+    // обратный проход по меню и удаление повторяющихся null
+    let nullsCount = 0
+
+    console.log("normalizeMenu", menu)
+
+    for(let i=menu.length-1; i>=0; i--){
+        if(menu[i]==null){
+            nullsCount++
+            if(nullsCount>2){
+                menu.splice(i, 1)
+                nullsCount=0
+            }
+        }
+    }
+}
+

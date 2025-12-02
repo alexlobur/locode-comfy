@@ -4,6 +4,8 @@ import {setObjectParams} from "../../.core/utils/base_utils.js"
 import {overrideComputeSizeMinWidth} from "../../.core/utils/nodes_utils.js"
 import {LoSetNode} from "./set_node.js"
 import {_CFG} from "./config.js"
+import { getSetterActiveInputs } from "../props_utils.js"
+import Logger from "../../.core/utils/Logger.js"
 
 
 // const LGraphNode = LiteGraph.LGraphNode
@@ -83,6 +85,18 @@ const NODE_CFG = _CFG.getNode
 	}
 
 
+	/* NODE EVENTS */
+
+	/**
+     *  При удалении узла
+     */
+    onRemoved(){
+		LoSetNode.events.off("nodes_changed",		this.#handleSetNodesChanged )
+		LoSetNode.events.off("namespace_changed",	this.#handleSetNodeNamespaceChange )
+		LoSetNode.events.off("input_updated",		this.#handleSetNodeInputUpdated )
+    }
+
+
 	/* METHODS */
 
 
@@ -98,7 +112,17 @@ const NODE_CFG = _CFG.getNode
 			return null
 		}
 		// Находим слот
-		return this.graph.links[setter.inputs[slot].link]
+		try{
+			return this.graph.links[setter.inputs[slot].link]
+		} catch(e){
+			this.#showAlert(
+				_CFG.messages.noLink
+					.replace("{slot}", slot)
+					.replace("{name}", this.#nsWidget.value),
+				"error"
+			)
+			return null
+		}
 	}
 
 
@@ -134,7 +158,6 @@ const NODE_CFG = _CFG.getNode
 	 */
 	#updateOutputsFromSetter(fitSize=false){
 		const setterInputs = this.#getSetterActiveInputs()
-		if(!setterInputs) return
 
 		// обновление выходов
 		for (let index = 0; index < setterInputs.length; index++){
@@ -163,24 +186,10 @@ const NODE_CFG = _CFG.getNode
 	/**
 	 *	Выдает список инпутов рефера, без учета последнего
 	 */
-	 #getSetterActiveInputs(){
-		const setterNode = this.getSetterNode()
-		if(!setterNode) return null
-
-		// Если заморожены, то возвращаем все инпуты
-		if(setterNode.frozen){
-			return setterNode.inputs
-		}
-
-		// Только один инпут
-		if(setterNode.inputs.length<=1) return []
-
-		// Активные инпуты
-		return setterNode.inputs.slice(0, setterNode.inputs.length-1)
-	}
+	 #getSetterActiveInputs = () => getSetterActiveInputs(this.getSetterNode())
 
 
-	/**
+	 /**
      *  Обновление заголовка узла
      *  - Установлен setTitleFromNamespace, то заголовок равен NODE_CFG.title + namespace
      */
@@ -195,12 +204,12 @@ const NODE_CFG = _CFG.getNode
 	/**
      *	Дополнительные опции
      */
-	 getExtraMenuOptions(_, options){
-
+	 getExtraMenuOptions(canvas, menu){
+		menu = menu ?? []
 		const setter = this.getSetterNode()
 
 		// Опции будут наверху
-		options.unshift(
+		menu.unshift(
 			{
 				content:  NODE_CFG.menu.title,
 				has_submenu: true,

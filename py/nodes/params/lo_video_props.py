@@ -30,8 +30,8 @@ Set Video parameters
             },
         }
 
-    RETURN_TYPES = ("INT", "INT", "FLOAT", "FLOAT", "INT", "LO_VIDEO_PROPS")
-    RETURN_NAMES = ("width", "height", "duration", "fps", "frames", "video_props")
+    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT")
+    RETURN_NAMES = ("video_props", "width", "height", "duration", "fps", "frames")
     FUNCTION = "execute"
 
 

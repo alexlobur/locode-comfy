@@ -1,8 +1,6 @@
 import {app} from "../../../../../scripts/app.js"
-import { importCss, createElement } from "../../utils/dom_utils.js"
-import Logger from "../../utils/Logger.js"
-import { foreachNodes } from "../../utils/nodes_utils.js"
-
+import { importCss, createElement } from "../../.core/utils/dom_utils.js"
+import { foreachNodes } from "../../.core/utils/nodes_utils.js"
 
 importCss("deprecated_banner.css", import.meta)
 

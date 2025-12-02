@@ -1,11 +1,14 @@
 import {app} from "../../../scripts/app.js"
-import {normalizeNodeInputs, overrideOnConnectInput} from "../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput} from "../.core/utils/nodes_utils.js"
 
 
 // Конфиг узла
 const NODE_CFG = {
     extName:    "locode.LoListsCommon",
     types:      ["LoListsMerge", "LoSetList"],
+    label: {
+        "LoListsMerge": "list",
+    },
     applyDelay: 100, // задержка применения изменений
 }
 
@@ -28,7 +31,7 @@ app.registerExtension({
         nodeType.prototype.onNodeCreated = function(){
             const ret = onNodeCreated?.apply(this, arguments)
             // Обновление динамических инпутов
-            normalizeNodeInputs(this)
+            _normalizeInputs(this, nodeType)
             return ret
         }
 
@@ -40,7 +43,7 @@ app.registerExtension({
         nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output){
             const ret = _onConnectionsChange?.apply(this, arguments)
             // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>normalizeNodeInputs(this), NODE_CFG.applyDelay )
+            setTimeout( ()=>_normalizeInputs(this, nodeType), NODE_CFG.applyDelay )
             return ret
         }
 
@@ -49,7 +52,7 @@ app.registerExtension({
         overrideOnConnectInput(nodeType.prototype, {
             callbackAfter: function(){
                 // нормализуем с задержкой после добавления линка
-                setTimeout(()=> normalizeNodeInputs(this), NODE_CFG.applyDelay )
+                setTimeout(()=> _normalizeInputs(this, nodeType), NODE_CFG.applyDelay )
                 return true
             }
         })
@@ -57,4 +60,11 @@ app.registerExtension({
     }
 
 })
+
+
+function _normalizeInputs(node, nodeType){
+    normalizeDynamicInputs(node)
+    const label = NODE_CFG.label[nodeType.comfyClass]!=null ? NODE_CFG.label[nodeType.comfyClass]+node.inputs.length : undefined
+    addEmptyNodeInput( node, { label: label })
+}
 

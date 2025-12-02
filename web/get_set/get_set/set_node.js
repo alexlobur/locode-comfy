@@ -2,8 +2,8 @@ import {app} from "../../../../scripts/app.js"
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 import {makeUniqueName, setObjectParams} from "../../.core/utils/base_utils.js"
 import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, overrideOnConnectInput} from "../../.core/utils/nodes_utils.js"
+import { drawFrozenIndicator } from "../props_utils.js"
 import {_CFG} from "./config.js"
-import Logger from "../../.core/utils/Logger.js"
 
 
 const NODE_CFG = _CFG.setNode
@@ -127,31 +127,17 @@ const NODE_CFG = _CFG.setNode
     }
 
 
+    /* NODE DRAW */
+
+
     /**
-     *  Рисование переднего плана
+     *  Рисование бокса заголовка узла
+     *  - Если заморожен, то рисуется индикатор заморозки
+     *  - Иначе рисуется бокс заголовка узла
      */
-    onDrawForeground(ctx){
-        if(this.frozen) this.#drawFrozenIndicator(ctx)
-    }
-
-
-    #drawFrozenIndicator(ctx){
-        ctx.save()
-        ctx.fillStyle = NODE_CFG.frozenIndicator.color
-        ctx.font = NODE_CFG.frozenIndicator.font
-        ctx.fillText(
-            NODE_CFG.frozenIndicator.text,
-            this.size[0] + NODE_CFG.frozenIndicator.offset[0],
-            NODE_CFG.frozenIndicator.offset[1]
-        )
-        ctx.restore()
-    }
-
-
-    drawSlots(){
-        Logger.debug("drawSlots", super.drawSlots, arguments)
-        super.drawSlots?.apply(this, arguments)
-        // Logger.debug("drawSlots", arguments)
+    drawTitleBox(ctx, { scale, low_quality = false, title_height = LiteGraph.NODE_TITLE_HEIGHT, box_size = 10 }){
+        if(this.frozen) drawFrozenIndicator(ctx, { centerPos: [title_height*0.5, -title_height*0.5] })
+        else super.drawTitleBox(ctx, { scale, low_quality, title_height, box_size })
     }
 
 
@@ -199,11 +185,9 @@ const NODE_CFG = _CFG.setNode
             if(!lastInput.connected) this.inputs.pop()
         }
 
-        // Нормализация инпутов
-        this._normalizeInputs()
-
-        // Обновление заголовка узла
-        this._updateTitle()
+        this._normalizeInputs() // Нормализация инпутов
+        this._updateTitle()     // Обновление заголовка узла
+        this.setDirtyCanvas(true, true)
     }
 
 
@@ -280,9 +264,9 @@ const NODE_CFG = _CFG.setNode
 	/**
      *	Дополнительные опции
      */
-	 getExtraMenuOptions(_, options){
+	 getExtraMenuOptions(canvas, menu){
 		// Опции будут наверху
-		options.unshift(
+		menu.unshift(
 			{
 				content:  NODE_CFG.menu.title,
 				has_submenu: true,

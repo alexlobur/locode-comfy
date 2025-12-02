@@ -158,7 +158,7 @@ class TextsWidget {
      *  Копирование в Буфер
      */
     copyData = async() => {
-        const data = JSON.stringify(this.#tabsIterrator.toJson())
+        const data = JSON.stringify(this.#tabsIterrator.toJson(), null, 2)
         await clipboardWrite(data)
     }
 
@@ -283,10 +283,9 @@ app.registerExtension({
         const getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions
         nodeType.prototype.getExtraMenuOptions = function(canvas, menu) {
             menu = menu ?? []
-            menu.unshift(...[
-                null,
+            menu.unshift(
                 {
-                    content: "Lo:Texts > ",
+                    content: "Lo:Texts",
                     has_submenu: true,
                     submenu: {
                         // title: "",
@@ -326,7 +325,7 @@ app.registerExtension({
                     }
                 },
                 null
-        ])
+            )
             return getExtraMenuOptions ? getExtraMenuOptions.apply(this, [canvas, menu]) : undefined
         }
 

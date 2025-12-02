@@ -3,8 +3,8 @@ import {app} from "../../../../scripts/app.js"
 import {setObjectParams, makeUniqueName} from "../../.core/utils/base_utils.js"
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput, watchSlotLabel}
-    from "../../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput, watchSlotLabel} from "../../.core/utils/nodes_utils.js"
+import {drawFrozenIndicator} from "../props_utils.js"
 
 const VM = GetSetPropsVM
 const {setNode: NODE_CFG} = _CFG
@@ -97,18 +97,17 @@ export function LoSetPropsExtends(proto){
     }
 
 
-
     /**
      *  Удаление узла
      */
     const _onRemoved = proto.onRemoved
-    proto.onRemoved = function (side, index, connected, link, slot){
+    proto.onRemoved = function (){
         const ret = _onRemoved?.apply(this, arguments)
         // вызываем с задержкой, чтобы узел успел удалиться из графа
-        setTimeout(()=> VM.setterAfterRemoved(this), 100)
+        const nodeId = this.id
+        setTimeout(()=> VM.setterAfterRemoved(nodeId), _CFG.applyDelay)
         return ret
     }
-
 
 
     /**
@@ -118,42 +117,38 @@ export function LoSetPropsExtends(proto){
     proto.clone = function (){
         const cloned = _clone?.apply(this, arguments)
         if(cloned){
-            this._normalizeInputs()
+            cloned._normalizeInputs()
             cloned.size = cloned.computeSize()
             if(cloned.outputs[0].label){
-                cloned.outputs[0].label = makeUniqueName( this.outputs[0].label, VM.findSetters().map( item => item.propsName ) )
+                cloned.outputs[0].label = makeUniqueName(
+                    this.outputs[0].label,
+                    VM.findSetters().map( item => item.propsName )
+                )
             }
             return cloned
         }
     }
 
 
-    /**
-     *  Рисование переднего плана
-     */
-    proto.onDrawForeground = function(ctx){
-        if(this.frozen) this._drawFrozenIndicator(ctx)
-    }
+    /* NODE DRAW */
 
 
     /**
-     *  Рисование индикатора заморозки
+     *  Рисование бокса заголовка узла
+     *  - Если заморожен, то рисуется индикатор заморозки
+     *  - Иначе рисуется бокс заголовка узла
      */
-    proto._drawFrozenIndicator = function(ctx){
-        ctx.save()
-        ctx.fillStyle = NODE_CFG.frozenIndicator.color
-        ctx.font = NODE_CFG.frozenIndicator.font
-        ctx.fillText(
-            NODE_CFG.frozenIndicator.text,
-            this.size[0] + NODE_CFG.frozenIndicator.offset[0],
-            NODE_CFG.frozenIndicator.offset[1]
-        )
-        ctx.restore()
+    const _drawTitleBox = proto.drawTitleBox
+    proto.drawTitleBox = function(ctx, { scale, low_quality = false, title_height = LiteGraph.NODE_TITLE_HEIGHT, box_size = 10 }){
+        if(this.frozen){
+            drawFrozenIndicator(ctx, { centerPos: [title_height*0.5, -title_height*0.5] })
+        } else {
+            _drawTitleBox?.apply(this, arguments)
+        }
     }
 
 
     /* METHODS */
-
 
     /**
      *  Нормализация инпутов
@@ -169,25 +164,6 @@ export function LoSetPropsExtends(proto){
 
         // добавление пустого инпута в конец
         addEmptyNodeInput(this)
-    }
-
-
-    /**
-     *  Устанавливает параметры инпута на основе соединения
-     */
-    proto._setInputFromConnection = function(index, link=null){
-
-        const input = this.inputs[index]
-        link = link ?? app.graph.getLink(input.link)
-
-        const originNode = app.graph.getNodeById(link.origin_id)
-        .name = makeUniqueName(
-            originNode.outputs[link.origin_slot].type,
-            this.inputs.map( item => item.name ),
-            {
-                excludeIndex: index 
-            }
-        )
     }
 
 
@@ -209,11 +185,12 @@ export function LoSetPropsExtends(proto){
                     return makeUniqueName(value, VM.findSetters().map( item => item.propsName ))
                 }
             })
+            // обновление графики
+            this.setDirtyCanvas(true, true)
 
             // оповещение об изменении
             VM.setterOutputRenamed(this)
-
-        }, 100)
+        }, _CFG.applyDelay )
     }
 
 
@@ -232,9 +209,7 @@ export function LoSetPropsExtends(proto){
 
         // Нормализация инпутов
         this._normalizeInputs()
-
-        // Обновление заголовка узла
-        // this._updateTitle()
+        this.setDirtyCanvas(true, true)
     }
 
 
@@ -270,9 +245,11 @@ export function LoSetPropsExtends(proto){
     /**
      *	Дополнительные опции
      */
-     proto.getExtraMenuOptions = function(_, options){
+     const _getExtraMenuOptions = proto.getExtraMenuOptions
+     proto.getExtraMenuOptions = function(canvas, menu){
+        menu = menu ?? []
 		// Опции будут наверху
-		options.unshift(
+		menu.unshift(
 			{
 				content:  NODE_CFG.menu.title,
 				has_submenu: true,
@@ -294,6 +271,7 @@ export function LoSetPropsExtends(proto){
 			},
 			null
 		)
+        return _getExtraMenuOptions ? _getExtraMenuOptions.apply(this, [canvas, menu]) : undefined
 	}
 
 }

@@ -23,7 +23,5 @@ app.registerExtension({
 /*
     TEST
 */
-LoSetNode.events.onAny(
-    (e, d)=> Logger.debug(e, d)
-)
+// LoSetNode.events.onAny( (e, d)=> Logger.debug(e, d) )
 

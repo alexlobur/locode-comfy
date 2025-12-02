@@ -26,8 +26,7 @@ app.registerExtension({
 
 })
 
-GetSetProps.events.onAny( (e, d)=> Logger.debug(e, d) )
-
+// GetSetProps.events.onAny( (e, d)=> Logger.debug(e, d) )
 
 
 /*

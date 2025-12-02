@@ -9,6 +9,8 @@ const VM = GetSetPropsVM
 const {getNode: NODE_CFG} = _CFG
 
 
+
+
 /**---
  * 
  *  Расширение прототипа
@@ -91,7 +93,6 @@ export function LoGetPropsExtends(proto){
 		}
 		// если тип "*", поиск подходящих узлов по дереву
 		const setters = VM.findLinkedSetters(outputNode)
-		Logger.debug("findLinkedSetters", setters)
 		if(setters.length>0){
 			this.updateSetterId(setters[0].id)
 			return true
@@ -100,20 +101,55 @@ export function LoGetPropsExtends(proto){
     }
 
 
-	/* METHODS */
+	/**
+     *  Удаление узла
+     */
+    const _onRemoved = proto.onRemoved
+    proto.onRemoved = function (){
+        const ret = _onRemoved?.apply(this, arguments)
+		this._removeEventsHandlers()
+        return ret
+    }
 
+
+	/* SETTER EVENTS HANDLERS */
 
 	/**
 	 *	Установка слушателей settera
 	 */
-	proto._setEventsHandlers = function(){
-		VM.events.on("setter_created",			()=> this._setterWidget._updateValues() )
-		VM.events.on("setter_configured",		()=> this._setterWidget._updateValues() )
-		VM.events.on( "setter_output_renamed",	()=> this.updateSetterId(this.setterId) )
-		VM.events.on("setter_removed",			()=> this._setterWidget._updateValues() )
-		VM.events.on("setter_input_changed",	()=> this._updateOutputsFromRefer(true) )
-		VM.events.on("setter_output_connect_changed", ()=>{})
+	 proto._setEventsHandlers = function(){
+		// Привязываем обработчики к контексту и сохраняем ссылки для удаления
+		this._setterHandlers = {
+			valuesUpdated:			()=> this._setterWidget._updateValues(),
+			inputsUpdated:			()=> this._updateOutputsFromRefer(true),
+			outputRenamed:			()=> this.updateSetterId(this.setterId),
+			outputConnectChanged:	()=> { /* обработка изменения связи выхода */ }
+		}
+		VM.events.on("setter_created",					this._setterHandlers.valuesUpdated)
+		VM.events.on("setter_configured",				this._setterHandlers.valuesUpdated)
+		VM.events.on("setter_output_renamed",			this._setterHandlers.outputRenamed)
+		VM.events.on("setter_removed",					this._setterHandlers.valuesUpdated)
+		VM.events.on("setter_input_changed",			this._setterHandlers.inputsUpdated)
+		VM.events.on("setter_output_connect_changed",	this._setterHandlers.outputConnectChanged)
 	}
+
+	/**
+	 *  Удаление слушателей settera
+	 */
+	proto._removeEventsHandlers = function(){
+		if (!this._setterHandlers) return
+		VM.events.off("setter_created",					this._setterHandlers.valuesUpdated)
+		VM.events.off("setter_configured",				this._setterHandlers.valuesUpdated)
+		VM.events.off("setter_output_renamed",			this._setterHandlers.outputRenamed)
+		VM.events.off("setter_removed",					this._setterHandlers.valuesUpdated)
+		VM.events.off("setter_input_changed",			this._setterHandlers.inputsUpdated)
+		VM.events.off("setter_output_connect_changed",	this._setterHandlers.outputConnectChanged)
+		// Очищаем ссылки
+		this._setterHandlers = null
+	}
+
+
+	/* METHODS */
 
 
 	/**
@@ -194,7 +230,7 @@ function createSetterSelectWidget(node, onSetValue){
 	// виджет выбора сеттера
 	const widget = node.addWidget( "combo", "props", "",
 		function(val){
-			onSetValue(this._values.get(val), val)
+			if(this._values) onSetValue(this._values.get(val), val)
 		},
 		{ values: [] }
 	)

@@ -1,4 +1,16 @@
 import { app } from "../../../scripts/app.js"
+import Logger from "../.core/utils/Logger.js"
+
+
+// Конфиг узла
+const NODE_CFG = {
+    type:       "LoSetVideoProps",
+    font:       "400 11px Arial, sans-serif",
+    color:      "#FFFFFF66",
+    align:      "left",
+    lineHeight: 15,
+    pos:        [ 8, 4 ],
+}
 
 
 /**
@@ -11,78 +23,30 @@ import { app } from "../../../scripts/app.js"
 app.registerExtension({
     name: "locode.SetVideoProps",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeType.comfyClass !== NODE_CFG.type) return   // Проверяем, что класс узла соответствует нужному типу
 
-        // Проверяем, что имя узла соответствует нужному типу
-        if (nodeData.name !== "LoSetVideoProps") return;
+        /**
+         *  Переопределение рисования оверлея
+         */
+        const _onDrawForeground = nodeType.prototype.onDrawForeground
+        nodeType.prototype.onDrawForeground = function (ctx) {
+            const ret = _onDrawForeground?.apply(this, arguments)
 
-        // Пересчёт и сохранение данных оверлея из текущих значений виджетов
-        const originalOnDrawForeground = nodeType.prototype.onDrawForeground
-        function updateOverlayFromWidgets() {
-            const width = Number(getWidgetValueByName(this, "width", 0)) || 0
-            const height = Number(getWidgetValueByName(this, "height", 0)) || 0
-            const duration = Number(getWidgetValueByName(this, "duration", 0)) || 0
-            const fps = Number(getWidgetValueByName(this, "fps", 0)) || 0
-            if (width > 0 && height > 0 && duration > 0 && fps > 0) {
-                this.__lo_overlayLines = buildOverlayLines(width, height, duration, fps)
-            } else {
-                this.__lo_overlayLines = null
-            }
+            // Если подключены входы, то рисовать оверлей не нужно
+            // if (this.inputs.some(input => input.isConnected)) return
+
+            // Рассчитать размеры видео
+            const videoProps = calculate(this)
+            if (!videoProps) return
+
+            // Вывести строки оверлея
+            drawOverlay(ctx, videoProps)
+
+            return ret
         }
 
-        //---
-        // Вызывается после выполнения узла: обновляем оверлей по пришедшим параметрам и перерисовываем
-        const originalOnExecuted = nodeType.prototype.onExecuted
-        nodeType.prototype.onExecuted = function () {
-            // DEBUG
-            console.debug("onExecuted", this, arguments)
-
-            try {
-                updateOverlayFromWidgets.call(this)
-                this.setDirtyCanvas(true, true)
-            } catch (e) {
-                //
-            }
-            if (originalOnExecuted) return originalOnExecuted.apply(this, arguments)
-        };
-
-        //---
-        // Вызывается перед рисованием оверлея
-        nodeType.prototype.onDrawForeground = function (ctx) {
-
-            // Вызов оригинала, если был
-            if (originalOnDrawForeground) originalOnDrawForeground.apply(this, arguments)
-
-            // Если уже есть рассчитанные строки (например, после onExecuted) — используем их
-            let lines = this.__lo_overlayLines;
-            // Иначе, пробуем посчитать из текущих значений виджетов (живой предпросмотр)
-            if (!lines) {
-                const width = Number(getWidgetValueByName(this, "width", 0)) || 0
-                const height = Number(getWidgetValueByName(this, "height", 0)) || 0
-                const duration = Number(getWidgetValueByName(this, "duration", 0)) || 0
-                const fps = Number(getWidgetValueByName(this, "fps", 0)) || 0
-                if (width > 0 && height > 0 && duration > 0 && fps > 0) {
-                    lines = buildOverlayLines(width, height, duration, fps)
-                }
-            }
-
-            if (!lines) return
-
-            // Позиционирование: рисуем у нижнего края, с отступами
-            const padding = 8
-            const lineHeight = 15
-            const x = padding
-            const y = padding*2.5
-
-            // Текст (правое выравнивание в подложке)
-            for (let i = 0; i < lines.length; i++) {
-                drawText(ctx, lines[i], x, y + i * lineHeight, { align: "left" })
-            }
-
-        };
-
     },
-});
-
+})
 
 
 //---
@@ -93,23 +57,71 @@ app.registerExtension({
 
 
 /**
- * Вычислить количество кадров и финальную длительность
- * @param {*} duration 
- * @param {*} fps 
- * @returns 
+ *  Отрисовка оверлея
+ *  @param {CanvasRenderingContext2D} ctx 
+ *  @param {Object} videoProps 
+ *  @returns 
  */
-function computeFrames(duration, fps) {
-    const frames = 1 + Math.ceil((duration * fps) / 4) * 4
-    const durationFinal = Math.round((frames / fps) * 100) / 100
-    return { frames, durationFinal }
+function drawOverlay(ctx, videoProps){
+    ctx.save()
+    ctx.font = NODE_CFG.font
+    ctx.fillStyle = NODE_CFG.color
+    ctx.textAlign = NODE_CFG.align
+
+    // Рассчет количества пикселей
+    const pixels = videoProps.width * videoProps.height
+    const pixelsStr = pixels > 1000000
+        ? `${(pixels / 1000000).toFixed(2)}Mpx`
+        : pixels > 1000
+            ? `${(pixels / 1000).toFixed(1)}Kpx`
+            : `${pixels}px`
+
+    // Текст оверлея
+    const text = `
+        ${videoProps.width} x ${videoProps.height}
+        ${pixelsStr}
+        duration: ${videoProps.duration}s
+        fps: ${videoProps.fps}
+        frames: ${videoProps.frames}
+    `
+    // Разбиение текста на строки
+    const lines = text.split("\n").map(line => line.trim())
+
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], NODE_CFG.pos[0], NODE_CFG.pos[1] + i * NODE_CFG.lineHeight)
+    }
+
+    ctx.restore()
+}
+
+
+/**
+ *  Рассчет размеров видео
+ *  @param {Object} node 
+ *  @returns 
+ */
+function calculate(node){
+    // Получение значений из виджетов
+    const width         = Number(getWidgetValueByName(node, "width", 0))
+    const height        = Number(getWidgetValueByName(node, "height", 0))
+    const durationRaw   = Number(getWidgetValueByName(node, "duration", 0))
+    const fps           = Number(getWidgetValueByName(node, "fps", 0))
+    if (width*height*durationRaw*fps <= 0) return null
+
+    // Вычисление количества кадров и финальной длительности
+    const frames = 1 + Math.ceil((durationRaw * fps) / 4) * 4
+    const duration = Math.round((frames / fps) * 100) / 100
+
+    // Вернуть результат
+    return { width, height, duration, fps, frames }
 }
 
 
 /**
  * Безопасное чтение значения из виджета по имени
- * @param {*} node 
- * @param {*} name 
- * @param {*} def 
+ * @param {Object} node 
+ * @param {string} name 
+ * @param {any} def 
  * @returns 
  */
 function getWidgetValueByName(node, name, def = null) {
@@ -120,44 +132,3 @@ function getWidgetValueByName(node, name, def = null) {
         return def
     }
 }
-
-
-/**
- * Рендер текста со стилями
- * @param {*} ctx 
- * @param {*} text 
- * @param {*} x 
- * @param {*} y 
- * @param {*} opts 
- */
-function drawText(ctx, text, x, y, opts = {}) {
-    const { color = "#9aa0a6", font = "12px sans-serif", align = "left" } = opts
-    ctx.save()
-    ctx.font = font
-    ctx.fillStyle = color
-    ctx.textAlign = align
-    ctx.fillText(text, x, y)
-    ctx.restore()
-}
-
-
-/**
- * Построить строки оверлея из числовых значений
- * @param {*} width 
- * @param {*} height 
- * @param {*} duration 
- * @param {*} fps 
- * @returns 
- */
-function buildOverlayLines(width, height, duration, fps) {
-    const pixels = width * height;
-    const { frames, durationFinal } = computeFrames(duration, fps);
-    const pixelsStr = pixels > 1000 * 1000 ? `${(pixels / 1000 / 1000).toFixed(2)}Mpx` : `${pixels}px`
-    return [
-        `size: ${width}x${height} ${pixelsStr}`,
-        `duration: ${duration}s`,
-        `fps: ${fps}`,
-        `frames: ${frames} → ${durationFinal}s`,
-    ];
-}
-

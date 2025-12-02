@@ -1,0 +1,130 @@
+.locode-nodedesign-window{
+    position: absolute; top: 8px; right: 8px;
+    z-index: 100000;
+    user-select: none;
+
+    background: var(--comfy-menu-bg) !important;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+
+.locode-nodedesign-window .-content{
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 12px;
+}
+
+.locode-nodedesign-window .-close{
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: 6px; right: 8px;
+    width: 28px; height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: color-mix(in srgb, var(--p-text-color) 60%, transparent);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.locode-nodedesign-window .-close:hover{
+    background: color-mix(in srgb, var(--p-surface-800) 80%, transparent);
+    color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
+}
+
+
+.locode-nodedesign-window .header{
+    font-size: 12px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
+    padding-bottom: 0;
+}
+
+
+.locode-nodedesign-window .label{
+    font-size: 14px;
+    opacity: 0.33;
+    padding-bottom: 1px;
+}
+
+
+.locode-nodedesign-window INPUT {
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    background: color-mix(in srgb, var(--p-surface-800) 75%, transparent);
+    color:      color-mix(in srgb, var(--p-text-color) 66%, transparent);
+    outline:    0px solid var(--p-surface-800);
+    border: none;
+}
+
+.locode-nodedesign-window INPUT:focus {
+    background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
+    color:      var(--p-text-color);
+    outline:    2px solid var(--p-surface-600);
+}
+
+
+.locode-nodedesign-window .colors{
+    display: grid; 
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 4px 8px;
+}
+
+.locode-nodedesign-window .colors INPUT{
+    width: 180px;
+}
+
+.locode-nodedesign-window .color-selector{
+    grid-column: span 2;
+    padding-bottom: 8px;
+}
+
+.locode-nodedesign-window .color-selector ul{
+    display: flex; flex-direction: row; gap: 2px; flex-wrap: wrap;
+    justify-content: flex-end;
+    margin: 0; padding: 0; list-style: none;
+}
+
+.locode-nodedesign-window .color-selector ul > LI{
+    display: block;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    margin: 0; padding: 0; list-style: none;
+    cursor: pointer;
+    border: 1px solid var(--p-surface-800);
+}
+
+.locode-nodedesign-window .color-selector ul > LI.selected{
+    outline: 1px solid var(--p-surface-600);
+}
+
+.locode-nodedesign-window .color-selector ul > LI:HOVER{
+    outline: 2px solid var(--p-surface-600);
+}
+
+.locode-nodedesign-window .shapes{
+    display: flex; flex-direction: row; gap: 4px;
+    justify-content: center;
+}
+
+.locode-nodedesign-window .shapes BUTTON{
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    background: color-mix(in srgb, var(--p-surface-800) 50%, transparent);
+    color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
+    border: none;
+	cursor: pointer;
+}
+
+.locode-nodedesign-window .shapes BUTTON:hover{
+    background: color-mix(in srgb, var(--p-surface-800) 50%, transparent);
+    color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
+}
+
+.locode-nodedesign-window .shapes BUTTON.selected{
+	background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
+    color: color-mix(in srgb, var(--p-text-color) 66%, transparent);
+}

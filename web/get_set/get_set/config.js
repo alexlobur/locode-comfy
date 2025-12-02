@@ -4,7 +4,7 @@ import { LO_NODES_DEFAULTS } from "../../config.js";
 // Конфиги узлов
 export const _CFG = {
     extName:        "locode.GetSet",
-	category:       "locode/test",
+	category:       "locode/params",
 
     /**
      *  Устанавливать ли заголовок узла из пространства имен
@@ -31,12 +31,6 @@ export const _CFG = {
         inputPrefix:        "in",
         nodesDefaults: { ...LO_NODES_DEFAULTS["LoSet"] },
         minWidth:       150,
-        frozenIndicator: {
-            color:  "#FFFFFF66",
-            font:   "36px sans-serif",
-            text:   "*",
-            offset: [-18, 32],
-        },
         menu: {
             title: "Lo:Set",
             submenu: {
@@ -72,6 +66,7 @@ export const _CFG = {
     messages: {
         namespaceEmpty: "Namespace should not be empty",
         namespaceExist: "Namespace \"{name}\" already exists",
-        noRefer:        "Setter with namespace \"{name}\" not found",
+        noSetter:       "Setter with namespace \"{name}\" not found",
+        noLink:         "Link[{slot}] to setter with namespace \"{name}\" not found",
     },
 }

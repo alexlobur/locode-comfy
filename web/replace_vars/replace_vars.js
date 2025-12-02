@@ -1,6 +1,6 @@
 import {app} from "../../../scripts/app.js"
 import {InputsLabelsWidget} from "../.core/widgets/InputsLabelsWidget.js"
-import { normalizeNodeInputs, addEmptyNodeInput } from "../.core/utils/nodes_utils.js"
+import { normalizeDynamicInputs, addEmptyNodeInput } from "../.core/utils/nodes_utils.js"
 
 
 // Конфиг узла
@@ -50,7 +50,7 @@ app.registerExtension({
 
 
 function _normalizeInputs(node){
-    normalizeNodeInputs( node, { addDefaultEmptyInput: false })
+    normalizeDynamicInputs(node)
     addEmptyNodeInput( node, {
         prefix: NODE_CFG.inputPrefix,
         label: NODE_CFG.inputPrefix+node.inputs.length

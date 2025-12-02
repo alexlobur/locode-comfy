@@ -1,4 +1,5 @@
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
+import { getSetterActiveInputs } from "../props_utils.js"
 
 
 // Конфиги узлов
@@ -7,6 +8,7 @@ export const _CFG = {
     extName:        "locode.GetSetProps",
     applyDelay:     100, // задержка применения изменений
     onCreateGetterOffset: [50, 0],  // Сдвиг при создании геттера относительно сеттера [x, y]
+    maxFindLinkedSettersDepth: 10,  // максимальная глубина поиска связанных сеттеров
 
     setNode: {
         type:           "LoSetProps",
@@ -18,12 +20,6 @@ export const _CFG = {
             name:       "props",
         },
         minWidth:       140,
-        frozenIndicator: {
-            color:  "#FFFFFF66",
-            font:   "36px sans-serif",
-            text:   "*",
-            offset: [-18, 32],
-        },
         menu: {
             title: "Lo:SetProps",
             submenu: {
@@ -66,8 +62,8 @@ class _GetSetPropsVM{
         this.events.emit("setter_output_connect_changed", { node, output })
     setterOutputRenamed = (node) =>
         this.events.emit("setter_output_renamed", { node })
-    setterAfterRemoved = (node) =>
-        this.events.emit("setter_removed", { node })
+    setterAfterRemoved = (nodeId) =>
+        this.events.emit("setter_removed", { nodeId })
 
 
     /**
@@ -76,9 +72,13 @@ class _GetSetPropsVM{
      *  @param {{}} parentNode
      *  @return {{}[]} setters
      */
-    findLinkedSetters(parentNode){
-        if (!parentNode || !Array.isArray(parentNode.inputs)) return []
-        
+    findLinkedSetters(parentNode, count=0){
+        if (
+            !parentNode
+            || !Array.isArray(parentNode.inputs)
+            || count > _CFG.maxFindLinkedSettersDepth
+        ) return []
+
         const skipTypes = [
             "STRING", "INT", "FLOAT", "BOOLEAN",
             "IMAGE", "MASK", "LATENT",
@@ -97,7 +97,7 @@ class _GetSetPropsVM{
             if (node.type == _CFG.setNode.type){
                 result.push(node)
             } else {
-                result.push(...this.findLinkedSetters(node))
+                result.push(...this.findLinkedSetters(node, count+1))
             }
         }
          return result
@@ -116,15 +116,11 @@ class _GetSetPropsVM{
     /**
      *	Выдает список инпутов сеттера, без последнего
      */
-    getSetterActiveInputs(setterNode){
-        if(!setterNode) return []
-        // Только один инпут
-        if(setterNode.inputs.length<=1) return []
-        // Активные инпуты
-        return setterNode.inputs.slice(0, setterNode.inputs.length-1)
-    }
+    getSetterActiveInputs = (setterNode) => getSetterActiveInputs(setterNode)
+
 
 }
+
 
 const GetSetPropsVM = new _GetSetPropsVM()
 export default GetSetPropsVM
