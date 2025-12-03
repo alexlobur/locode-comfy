@@ -5,7 +5,7 @@ import {overrideComputeSizeMinWidth} from "../../.core/utils/nodes_utils.js"
 import {LoSetNode} from "./set_node.js"
 import {_CFG} from "./config.js"
 import { getSetterActiveInputs } from "../props_utils.js"
-import Logger from "../../.core/utils/Logger.js"
+
 
 
 // const LGraphNode = LiteGraph.LGraphNode

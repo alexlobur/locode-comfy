@@ -1,18 +1,19 @@
 .locode-nodedesign-window{
-    position: absolute; top: 8px; right: 8px;
+    position: absolute; top: 6px; right: 6px;
     z-index: 100000;
     user-select: none;
 
-    background: var(--comfy-menu-bg) !important;
+    background: var(--comfy-menu-secondary-bg) !important;
     border-radius: 16px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
 }
 
 
 .locode-nodedesign-window .-content{
-    display: flex; flex-direction: column; gap: 12px;
+    display: flex; flex-direction: column;
     padding: 12px;
 }
+
 
 .locode-nodedesign-window .-close{
     display: flex; align-items: center; justify-content: center;
@@ -27,6 +28,7 @@
     cursor: pointer;
 }
 
+
 .locode-nodedesign-window .-close:hover{
     background: color-mix(in srgb, var(--p-surface-800) 80%, transparent);
     color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
@@ -36,14 +38,14 @@
 .locode-nodedesign-window .header{
     font-size: 12px;
     font-weight: 600;
-    color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
-    padding-bottom: 0;
+    color: color-mix(in srgb, var(--p-button-text-secondary-color) 50%, transparent);
+    padding-bottom: 8px;
 }
 
 
 .locode-nodedesign-window .label{
     font-size: 14px;
-    opacity: 0.33;
+    color: var(--p-button-text-secondary-color);
     padding-bottom: 1px;
 }
 
@@ -58,6 +60,7 @@
     border: none;
 }
 
+
 .locode-nodedesign-window INPUT:focus {
     background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
     color:      var(--p-text-color);
@@ -66,20 +69,52 @@
 
 
 .locode-nodedesign-window .colors{
-    display: grid; 
-    grid-template-columns: auto 1fr;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
     gap: 4px 8px;
 }
 
-.locode-nodedesign-window .colors INPUT{
-    width: 180px;
+.locode-nodedesign-window .color-icon{
+    position: relative;
 }
 
+.locode-nodedesign-window .color-icon:after{
+    content: ""; display: block;
+    width: 14px; height: 14px;
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 2px;
+    border: 2px solid var(--p-button-text-secondary-color);
+    opacity: 0.25;
+}
+
+.locode-nodedesign-window .color-icon:after + INPUT:focus{
+    opacity: 1.0;
+}
+
+
+.locode-nodedesign-window .color-icon.title:after{
+    border-top: 4px solid var(--p-button-text-secondary-color);
+}
+
+.locode-nodedesign-window .color-icon.content:after{
+    border-bottom: 8px solid var(--p-button-text-secondary-color);
+}
+
+
+.locode-nodedesign-window .colors INPUT{
+    width: 180px;
+    padding: 8px 8px 8px 28px;
+    font-size: 14px;
+}
+
+
 .locode-nodedesign-window .color-selector{
-    grid-column: span 2;
     padding-bottom: 8px;
 }
+
 
 .locode-nodedesign-window .color-selector ul{
     display: flex; flex-direction: row; gap: 2px; flex-wrap: wrap;
@@ -89,42 +124,72 @@
 
 .locode-nodedesign-window .color-selector ul > LI{
     display: block;
-    width: 16px; height: 16px;
+    width: 14px; height: 14px;
     border-radius: 50%;
     margin: 0; padding: 0; list-style: none;
     cursor: pointer;
     border: 1px solid var(--p-surface-800);
 }
 
+
 .locode-nodedesign-window .color-selector ul > LI.selected{
     outline: 1px solid var(--p-surface-600);
 }
 
+
 .locode-nodedesign-window .color-selector ul > LI:HOVER{
     outline: 2px solid var(--p-surface-600);
 }
+
 
 .locode-nodedesign-window .shapes{
     display: flex; flex-direction: row; gap: 4px;
     justify-content: center;
 }
 
+
 .locode-nodedesign-window .shapes BUTTON{
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 14px;
+    position: relative;
+    width: 32px; height: 32px;
+    border-radius: 50%;
     background: color-mix(in srgb, var(--p-surface-800) 50%, transparent);
-    color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
     border: none;
 	cursor: pointer;
 }
 
+.locode-nodedesign-window .shapes BUTTON:after{
+    content: ""; display: block; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border-color: color-mix(in srgb, var(--p-button-text-secondary-color) 50%, transparent);
+    border-width: 2px;
+    border-style: solid;
+}
+
+.locode-nodedesign-window .shapes BUTTON[value="0"]:after{
+    border-style: dashed;
+}
+
+.locode-nodedesign-window .shapes BUTTON[value="1"]:after{
+    border-radius: 0px;
+}
+
+.locode-nodedesign-window .shapes BUTTON[value="2"]:after{
+    border-radius: 33%;
+}
+
+.locode-nodedesign-window .shapes BUTTON[value="4"]:after{
+    border-radius: 33% 33% 0 0;
+}
+
 .locode-nodedesign-window .shapes BUTTON:hover{
-    background: color-mix(in srgb, var(--p-surface-800) 50%, transparent);
-    color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
+    background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
 }
 
 .locode-nodedesign-window .shapes BUTTON.selected{
 	background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
-    color: color-mix(in srgb, var(--p-text-color) 66%, transparent);
+}
+
+.locode-nodedesign-window .shapes BUTTON.selected:after{
+    border-color: color-mix(in srgb, var(--p-button-text-secondary-color) 100%, transparent);
 }

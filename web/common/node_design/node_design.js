@@ -113,22 +113,24 @@ class _NodeDesign {
 					<button type="button" class="-close" title="Close">✕</button>
 					<div class="header">Lo: Nodes Design</div>
 					<div class="colors">
-						<div class="label">Title:</div>
-						<input type="text" name="color" title="Title Background Color">
+						<div class="color-icon title">
+							<input type="text" name="color" title="Title Background Color">
+						</div>
 						<div class="color-selector" data-type="color">
 							<ul><li></li></ul>
 						</div>
-						<div class="label">Content:</div>
-						<input type="text" name="bgcolor" title="Content Background Color">
+						<div class="color-icon content">
+							<input type="text" name="bgcolor" title="Content Background Color">
+						</div>
 						<div class="color-selector" data-type="bgcolor">
 							<ul><li></li></ul>
 						</div>
 					</div>
 					<div class="shapes">
-						<button type="button" name="shape" value="0">Default</button>
-						<button type="button" name="shape" value="1">Box</button>
-						<button type="button" name="shape" value="2">Round</button>
-						<button type="button" name="shape" value="4">Card</button>
+						<button type="button" name="shape" value="0" title="Default"></button>
+						<button type="button" name="shape" value="1" title="Box"></button>
+						<button type="button" name="shape" value="2" title="Round"></button>
+						<button type="button" name="shape" value="4" title="Card"></button>
 					</div>
 				</div>
 			`,

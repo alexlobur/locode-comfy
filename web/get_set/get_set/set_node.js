@@ -2,9 +2,9 @@ import {app} from "../../../../scripts/app.js"
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 import {makeUniqueName, setObjectParams} from "../../.core/utils/base_utils.js"
 import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, overrideOnConnectInput} from "../../.core/utils/nodes_utils.js"
-import { drawFrozenIndicator } from "../props_utils.js"
+import {drawFrozenIndicator} from "../props_utils.js"
+import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
 import {_CFG} from "./config.js"
-
 
 const NODE_CFG = _CFG.setNode
 
@@ -318,8 +318,7 @@ const NODE_CFG = _CFG.setNode
 	 *	Получение списка пространства имен воркфлоу
 	 */
      static getNamespaces({ excludeNodesIds = [] }={}){
-		return app.graph
-            .findNodesByType(_CFG.setNode.type)
+        return findNodesBy({ type: _CFG.setNode.type })
             .filter( node => !excludeNodesIds.includes(node.id) )
             .map( node => node.namespace )
             .filter( namespace => namespace!="" )
@@ -330,8 +329,7 @@ const NODE_CFG = _CFG.setNode
      *  Получение узла SetNode по namespace 
      */
     static findNodeByNamespace(name){
-        const nodes = app.graph.findNodesByType(_CFG.setNode.type)
-        return nodes.find(node => node.namespace == name)
+        return findNodeBy({ type: _CFG.setNode.type, namespace: name })
     }
 
 }

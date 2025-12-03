@@ -1,14 +1,10 @@
-import {app} from "../../../../scripts/app.js"
 import Logger from "../../.core/utils/Logger.js"
 import {setObjectParams} from "../../.core/utils/base_utils.js"
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
 
-
 const VM = GetSetPropsVM
 const {getNode: NODE_CFG} = _CFG
-
-
 
 
 /**---
@@ -169,7 +165,7 @@ export function LoGetPropsExtends(proto){
 	 *	Обновление выходов на основе узла-сеттера
 	 */
 	proto._updateOutputsFromRefer = function(fitSize=false){
-		const setterInputs = VM.getSetterActiveInputs(app.graph.getNodeById(this.setterId))
+		const setterInputs = VM.getSetterActiveInputs(VM.getSetterById(this.setterId))
 
 		// обновление выходов
 		for (let index = 0; index < setterInputs.length; index++){
@@ -197,7 +193,7 @@ export function LoGetPropsExtends(proto){
      */
     proto._setInputParams = function (){
         // узел сеттера
-		const setter = app.graph.getNodeById(this.setterId)
+		const setter = VM.getSetterById(this.setterId)
 		const params = {
 			...NODE_CFG.inputProps,
 			label:	setter?.propsName??NODE_CFG.inputProps.label,

@@ -1,5 +1,7 @@
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
-import { getSetterActiveInputs } from "../props_utils.js"
+import {getSetterActiveInputs} from "../props_utils.js"
+import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
+import {app} from "../../../../scripts/app.js"
 
 
 // Конфиги узлов
@@ -109,7 +111,17 @@ class _GetSetPropsVM{
      *  @returns
      */
     findSetters(){
-		return app.graph.findNodesByType(_CFG.setNode.type)
+        return findNodesBy({ type: _CFG.setNode.type })
+    }
+
+
+    /**
+     *  Получение сеттера по id
+     *  @param {string} id
+     *  @returns {LGraphNode}
+     */
+    getSetterById(id){
+        return findNodeBy({ id })
     }
 
 

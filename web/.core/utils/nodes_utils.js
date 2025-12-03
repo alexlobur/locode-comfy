@@ -6,9 +6,11 @@ import {makeUniqueName} from "./base_utils.js"
  *  Проход по списку всех узлов графа (по дереву)
  * 
  * @param {{}[]} nodes
- * @param {?function(node, parentNodeIds)} callBack Колбэк функция при проходе каждого нода. Вернет нод и список id родителей
+ * @param {?function(node, parentNodeIds)} callBack
+ *  Колбэк функция при проходе каждого нода.
+ *  Вернет нод и список id родителей
  * @param {Number[]} parentNodeIds
- * @returns 
+ * @returns {LGraphNode[]} Список всех узлов графа
  */
 export function foreachNodes(nodes, callBack=null, parentNodeIds=[]){
     const result = []
@@ -25,7 +27,42 @@ export function foreachNodes(nodes, callBack=null, parentNodeIds=[]){
         result.push(node)
     }
     return result
+}
 
+
+/**
+ *  Поиск узлов по типу и id
+ * 
+ *  Если type или ids не указан, то будут найдены все узлы.
+ * 
+ *  @param {string|null} type
+ *  @param {string[]} ids
+ *  @returns {LGraphNode[]}
+ */
+export function findNodesBy({ type=null, ids=[] }={}){
+    const result = []
+    foreachNodes( app.graph.nodes, (node)=>{
+        if(type && node.type != type) return
+        if(ids.length > 0 && !ids.includes(node.id)) return
+        result.push(node)
+    })
+    return result
+}
+
+
+/**
+ *  Поиск узла по свойствам
+ * 
+ *  @param {{}} props
+ *  @returns {LGraphNode|null}
+ */
+export function findNodeBy(props){
+    let result = null
+    foreachNodes( app.graph.nodes, (node)=>{
+        for(const key in props) if(node[key] !== props[key]) return
+        result = node
+    })
+    return result
 }
 
 
