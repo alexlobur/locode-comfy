@@ -13,7 +13,17 @@ class LoIsEmpty:
     CATEGORY = "locode/calc"
     DESCRIPTION = """
 Check value of any type for Empty.
+
+## Check Rules:
+- **None** → `True`
+- **Strings**:
+  - "" → `True`
+- **Collections**
+  - (lists, dicts, sets, tuples): Empty → `True`
+
+Use Lo:IsNone to precisely check for None.
 """
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -29,6 +39,26 @@ Check value of any type for Empty.
     RETURN_NAMES = ("bool",)
     FUNCTION = "execute"
 
-    def execute(self, any):
-        is_empty = any is None or (isinstance(any, str) and any.strip() == "")
-        return (is_empty,)
+    def execute(self, any=None):
+        try:
+            return (check_empty(any),)
+        except Exception as e:
+            raise ValueError(f"Error converting to boolean: {any}. Error: {str(e)}")
+
+
+def check_empty(any) -> bool:
+
+    # Check for None
+    if any is None:
+        return True
+
+    # Check for empty string
+    if isinstance(any, str):
+        return any.strip() == ""
+
+    # Check for empty collection
+    if isinstance(any, (list, dict, set, tuple)):
+        return len(any) == 0
+
+    return True
+

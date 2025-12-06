@@ -4,6 +4,7 @@ from .py.nodes.calc.lo_compare_num import LoCompareNum
 from .py.nodes.calc.lo_random_num import LoRandomNum
 from .py.nodes.calc.lo_random_bool import LoRandomBool
 from .py.nodes.calc.lo_is_empty import LoIsEmpty
+from .py.nodes.calc.lo_is_none import LoIsNone
 
 from .py.nodes.convert.lo_not_bool import LoNotBool
 from .py.nodes.convert.lo_to_int import LoToInt
@@ -54,7 +55,7 @@ classes = [
     # replacers
     Replacers, ReplacersApply, LoReplaceVars,
     # calc
-    LoEval, LoEvals, LoCompareNum, LoIsEmpty, LoRandomNum, LoRandomBool,
+    LoEval, LoEvals, LoCompareNum, LoIsEmpty, LoIsNone, LoRandomNum, LoRandomBool,
     # convert
     LoNotBool, LoToInt, LoToFloat, LoToStr, LoToBool,
     # utils
