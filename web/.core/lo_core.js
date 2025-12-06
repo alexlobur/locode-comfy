@@ -32,7 +32,7 @@ class _LoCore {
         })
 
         // Логирование всех событий
-        this.events.onAny((eventName, ...args) => Logger.debug(`Event: ${eventName}`, ...args))
+        // this.events.onAny((eventName, ...args) => Logger.debug(`Event: ${eventName}`, ...args))
         this.events.emit("core_inited")
     }
 
@@ -64,6 +64,11 @@ class _LoCore {
 
         // выделение узлов
         app.canvas.onSelectionChange = wrapWithEvent(app.canvas.onSelectionChange, "canvas_selection_changed", this.events)
+
+        // перемещение узла
+        app.canvas.onNodeMoved = wrapWithEvent(app.canvas.onNodeMoved, "canvas_node_moved", this.events)
+
+        Logger.debug("Events initialized", app)
     }
 
 }

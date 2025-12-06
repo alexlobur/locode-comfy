@@ -82,6 +82,10 @@ export function LoGetPropsExtends(proto){
      *  При присоединении
      */
     proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
+		// если узел уже указан сеттер, то не проверяем
+		if(this.setterId != -1 && [this.inputs[index].type, "*"].includes(type) ){
+			return true
+		}
 		// проверка типа
 		if(type == this.inputs[index].type){
 			this.updateSetterId(outputNode.id)

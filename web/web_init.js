@@ -1,11 +1,11 @@
 import {app} from "../../../scripts/app.js"
 import Logger from "./.core/utils/Logger.js"
 import LoCore from "./.core/lo_core.js"
-import NodeDesign from "./common/node_design/node_design.js"
 import {updateDeprecatedBanner} from "./common/deprecated_banner/deprecated_banner.js"
 import { overrideComputeSizeMinWidth } from "./.core/utils/nodes_utils.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
+import { registerSidebarTab } from "./common/sidebar/sidebar.js"
 
 
 const DEPRECATED_TYPES = new Set()
@@ -39,16 +39,20 @@ app.registerExtension({
         LoCore.init()
 
         // Обновление баннера устаревших нодов
-        LoCore.events.on("graph_load", ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
-        LoCore.events.on("graph_node_added", ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
-        LoCore.events.on("graph_node_removed", ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
+        LoCore.events.on("graph_load",          ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
+        LoCore.events.on("graph_node_added",    ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
+        LoCore.events.on("graph_node_removed",  ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
 
         // Добавление контекстного меню для выделения
-        setSelectionContextMenu()        
-
+        setSelectionContextMenu()       
+        
+        // Регистрируем вкладку в боковой панели
+        registerSidebarTab(app)
     }
 
 })
+
+
 
 
 /*---
@@ -86,9 +90,6 @@ function setContextMenu(nodeType){
     nodeType.prototype.getExtraMenuOptions = function(canvas, menu){
         const ret = _getExtraMenuOptions?.apply(this, arguments)
 
-        // Добавляем пункт меню "Nodes Design" в меню
-        NodeDesign.addToMenu(menu)
-
         return ret
     }
 }
@@ -102,9 +103,6 @@ function setSelectionContextMenu(){
     const _getCanvasMenuOptions = LGraphCanvas.prototype.getCanvasMenuOptions
     LGraphCanvas.prototype.getCanvasMenuOptions = function(...args) {
         const options = _getCanvasMenuOptions?.apply(this, [...args]) || []
-
-        // Добавляем пункт меню "Nodes Design" в меню
-        NodeDesign.addToMenu(options)
 
         return options
     }

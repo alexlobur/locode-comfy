@@ -1,0 +1,7 @@
+.locode-sidebar{
+}
+
+.locode-sidebar-icon::after{
+    /* content: "L."; font-weight: 900; */
+    content: "N."; font-weight: 900;
+}

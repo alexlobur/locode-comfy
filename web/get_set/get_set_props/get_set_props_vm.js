@@ -95,7 +95,7 @@ class _GetSetPropsVM{
             .filter(link => !skipTypes.includes(link.origin_type))
 
             for (const link of links){
-            const node = app.graph.getNodeById(link.origin_id)
+            const node = findNodeBy({ id: link.origin_id })
             if (node.type == _CFG.setNode.type){
                 result.push(node)
             } else {

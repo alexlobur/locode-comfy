@@ -1,20 +1,25 @@
 import {app} from "../../../../scripts/app.js"
+import Logger from "./Logger.js"
 import {makeUniqueName} from "./base_utils.js"
 
 
 /**
  *  Проход по списку всех узлов графа (по дереву)
  * 
- * @param {{}[]} nodes
+ * @param {LGraphNode[]|null} nodes
  * @param {?function(node, parentNodeIds)} callBack
  *  Колбэк функция при проходе каждого нода.
  *  Вернет нод и список id родителей
  * @param {Number[]} parentNodeIds
  * @returns {LGraphNode[]} Список всех узлов графа
  */
-export function foreachNodes(nodes, callBack=null, parentNodeIds=[]){
+export function foreachNodes(nodes=null, callBack=null, parentNodeIds=[]){
+    if(nodes==null) nodes = app.graph.nodes
     const result = []
     for (const node of nodes){
+        // нод
+        callBack?.(node, parentNodeIds)
+        result.push(node)
         // сабграф
         if(node.subgraph!=null){
             result.push(
@@ -22,9 +27,6 @@ export function foreachNodes(nodes, callBack=null, parentNodeIds=[]){
             )
             continue
         }
-        // нод
-        callBack?.(node, parentNodeIds)
-        result.push(node)
     }
     return result
 }
@@ -163,7 +165,10 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
 export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
 
     // удаление инпутов без соединения
-    node.inputs = node.inputs.filter( input => input.isConnected )
+    node.inputs = node.inputs.filter( input =>{
+        if(!input.isConnected) return false             // проверка наличия соединения
+        return (app.graph.getLink(input.link)!=null)    // проверка существования ссылки
+    })
 
     // Обновление типов
     let index=0
