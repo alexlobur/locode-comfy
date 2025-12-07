@@ -22,10 +22,22 @@ class LoSidebar {
 
 
     /**
+     * Боковая панель для дизайна узлов
+     */
+    get subgraphSidebar(){
+        if(!this.#subgraphSidebar){
+            this.#subgraphSidebar = (new SubgraphSidebar()).element
+        }
+        return this.#subgraphSidebar
+    }
+    #subgraphSidebar = null
+
+
+    /**
      * Создание боковой панели
      * @param {Element} parentElement - Контейнер для боковой панели
      */
-    createSidebar(parentElement){
+    createNodesDesignSidebar(parentElement){
 
         parentElement.innerHTML = ""
 
@@ -63,7 +75,7 @@ export function registerSidebarTab(app){
         title:      "NodesDesign",
         tooltip:    "LoCode Nodes Design",
         type:       "custom",
-        render: (el) => sidebar.createSidebar(el)
+        render: (el) => sidebar.createNodesDesignSidebar(el)
     })
 }
 
