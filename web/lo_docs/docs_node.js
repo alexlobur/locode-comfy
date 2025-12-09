@@ -1,7 +1,11 @@
 import { app } from "../../../scripts/app.js"
 import Logger from "../.core/utils/Logger.js"
 import { DocsNodeItem } from "./DocsNodeItem.js"
-import { createElement } from "../.core/utils/dom_utils.js"
+import { importCss } from "../.core/utils/dom_utils.js"
+import { DocsContentWidget } from "./DocsContentWidget.js"
+
+
+importCss("docs_node.css", import.meta)
 
 
 // Конфиг узла
@@ -12,6 +16,7 @@ const NODE_CFG = {
 	nodeCategory:	"locode/ui",
 	nodeDescription: `Node for creating documentation in markdown format.`,
 }
+
 
 
 /**---
@@ -27,11 +32,27 @@ export class LoDocsNode extends LGraphNode {
 
 		this.isVirtualNode = true
 		this.resizable = true
+		this.serialize_widgets = true
+
 
 		Logger.debug("constructor", this)
 
-		// Кастомный виджет с документацией
-		this.docsWidget = new LoDocsWidget(this, "docs_content")
+		// Кастомный виджет с DIV блоком
+		this.docsWidget = new DocsContentWidget(this)
+
+		// Добавляем кнопки в заголовок
+		// this.addTitleButton({
+		// 	text:		"\ue967", 
+		// 	fgColor: 	"white",
+		// 	bgColor: 	"#0F1F0F",
+		// 	name:	 	"pages",
+		// 	xOffset:	-10,
+		// 	yOffset:	0,
+		// 	fontSize:	16,
+		// 	padding:	6,
+		// 	height:		20,
+		// 	cornerRadius: 5,
+		// })
 
 		// Визуальные настройки нода (минимальные)
 		this.size = NODE_CFG.nodeSize
@@ -39,11 +60,17 @@ export class LoDocsNode extends LGraphNode {
 	}
 
 
-	onDblClick(){
-		Logger.debug("onDblClick", this)
-	}
+	/**
+	 * Обработчик нажатия на кнопку в заголовке
+	 */
+	// onTitleButtonClick(button){
+	// 	Logger.debug("onTitleButtonClick", button)
+	// }
 
 
+	/**
+	 * Регистрация нода
+	 */
 	static setUp() {
         LiteGraph.registerNodeType(NODE_CFG.nodeType, this)
 		this.category		= NODE_CFG.nodeCategory
@@ -51,72 +78,6 @@ export class LoDocsNode extends LGraphNode {
     }
 
 }
-
-
-
-/**---
- * 
- *	Виджет для отображения/редактирования текущего документа
- *
- */
- class LoDocsWidget {
-	
-	#element
-	#node
-
-	constructor(node, name = "docs_content") {
-		this.#node = node
-		this.name = name
-		this.#createElement()
-	}
-
-	/**
-	 * Создаем DIV элемент
-	 */
-	#createElement() {
-		// Создаем DIV блок
-		this.#element = createElement("div", {
-			classList: ["lo-docs-widget"],
-			styles: {
-				minHeight: "100px",
-				padding: "10px",
-				backgroundColor: "rgba(0, 0, 0, 0.1)",
-				borderRadius: "4px"
-			},
-			content: "Документация"
-		})
-
-		// Добавляем виджет к узлу
-		this.#node.addDOMWidget(this.name, "STRING", this.#element, {
-			getValue: () => this.getValue(),
-			setValue: (value) => this.setValue(value),
-		})
-	}
-
-	/**
-	 * Получаем значение
-	 */
-	getValue() {
-		return this.#element.textContent || ""
-	}
-
-	/**
-	 * Устанавливаем значение
-	 */
-	setValue(value) {
-		if (this.#element) {
-			this.#element.textContent = value || ""
-		}
-	}
-
-	/**
-	 * Получаем элемент для внешнего доступа
-	 */
-	get element() {
-		return this.#element
-	}
-}
-
 
 
 /**---

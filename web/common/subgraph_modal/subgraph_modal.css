@@ -1,0 +1,134 @@
+
+.locode-subgraph-modal{
+    &{
+        position: fixed; top: 20px; right: 20px;
+        display: flex; flex-direction: column; gap: 8px;
+        padding: 24px;
+        user-select: none;
+        border-radius: 16px;
+        border: 1px solid var(--p-surface-700);
+        outline: none;
+        background: var(--p-surface-800);
+        box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    &::backdrop{
+        background: rgb(0,0,0);
+        opacity: 0.75;
+    }
+
+}
+
+
+.locode-subgraph-modal .title{
+    font-size: 16px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--p-text-color) 75%, transparent);
+}
+
+
+.locode-subgraph-modal .label{
+    font-size: 13px;
+    /* color: var(--p-button-text-secondary-color); */
+    color: color-mix(in srgb, var(--p-text-color) 50%, transparent);
+    padding-bottom: 4px;
+}
+
+
+/* Table */
+
+.locode-subgraph-modal table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.locode-subgraph-modal table caption{
+    font-weight: 600;
+    color: color-mix(in srgb, var(--p-text-color) 75%, transparent);
+    padding: 6px;
+}
+
+.locode-subgraph-modal table tr{
+    border-bottom: 1px solid var(--p-surface-700);
+
+    &:hover{
+        background-color: color-mix(in srgb, var(--p-surface-900) 33%, transparent);
+    }
+}
+
+.locode-subgraph-modal table th{
+    color: color-mix(in srgb, var(--p-text-color) 50%, transparent);
+    background-color: color-mix(in srgb, var(--p-surface-700) 33%, transparent);
+    font-weight: 600;
+    font-size: 11px;
+    text-align: left;
+    padding: 6px 8px;
+}
+
+.locode-subgraph-modal table td{
+    padding: 8px;
+    color: color-mix(in srgb, var(--p-text-color) 50%, transparent);
+}
+
+.locode-subgraph-modal table td.actions{
+    display: flex; gap: 0;
+    padding: 0;
+}
+
+.locode-subgraph-modal table td.actions button{
+    &{
+        width: 24px; height: 28px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        outline: none;
+        cursor: pointer;
+    }
+    &:hover{
+        background: color-mix(in srgb, var(--p-surface-900) 100%, transparent);
+    }
+}
+
+.locode-subgraph-modal table tr:first-child td.actions button:first-child,
+.locode-subgraph-modal table tr:last-child td.actions button:last-child {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+
+.locode-subgraph-modal table td.name{
+    font-weight: bold;
+}
+
+
+/* INPUTS */
+
+.locode-subgraph-modal INPUT {
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
+    color:      color-mix(in srgb, var(--p-text-color) 75%, transparent);
+    outline:    0px solid var(--p-surface-800);
+    width: 100%;
+    border: none;
+
+    /* placeholder */
+    &::placeholder{
+        color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
+        font-size: 12px;
+    }
+
+    /* focus */
+    &:focus {
+        background: color-mix(in srgb, var(--p-surface-800) 100%, transparent);
+        color:      var(--p-text-color);
+        outline:    2px solid var(--p-surface-600);
+    }
+
+}
+

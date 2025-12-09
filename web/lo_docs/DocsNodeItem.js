@@ -3,19 +3,21 @@
  */
 export class DocsNodeItem {
 
-    #header = ''
+    #title = ''
     #text = ''
+    get title() { return this.#title }
+    get text() { return this.#text }
+
 
     /**
      *  Конструктор
      *  
-     * @param {Object} data
-     * @param {string} data.header
-     * @param {string} data.text
+     * @param {string} title
+     * @param {string} text
      */
-    constructor(data){
-        this.#header = data?.header || ''
-        this.#text = data?.text || ''
+    constructor({ title = 'Untitled', text = '' } = {}){
+        this.#title = title || 'Untitled'
+        this.#text = text
     }
 
 
@@ -26,7 +28,7 @@ export class DocsNodeItem {
      */
     toJson(){
         return {
-            header: this.#header,
+            title: this.#title,
             text: this.#text
         }
     }
@@ -51,11 +53,9 @@ export class DocsNodeItem {
      */
     copyWith(updates = {}) {
         return new DocsNodeItem({
-            ...this,
+            ...this.toJson(),
             ...updates
         })
     }
 
 }
-
-
