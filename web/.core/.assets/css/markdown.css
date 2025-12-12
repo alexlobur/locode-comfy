@@ -1,0 +1,47 @@
+.locode-markdown{
+    word-wrap: break-word;
+    /* white-space: pre-wrap; */
+    /* white-space: break-spaces; */
+    -webkit-font-variant-ligatures: none;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0;
+
+    /* background-color: var(--comfy-input-bg); */
+    /* color: var(--input-text); */
+}
+
+.locode-markdown :first-child {
+    margin-top: 0;
+}
+  
+.locode-markdown :last-child {
+    margin-bottom: 0;
+}
+  
+.locode-markdown blockquote {
+    border-left: solid;
+    margin-left: 1em;
+    padding-left: .5em;
+}
+  
+.locode-markdown pre {
+    border: thin dotted;
+    border-radius: .5em;
+    margin: .5em;
+    padding: .5em;
+}
+  
+.locode-markdown table {
+    border-collapse: collapse;
+}
+  
+.locode-markdown th {
+    text-align: left;
+    background: var(--comfy-menu-bg);
+}
+
+.locode-markdown th, .locode-markdown td {
+    border: thin solid;
+    padding: .5em;
+}
+

@@ -1,5 +1,5 @@
 import {app} from "../../../scripts/app.js"
-import {addEmptyNodeInput, normalizeNodeInputs} from "../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs} from "../.core/utils/nodes_utils.js"
 
 
 // Конфиг узла
@@ -45,7 +45,7 @@ app.registerExtension({
 
 
 function _normalizeInputs(node){
-    normalizeNodeInputs(node, { addDefaultEmptyInput: false })
+    normalizeDynamicInputs(node)
     addEmptyNodeInput( node, {
         prefix: NODE_CFG.inputPrefix,
         label: NODE_CFG.inputPrefix+node.inputs.length

@@ -1,5 +1,5 @@
 import { app } from "../../../scripts/app.js"
-import { wrapCanvasText } from "../.core/utils/nodes_utils.js"
+import { wrapCanvasText } from "../.core/utils/dom_utils.js"
 import { TextData } from "../.core/entity/TextData.js"
 import { openCommentModal } from "./comment_modal.js"
 import { CommentData } from "./CommentData.js"

@@ -68,6 +68,9 @@ class _LoCore {
         // перемещение узла
         app.canvas.onNodeMoved = wrapWithEvent(app.canvas.onNodeMoved, "canvas_node_moved", this.events)
 
+        // открытие сабграфа
+        app.canvas.openSubgraph = wrapWithEvent(app.canvas.openSubgraph, "canvas_open_subgraph", this.events)
+
         Logger.debug("Events initialized", app)
     }
 

@@ -7,25 +7,88 @@ import {makeUniqueName} from "./base_utils.js"
  *  Проход по списку всех узлов графа (по дереву)
  * 
  * @param {LGraphNode[]|null} nodes
- * @param {?function(node, parentNodeIds)} callBack
+ * @param {?function(node, parentNodesIds)} callBack
  *  Колбэк функция при проходе каждого нода.
  *  Вернет нод и список id родителей
- * @param {Number[]} parentNodeIds
+ * @param {Number[]} parentNodesIds
  * @returns {LGraphNode[]} Список всех узлов графа
  */
-export function foreachNodes(nodes=null, callBack=null, parentNodeIds=[]){
+export function foreachNodes(nodes=null, callBack=null, parentNodesIds=[]){
     if(nodes==null) nodes = app.graph.nodes
     const result = []
     for (const node of nodes){
         // нод
-        callBack?.(node, parentNodeIds)
+        callBack?.(node, parentNodesIds)
         result.push(node)
         // сабграф
         if(node.subgraph!=null){
             result.push(
-                ...foreachNodes( node.subgraph._nodes, callBack, [...parentNodeIds, node.id] )
+                ...foreachNodes( node.subgraph._nodes, callBack, [...parentNodesIds, node.id] )
             )
-            continue
+        }
+    }
+    return result
+}
+
+
+/**
+ *  Проход по списку всех групп графа (по дереву)
+ * 
+ * @param {LGraphGroup[]|null} groups
+ * @param {?function(group, parentSubgraphs)} callBack
+ *  Колбэк функция при проходе каждой группы
+ *  Вернет группу и список сабграфов родителей
+ * @returns {LGraphGroup[]} Список всех групп графа
+ */
+export function foreachGroups(callBack=null){
+    const result = []
+
+    // колбэк для прохода по группам
+    const _callback = (groups, parentSubgraphs)=>{
+        for(const group of groups){
+            callBack?.(group, parentSubgraphs)
+            result.push(group)
+        }
+    }
+
+    // группы графа
+    _callback(app.graph._groups, [])
+
+    // группы сабграфов
+    foreachSubgraphs( null, (subgraph, parentSubgraphs)=>
+        _callback(subgraph._groups, [...parentSubgraphs, subgraph])
+    )
+
+    return result
+}
+
+
+/**
+ *  Проход по списку всех сабграфов графа (по дереву)
+ * 
+ * @param {LGraphSubgraph[]|null} subgraphs
+ * @param {?function(subgraph, parentSubgraphs)} callBack
+ *  Колбэк функция при проходе каждого сабграфа
+ *  Вернет сабграф и список сабграфов родителей
+ * @param {LGraphSubgraph[]} parentSubgraphs
+ * @returns {LGraphSubgraph[]} Список всех сабграфов графа
+ */
+function foreachSubgraphs(subgraphs=null, callBack=null, parentSubgraphs=[]){
+    // сабграфы графа
+    if(subgraphs==null) subgraphs = Array.from(app.graph._subgraphs?.values()??[])
+    const result = []
+
+    // проход по сабграфам
+    for (const subgraph of subgraphs){
+        callBack?.(subgraph, parentSubgraphs)
+        result.push(subgraph)
+        if(subgraph._subgraphs!=null){
+            result.push(
+                ...foreachSubgraphs(
+                    Array.from(subgraph._subgraphs?.values()??[]),
+                    callBack, [...parentSubgraphs, subgraph]
+                )
+            )
         }
     }
     return result
@@ -69,6 +132,47 @@ export function findNodeBy(props){
 
 
 /**
+ *  Поиск узла по id (быстрый)
+ * 
+ *  @param {number} id
+ *  @returns {LGraphNode|null}
+ */
+export function findNodeById(id){
+    // сначала ищем в текущем графе
+    const node = app.graph._nodes_by_id[id]??null
+    if(node) return node
+    // затем в сабграфах графа
+    const subgraphs = foreachSubgraphs()
+    for(const subgraph of subgraphs){
+        const node = subgraph._nodes_by_id[id]??null
+        if(node) return node
+    }
+    return null
+}
+
+
+/**
+ *  Поиск ссылки по id
+ * 
+ *  @param {number} id
+ *  @returns {LLink|null}
+ */
+export function findLinkById(id){
+    // сначала ищем в графе
+    const link = app.graph.getLink(id)
+    if(link) return link
+
+    // затем в сабграфах графа
+    const subgraphs = foreachSubgraphs()
+    for(const subgraph of subgraphs){
+        const link = subgraph.getLink(id)
+        if(link) return link
+    }
+    return null
+}
+
+
+/**
  *  Пытается перейти к узлу
  */
 export function gotoNode(node, select = true){
@@ -94,67 +198,6 @@ export function listToNamedObject( namedList ){
 
 
 /**
- *  Пишет многострочный текст на канве, учитывая ручные переносы строк.
- *
- *  @param {CanvasRenderingContext2D} ctx   Контекст канвы, в котором будет рисоваться текст.
- *  @param {string} text                    Исходный текст, допускающий переносы `\n`.
- *  @param {number} marginLeft              Координата X первой строки.
- *  @param {number} marginTop               Координата Y первой строки.
- *  @param {number} maxWidth                Максимальная ширина строки.
- *  @param {number|null} lineSpacing        Межстрочный интервал.
- *  @param {boolean} calcOnly               Только посчет без вывода
- *  @returns {{width: number, height: number}}  Итоговая высота и ширина блока текста.
- */
-export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0, lineSpacing=1.25, calcOnly=false }){
-
-    // Вычисляем высоту строки
-    const metrics = ctx.measureText("M")
-    //const effectiveLineHeight = ((metrics.fontBoundingBoxAscent ?? 0) + (metrics.fontBoundingBoxDescent ?? 0))*1.25
-    // const effectiveLineHeight = metrics.fontBoundingBoxDescent*lineSpacing
-    const lineHeight = metrics.actualBoundingBoxDescent * lineSpacing
-
-    let cursorY = marginTop
-    const result = { width: 0, height: 0 }
-
-    /**
-     * Фиксирует текущую строку на канве и смещает курсор на следующую.
-     * @param {string} line Строка, которую нужно нарисовать.
-     */
-    const commitLine = (line) => {
-        const m = ctx.measureText(line)
-        // обновление результирущих данных
-        result.width = Math.max(result.width, m.width)
-        result.height = m.actualBoundingBoxDescent + cursorY - marginTop
-        if(!calcOnly) ctx.fillText(line, marginLeft, cursorY)
-        cursorY += lineHeight
-    }
-
-    const paragraphs = String(text ?? "").split(/\r?\n/)
-    for (const paragraph of paragraphs){
-        let line = ""
-        const words = paragraph.trim().split(" ")
-
-        for (const word of words){
-            const testLine = line + word
-            const testWidth = ctx.measureText(testLine).width
-
-            // Переносим строку на новую линию, если достигли ограничения по ширине.
-            if (testWidth > maxWidth && line !== ""){
-                commitLine(line)
-                line = word + " "
-            } else {
-                line = testLine + " "
-            }
-        }
-        // Добавляем завершающую строку параграфа (возможно пустую).
-        commitLine(line.trimEnd())
-    }
-
-    return result
-}
-
-
-/**
  *  Нормализация динамических инпутов
  *  Удаление пустых
  * 
@@ -166,15 +209,15 @@ export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
 
     // удаление инпутов без соединения
     node.inputs = node.inputs.filter( input =>{
-        if(!input.isConnected) return false             // проверка наличия соединения
-        return (app.graph.getLink(input.link)!=null)    // проверка существования ссылки
+        if(!input.isConnected) return false        // проверка наличия соединения
+        return (findLinkById(input.link)!=null)    // проверка существования ссылки
     })
 
     // Обновление типов
     let index=0
     for (const input of node.inputs){
         // обновление типа из выхода узла по ссылке
-        const link = app.graph.getLink(input.link)
+        const link = findLinkById(input.link)
         if(link){
             const originNode = app.graph.getNodeById(link.origin_id)
             input.type = originNode?.outputs[link.origin_slot].type??"*"
@@ -187,45 +230,6 @@ export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
         }
         index++
     }
-}
-
-
-/**
- *  Нормализация Инпутов
- *  Удаление пустых, добавление свободного
- * 
- *  @param {LGraphNode} node 
- *  @param {(node, index, input)=>void} onLabelChanged - функция для обработки изменений Label
- *  @param {boolean} addDefaultEmptyInput - добавлять пустой инпут в конец
- *  @returns {void}
- *  @deprecated Use normalizeDynamicInputs instead
- */
-export function normalizeNodeInputs(node, { onLabelChanged=null, addDefaultEmptyInput=true }={}){
-
-    // удаление инпутов без соединения
-    node.inputs = node.inputs.filter( input => input.isConnected )
-
-    // Обновление типов
-    let index=0
-    for (const input of node.inputs){
-        // обновление типа из выхода узла по ссылке
-        const link = app.graph.getLink(input.link)
-        if(link){
-            const originNode = app.graph.getNodeById(link.origin_id)
-            input.type = originNode?.outputs[link.origin_slot].type??"*"
-        }
-        // вешаем слушатель на label
-        if(onLabelChanged){
-            watchSlotLabel( input, {
-                onChanged: (input) => onLabelChanged?.(node, index, input)
-            })
-        }
-        index++
-    }
-
-    // Добавление пустого инпута в конец
-    if(addDefaultEmptyInput) addEmptyNodeInput(node)
-
 }
 
 
@@ -348,4 +352,5 @@ export function normalizeMenu(menu){
         }
     }
 }
+
 

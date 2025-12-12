@@ -1,5 +1,6 @@
 import { createElement, importCss } from "../../.core/utils/dom_utils.js"
 import NodeDesignSidebar from "../node_design_sidebar/node_design_sidebar.js"
+import GroupDesignSidebar from "../group_design_sidebar/group_design_sidebar.js"
 
 importCss("sidebar.css", import.meta)
 
@@ -19,6 +20,18 @@ class LoSidebar {
         return this.#nodeDesignSidebar
     }
     #nodeDesignSidebar = null
+
+
+    /**
+     * Боковая панель для дизайна групп
+     */
+    get groupDesignSidebar(){
+        if(!this.#groupDesignSidebar){
+            this.#groupDesignSidebar = (new GroupDesignSidebar()).element
+        }
+        return this.#groupDesignSidebar
+    }
+    #groupDesignSidebar = null
 
 
     /**
@@ -56,6 +69,31 @@ class LoSidebar {
         })
     }
 
+
+    /**
+     * Создание боковой панели
+     * @param {Element} parentElement - Контейнер для боковой панели
+     */
+    createGroupsDesignSidebar(parentElement){
+
+        parentElement.innerHTML = ""
+
+        // Создаем контейнер
+        createElement("DIV", {
+            classList: ["locode-sidebar"],
+            content: [
+                `
+                    <div class="locode-sidebar-header">
+                    </div>
+                `,
+                // Добавление виджетов
+                this.groupDesignSidebar
+            ] ,
+            parent: parentElement,
+        })
+    }
+
+
 }
 
 
@@ -77,6 +115,16 @@ export function registerSidebarTab(app){
         type:       "custom",
         render: (el) => sidebar.createNodesDesignSidebar(el)
     })
+
+    app.extensionManager.registerSidebarTab({
+        id:         "locode_right_sidebar",
+        icon:       "locode-sidebar-icon",
+        title:      "GroupsDesign",
+        tooltip:    "LoCode Groups Design",
+        type:       "custom",
+        render: (el) => sidebar.createGroupsDesignSidebar(el)
+    })
+
 }
 
 

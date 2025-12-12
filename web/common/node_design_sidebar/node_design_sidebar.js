@@ -46,7 +46,7 @@ export default class NodeDesignSidebar {
 	}
 
 	get graphNodes(){
-		return foreachNodes(null)
+		return app.canvas.graph._nodes
 	}
 
 
@@ -62,8 +62,11 @@ export default class NodeDesignSidebar {
 
 
 	#eventHandler = (event, data) => {
-		Logger.debug("eventHandler", this.selectedNodes)
-		this.#setState()
+		// задержка для того, чтобы обновиться после всех изменений графа
+		setTimeout(() => {
+			Logger.debug("eventHandler", this.selectedNodes)
+			this.#setState()
+		}, 10)
 	}
 
 

@@ -1,6 +1,7 @@
 import { app } from "../../../scripts/app.js"
-import { createElement, haltEvent } from "../.core/utils/dom_utils.js"
+import { loadScript, createElement, haltEvent } from "../.core/utils/dom_utils.js"
 import { DocsNodeItem } from "./DocsNodeItem.js"
+import { clamp } from "../.core/utils/base_utils.js"
 
 
 /**---
@@ -10,17 +11,18 @@ import { DocsNodeItem } from "./DocsNodeItem.js"
 export class DocsContentWidget {
 
 	#node
+	#md = null
 	#dom = {
 		parent: null,
 		text: null,
 		textarea: null,
-		pagesMenu: null,
+		articlesMenu: null,
 	}
 
-	#pageIndex
-	#pages = [ new DocsNodeItem() ]
+	#articleIndex=0
+	#articles = [ new DocsNodeItem( { title: "Untitled", text: "Put your text here..." } ) ]
 
-	get currentPage() { return this.#pages[this.#pageIndex] }
+	get currentArticle() { return this.#articles[this.#articleIndex] }
 
 
 	/**
@@ -37,43 +39,103 @@ export class DocsContentWidget {
 		this.#node = node
 		this.#createElement(name)
 
+		// Загружаем markdown-it
+		loadScript( new URL("../.core/utils/markdown-it.min.js", import.meta.url).href, {
+			onLoad: () => {
+				this.#md = window.markdownit({ linkify: true, typographer: true })
+				this.setState()
+			}
+		})
+
 		// Добавляем виджет к узлу
 		this.#node.addDOMWidget(name, "STRING", this.#dom.parent, { getValue: this.getValue, setValue: this.setValue })
+		this.setState()
 	}
 
 
 	/**
 	 *	Обновление состояния виджета
 	 */
-	setState({ editMode=false, pageIndex=null }={}){
-		// Устанавливаем индекс страницы, если он передан
-		if(pageIndex != null) this.#pageIndex = pageIndex
+	setState({ editMode=false, articleIndex=null }={}){
+		// Устанавливаем индекс статьи, если он передан
+		if(articleIndex != null) this.#articleIndex = articleIndex
+
+		// Приводим индекс статьи к диапазону
+		this.#articleIndex = clamp(this.#articleIndex, 0, this.#articles.length - 1)
 
 		// Устанавливаем класс для режима редактирования
 		this.#dom.parent.classList.toggle("edit", editMode)
 
-		// Обновляем значение textarea, если оно отличается от текста текущей страницы
-		if(this.#dom.textarea.value !== this.currentPage.text){
-			this.#dom.textarea.value = this.currentPage.text
+		// Обновляем значение textarea, если оно отличается от текста текущей статьи
+		if(this.#dom.textarea.value !== this.currentArticle.text){
+			this.#dom.textarea.value = this.currentArticle.text
 		}
 
 		// Обновляем текст текстового элемента
-		this.#dom.text.textContent = this.currentPage.text
+		this.#dom.text.innerHTML = this.#md?.render(this.currentArticle.text??"") ?? this.currentArticle.text
 
-		// Обновляем меню страниц
-		this.#buildPagesMenu()
+		// Обновляем меню статей
+		this.#buildArticlesMenu()
 	}
 
 
 	/* ACTIONS */
 
-	editPageTitle = (index) => {
+	addArticle = () => {
+		app.extensionManager.dialog.prompt({
+			title: "New Article",
+			message: "Enter the title of the article",
+			defaultValue: "Untitled"
+		}).then(result => {
+			if(result !== null) {
+				this.#articles.push(new DocsNodeItem({ title: result }))
+				this.setState({ articleIndex: this.#articles.length - 1 })
+			}
+		})
+
 	}
 
-	movePage = (index, direction) => {
+
+	editArticleTitle = (index) => {
+		app.extensionManager.dialog.prompt({
+			defaultValue: this.#articles[index].title
+		}).then(result => {
+			if(result !== null) {
+				this.#articles[index] = this.#articles[index].copyWith({ title: result })
+				this.setState()
+			}
+		})
 	}
 
-	deletePage = (index) => {
+
+	moveArticle = (index, direction) => {
+		const newIndex = index + direction
+		if(newIndex < 0 || newIndex >= this.#articles.length) return
+		const article = this.#articles[index]
+		this.#articles[index] = this.#articles[newIndex]
+		this.#articles[newIndex] = article
+		this.setState()
+	}
+
+
+	deleteArticle = (index) => {
+		// Если статья пустая, то удаляем ее
+		if(this.#articles[index].text.trim()==""){
+			this.#articles.splice(index, 1)
+			this.setState()
+			return
+		}
+		// Если статья не пустая, то показываем диалог подтверждения
+		app.extensionManager.dialog.confirm({
+			title: "Delete Article",
+			message: `The article "${this.#articles[index].title}" contains text.\nAre you sure you want to delete it?`,
+			type: "delete"
+		}).then(result => {
+			if(result) {
+				this.#articles.splice(index, 1)
+				this.setState()
+			}
+		})
 	}
 
 
@@ -84,9 +146,9 @@ export class DocsContentWidget {
 	 */
 	#createElement(name) {
 
-		// Создаем элемент для меню страниц
-		this.#dom.pagesMenu = createElement("div", {
-			classList: ["pages-menu"],
+		// Создаем элемент для меню статей
+		this.#dom.articlesMenu = createElement("div", {
+			classList: ["articles-menu"],
 			events: {
 				wheel: (event) => {
 					event.preventDefault();
@@ -96,9 +158,9 @@ export class DocsContentWidget {
 			}
 		})
 
-		// Создаем элемент для текста
+		// Создаем элемент для markdown текста
 		this.#dom.text = createElement("div", {
-			classList: ["text"],
+			classList: [ "text", "locode-markdown", "locode-scrollbar" ],
 			events: {
 				click: (event) => {
 					event.preventDefault()
@@ -113,7 +175,7 @@ export class DocsContentWidget {
 		this.#dom.textarea = createElement("textarea", {
 			events: {
 				change: (_) => {
-					this.#pages[this.#pageIndex] = this.currentPage.copyWith({ text: this.#dom.textarea.value })
+					this.#articles[this.#articleIndex] = this.currentArticle.copyWith({ text: this.#dom.textarea.value })
 					this.setState({ editMode: false })
 				},
 				blur: (_) => this.setState({ editMode: false })
@@ -124,7 +186,7 @@ export class DocsContentWidget {
 		this.#dom.parent = createElement("div", {
 			classList: ["lo-docs-content"],
 			content: [
-				this.#dom.pagesMenu,
+				this.#dom.articlesMenu,
 				this.#dom.text,
 				this.#dom.textarea,
 			],
@@ -143,51 +205,61 @@ export class DocsContentWidget {
 
 
 	/**
-	 *	Построение меню страниц
+	 *	Построение меню статей
 	 */
-	#buildPagesMenu() {
+	#buildArticlesMenu() {
 
 		// Создание элементов меню
-		const items = this.#pages.map((page, index) => {
+		const items = this.#articles.map((article, index) => {
 			const item = createElement("div", {
-				classList: ["page-item", index === this.#pageIndex ? "active" : ""],
+				classList: ["article-item", index === this.#articleIndex ? "active" : ""],
 				content: `
-					<span class="title">${page.title}</span>
+					<span class="title">${article.title}</span>
 					<span class="actions">
-						<i class="actions-hover pi pi-ellipsis-v"></i>
-						<div class="actions-menu">
-							<i class="pi pi-pencil" name="edit"></i>
-							<i class="pi pi-angle-up" name="up"></i>
-							<i class="pi pi-angle-down" name="down"></i>
-							<i class="pi pi-times" name="delete"></i>
-						</div>
+						<i class="pi pi-angle-up" name="up"></i>
+						<i class="pi pi-angle-down" name="down"></i>
+						<i class="pi pi-times" name="delete"></i>
 					</span>
 				`,
-				events: { click: () => this.setState({ pageIndex: index }) }
+				events: { click: () => this.setState({ articleIndex: index }) }
 			})
 
 			// Обработка событий
-			item.querySelector("[name='edit']").addEventListener("click",	(e) => haltEvent(e, this.editPageTitle(index)) )
-			item.querySelector("[name='up']").addEventListener("click",		(e) => haltEvent(e, this.movePage(index, -1)) )
-			item.querySelector("[name='down']").addEventListener("click",	(e) => haltEvent(e, this.movePage(index, 1)) )
-			item.querySelector("[name='delete']").addEventListener("click",	(e) => haltEvent(e, this.deletePage(index)) )
+			item.querySelector("[name='up']")?.addEventListener("click",		(e) => haltEvent(e, this.moveArticle(index, -1)) )
+			item.querySelector("[name='down']")?.addEventListener("click",	(e) => haltEvent(e, this.moveArticle(index, 1)) )
+			item.querySelector("[name='delete']")?.addEventListener("click",	(e) => haltEvent(e, this.deleteArticle(index)) )
 
 			return item
 		})
 
-		// добавление кнопки добавить
+		// кнопка добавления статьи
 		items.push(
 			createElement( "button", {
 				classList: ["add", "pi", "pi-plus"],
 				events: {
-					click: () => {
-						this.#pages.push(new DocsNodeItem())
-						this.setState({ pageIndex: this.#pages.length - 1 })
-					},
+					click: (e) => haltEvent(e, this.addArticle())
 				},
 			})
 		)
-		this.#dom.pagesMenu.replaceChildren(...items)
+
+		this.#dom.articlesMenu.replaceChildren(
+			createElement( "div", {
+				classList: [ "current-article" ],
+				content: `
+					<span>${this.currentArticle.title}</span>
+					<i class="pi pi-pencil" name="edit"></i>
+					<i class="pi pi-angle-down" name="dropdown"></i>
+				`,
+				events: {
+					click: (e) => haltEvent(e, this.editArticleTitle(this.#articleIndex))
+				}
+			}),
+			createElement( "div", {
+				classList: [ "articles-list" ],
+				content: items
+			}),
+		)
+
 	}
 
 
@@ -197,16 +269,16 @@ export class DocsContentWidget {
 	 *	Получение значения виджета
 	 */
 	getValue = () => ({
-		pageIndex: this.#pageIndex,
-		pages: this.#pages.map(page => page.toJson()),
+		articleIndex: this.#articleIndex,
+		articles: this.#articles.map(article => article.toJson()),
 	})
 
 	/**
 	 *	Установка значения виджета
 	 */
 	setValue = (value) => {
-		this.#pageIndex = value?.pageIndex ?? this.#pageIndex
-		this.#pages = value?.pages?.map(page => DocsNodeItem.fromJson(page)) ?? this.#pages
+		this.#articleIndex = value?.articleIndex ?? this.#articleIndex
+		this.#articles = value?.articles?.map(article => DocsNodeItem.fromJson(article)) ?? this.#articles
 		this.setState()
 	}
 
