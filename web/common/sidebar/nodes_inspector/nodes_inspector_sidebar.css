@@ -1,0 +1,64 @@
+/* items */
+
+.locode-nodes-inspector .nodes-list{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    font-size: 14px;
+
+    &:empty{
+        display: none;
+    }
+
+}
+
+
+.locode-nodes-inspector .nodes-list > DIV{
+    border-top: 1px solid color-mix(in srgb, var(--p-text-color) 15%, transparent);
+    padding: 8px;
+}
+
+
+.locode-nodes-inspector .nodes-list .id{
+    font-size: 12px;
+    color: color-mix(in srgb, var(--p-text-color) 50%, transparent);
+
+    &::before{
+        content: "#";
+    }
+
+}
+
+
+.locode-nodes-inspector .nodes-list .id > SPAN{
+    display: inline-block;
+
+    &::after{
+        content: ">"; transform: scale(75%);
+        opacity: 0.5;
+        display: inline-block;
+        padding: 0 1.5px;
+    }
+
+    &:last-child:after{
+        display: none;
+    }
+
+    &:hover{
+        color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
+        cursor: pointer;
+    }
+
+}
+
+
+.locode-nodes-inspector .nodes-list .type{
+    color: color-mix(in srgb, var(--p-text-color) 75%, transparent);
+
+    &:hover{
+        color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
+        cursor: pointer;
+    }
+
+}
+
+

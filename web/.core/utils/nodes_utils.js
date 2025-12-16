@@ -177,8 +177,15 @@ export function findLinkById(id){
  */
 export function gotoNode(node, select = true){
     if(!node) return
-    app.canvas.centerOnNode(node)
-    if(select) app.canvas.selectNode(node, false)
+    // переход на граф узла
+    if(app.canvas.graph.id !== node.graph.id){
+        app.canvas.openSubgraph(node.graph)
+    }
+    // переход к узлу и выделение
+    setTimeout(()=>{
+        app.canvas.centerOnNode(node)
+        if(select) app.canvas.selectNode(node, false)
+    }, 50)
 }
 
 
@@ -219,8 +226,9 @@ export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
         // обновление типа из выхода узла по ссылке
         const link = findLinkById(input.link)
         if(link){
-            const originNode = app.graph.getNodeById(link.origin_id)
-            input.type = originNode?.outputs[link.origin_slot].type??"*"
+            input.type = link.type
+            // const originNode = app.graph.getNodeById(link.origin_id)
+            // input.type = originNode?.outputs[link.origin_slot].type??"*"
         }
         // вешаем слушатель на label
         if(onLabelChanged){
@@ -286,7 +294,6 @@ export function overrideOnConnectInput( proto, {
     setLabelFromOutput = true,
 } = {}){
     proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
-
         // Вызов callbackBefore
         if(!callbackBefore.call(this, index, type, outputSlot, outputNode, outputIndex)) return false
 
@@ -309,7 +316,6 @@ export function overrideOnConnectInput( proto, {
 
         // Вызов callbackAfter
         return callbackAfter.call(this, index, type, outputSlot, outputNode, outputIndex)
-
     }
 }
 

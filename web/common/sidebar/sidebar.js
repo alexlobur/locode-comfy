@@ -1,8 +1,9 @@
 import { createElement, importCss } from "../../.core/utils/dom_utils.js"
-import NodeDesignSidebar from "../node_design_sidebar/node_design_sidebar.js"
-import GroupDesignSidebar from "../group_design_sidebar/group_design_sidebar.js"
+import NodeDesignSidebar from "./node_design/node_design_sidebar.js"
+import GroupDesignSidebar from "./group_design/group_design_sidebar.js"
+import NodesInspectorSidebar from "./nodes_inspector/nodes_inspector_sidebar.js"
 
-importCss("sidebar.css", import.meta)
+importCss("./css/sidebar.css", import.meta)
 
 
 /**
@@ -35,64 +36,29 @@ class LoSidebar {
 
 
     /**
-     * Боковая панель для дизайна узлов
+     * Боковая панель для инспектора узлов
      */
-    get subgraphSidebar(){
-        if(!this.#subgraphSidebar){
-            this.#subgraphSidebar = (new SubgraphSidebar()).element
+    get nodesInspectorSidebar(){
+        if(!this.#nodesInspectorSidebar){
+            this.#nodesInspectorSidebar = (new NodesInspectorSidebar()).element
         }
-        return this.#subgraphSidebar
+        return this.#nodesInspectorSidebar
     }
-    #subgraphSidebar = null
+    #nodesInspectorSidebar = null
 
 
     /**
      * Создание боковой панели
      * @param {Element} parentElement - Контейнер для боковой панели
      */
-    createNodesDesignSidebar(parentElement){
-
-        parentElement.innerHTML = ""
-
-        // Создаем контейнер
-        createElement("DIV", {
-            classList: ["locode-sidebar"],
-            content: [
-                `
-                    <div class="locode-sidebar-header">
-                    </div>
-                `,
-                // Добавление виджетов
-                this.nodeDesignSidebar
-            ] ,
-            parent: parentElement,
-        })
+    createLocodeSidebar(parentElement){
+        parentElement.classList.add("locode-sidebar", "locode-scrollbar")
+        parentElement.replaceChildren(
+            this.nodeDesignSidebar,
+            this.groupDesignSidebar,
+            this.nodesInspectorSidebar,
+        )
     }
-
-
-    /**
-     * Создание боковой панели
-     * @param {Element} parentElement - Контейнер для боковой панели
-     */
-    createGroupsDesignSidebar(parentElement){
-
-        parentElement.innerHTML = ""
-
-        // Создаем контейнер
-        createElement("DIV", {
-            classList: ["locode-sidebar"],
-            content: [
-                `
-                    <div class="locode-sidebar-header">
-                    </div>
-                `,
-                // Добавление виджетов
-                this.groupDesignSidebar
-            ] ,
-            parent: parentElement,
-        })
-    }
-
 
 }
 
@@ -107,22 +73,13 @@ export function registerSidebarTab(app){
     const sidebar = new LoSidebar()
 
     app.extensionManager.registerSidebarTab({
-        id:         "locode_left_sidebar",
+        id:         "locode_sidebar",
         // icon: "mdi mdi-robot",  // Material Design Icons
         icon:       "locode-sidebar-icon",
-        title:      "NodesDesign",
-        tooltip:    "LoCode Nodes Design",
+        title:      "LoCode Design",
+        tooltip:    "LoCode Nodes and Groups Design",
         type:       "custom",
-        render: (el) => sidebar.createNodesDesignSidebar(el)
-    })
-
-    app.extensionManager.registerSidebarTab({
-        id:         "locode_right_sidebar",
-        icon:       "locode-sidebar-icon",
-        title:      "GroupsDesign",
-        tooltip:    "LoCode Groups Design",
-        type:       "custom",
-        render: (el) => sidebar.createGroupsDesignSidebar(el)
+        render: (el) => sidebar.createLocodeSidebar(el)
     })
 
 }

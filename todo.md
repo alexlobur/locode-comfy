@@ -3,22 +3,28 @@
 
 ### VER 0.4
 
-* FIXME: Сабграфы - Проверка Set/Get
-* FIXME: Сабграфы - Проверка Динамических инпутов
+* deprecated banner / error nodes -> Nodes Inspector
+    Проверка отсутствующих узлов
+    Проверка deprecated узлов
+    Проверка линков узлов
+
+- - - 
+
+* FIXME: SET -> кнопка заморозить...
+* FIXME: GET PROPS -> добавить сверху: props
+* FIXME: SET/GET -> {MODELS} ???
 * FIXME: md - отступы... отбивка, HR
-
-* GroupDesign
-* SubGraph Editor
-
-* deprecated banner / error nodes
-
 * Тестирование Lazy у Get/SetProps.
+
+- - -
+
 * У Comment разобраться с высотой
 
+* Названия?
 * Удаление DEPRECATED
 * Проверка описаний
 
-* Выпуск на git
+* Выпуск на git / Comfy
     - разделить на библиотеки?
     - описание
     - сборка
@@ -32,5 +38,6 @@
 * Lo:DynamicPrompt - распознование промптов вида {some|any} [array1, array2, array3]
 * Lo:Replacers:
     - Reorder
+* Comment - добавить тень под текстом?
 
-
+* SubGraph Editor ???

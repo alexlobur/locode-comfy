@@ -72,3 +72,36 @@ export function getSetterActiveInputs(setterNode){
     // Возвращаем инпуты без последнего
     return setterNode.inputs.slice(0, setterNode.inputs.length-1)
 }
+
+
+
+
+/**
+ *	Обновление выходов на основе узла-сеттера
+ */
+export function updateOutputsFromReferInputs(node, referNode, { fitSize=false }={}){
+    // если сеттера нет, то не обновляем выходы
+    if(!referNode) return
+
+    const setterInputs = getSetterActiveInputs(referNode)
+
+    // обновление выходов
+    for (let index = 0; index < setterInputs.length; index++){
+        const input = setterInputs[index]
+
+        // создание / обновление выхода
+        const output = !node.outputs[index]
+            ? node.addOutput(`out_${index}`, input.type)
+            : node.outputs[index]
+        output.name = input.label || input.name
+        output.label = input.label || input.name
+        output.type = input.type
+    }
+
+    // Удаление узлов, которые выходят за границы
+    while(node.outputs[setterInputs.length]!=null){
+        node.removeOutput(setterInputs.length)
+    }
+
+    if(fitSize) node.setSize(node.computeSize())
+}

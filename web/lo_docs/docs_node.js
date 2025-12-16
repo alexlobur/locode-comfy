@@ -34,9 +34,6 @@ export class LoDocsNode extends LGraphNode {
 		this.resizable = true
 		this.serialize_widgets = true
 
-
-		Logger.debug("constructor", this)
-
 		// Кастомный виджет с DIV блоком
 		this.docsWidget = new DocsContentWidget(this)
 

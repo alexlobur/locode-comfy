@@ -1,7 +1,10 @@
 import Logger from "../../.core/utils/Logger.js"
 import {setObjectParams} from "../../.core/utils/base_utils.js"
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
-import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
+import { _CFG } from "./config.js"
+import GetSetPropsVM from "./get_set_props_vm.js"
+import {updateOutputsFromReferInputs} from "../props_utils.js"
+
 
 const VM = GetSetPropsVM
 const {getNode: NODE_CFG} = _CFG
@@ -169,26 +172,7 @@ export function LoGetPropsExtends(proto){
 	 *	Обновление выходов на основе узла-сеттера
 	 */
 	proto._updateOutputsFromRefer = function(fitSize=false){
-		const setterInputs = VM.getSetterActiveInputs(VM.getSetterById(this.setterId))
-
-		// обновление выходов
-		for (let index = 0; index < setterInputs.length; index++){
-			const input = setterInputs[index]
-
-			// создание / обновление выхода
-			const output = !this.outputs[index]
-				? this.addOutput("*", "*")
-				: this.outputs[index]
-			output.label = input.label || input.name
-			output.type = input.type
-		}
-
-		// Удаление узлов, которые выходят за границы
-		while(this.outputs[setterInputs.length]!=null){
-			this.removeOutput(setterInputs.length)
-		}
-
-		if(fitSize) this.setSize(this.computeSize())
+		updateOutputsFromReferInputs(this, VM.getSetterById(this.setterId), { fitSize })
 	}
 
 

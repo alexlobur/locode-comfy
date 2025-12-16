@@ -1,0 +1,7 @@
+@import url("common.css");
+
+.locode-sidebar-icon::after{
+    /* content: "N."; font-weight: 900; */
+    content: "L."; font-weight: 900;
+}
+

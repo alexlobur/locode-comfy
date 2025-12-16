@@ -4,8 +4,7 @@ import {setObjectParams} from "../../.core/utils/base_utils.js"
 import {overrideComputeSizeMinWidth} from "../../.core/utils/nodes_utils.js"
 import {LoSetNode} from "./set_node.js"
 import {_CFG} from "./config.js"
-import { getSetterActiveInputs } from "../props_utils.js"
-
+import { updateOutputsFromReferInputs } from "../props_utils.js"
 
 
 // const LGraphNode = LiteGraph.LGraphNode
@@ -41,21 +40,58 @@ const NODE_CFG = _CFG.getNode
 
 		// виджет пространства имен
 		this.#nsWidget = this.addWidget( "combo", "namespace", "",
-			(val) => this.#updateOutputsFromSetter(true),
+			(val) => {
+				this.#updateOutputsFromSetter(true)
+			},
 			{ values: [] }
 		)
 
 		// слушатели
-		LoSetNode.events.on("nodes_changed",		this.#handleSetNodesChanged )
-		LoSetNode.events.on("namespace_changed",	this.#handleSetNodeNamespaceChange )
-		LoSetNode.events.on("input_updated",		this.#handleSetNodeInputUpdated )
+		this.#setEvents()
 
 		// начальное обновление значений комбо
 		this.#updateNamespaceCombo()
 	}
 
 
-	/* HANDLERS */
+	/**
+     *  Конфигурация узла
+     */
+    onConfigure(){
+        try{
+
+			// Нормализация выходов
+			this.#updateOutputsFromSetter()
+
+		} catch(e) {
+            Logger.error(e, this)
+        }
+    }
+
+
+	/**
+     *  При удалении узла
+     */
+    onRemoved(){
+		this.#removeEvents()
+    }
+
+
+	/* EVENTS & HANDLERS */
+
+
+	#setEvents(){
+		LoSetNode.events.on("nodes_changed",		this.#handleSetNodesChanged )
+		LoSetNode.events.on("namespace_changed",	this.#handleSetNodeNamespaceChange )
+		LoSetNode.events.on("input_updated",		this.#handleSetNodeInputUpdated )
+	}
+
+	#removeEvents(){
+		LoSetNode.events.off("nodes_changed",		this.#handleSetNodesChanged )
+		LoSetNode.events.off("namespace_changed",	this.#handleSetNodeNamespaceChange )
+		LoSetNode.events.off("input_updated",		this.#handleSetNodeInputUpdated )
+	}
+
 
 	/**
 	 *	Обработка события изменения namespace в SetNode
@@ -85,18 +121,6 @@ const NODE_CFG = _CFG.getNode
 	}
 
 
-	/* NODE EVENTS */
-
-	/**
-     *  При удалении узла
-     */
-    onRemoved(){
-		LoSetNode.events.off("nodes_changed",		this.#handleSetNodesChanged )
-		LoSetNode.events.off("namespace_changed",	this.#handleSetNodeNamespaceChange )
-		LoSetNode.events.off("input_updated",		this.#handleSetNodeInputUpdated )
-    }
-
-
 	/* METHODS */
 
 
@@ -105,6 +129,9 @@ const NODE_CFG = _CFG.getNode
 	 *	Собственно на этом и построена возможность работы геттера как прокси на сеттере.
 	 */
 	 getInputLink(slot){
+		// проверка узла
+		this.validateNode()
+
 		// переносим ссылку на сеттер
 		const setter = this.getSetterNode()
 		if(!setter){
@@ -157,39 +184,17 @@ const NODE_CFG = _CFG.getNode
 	 *	Получаем выходы из узла-рефера
 	 */
 	#updateOutputsFromSetter(fitSize=false){
-		const setterInputs = this.#getSetterActiveInputs()
+		// Проверка узла
+		if(!this.validateNode()) return
 
-		// обновление выходов
-		for (let index = 0; index < setterInputs.length; index++){
-			const input = setterInputs[index]
-
-			// создание / обновление выхода
-			const output = !this.outputs[index]
-				? this.addOutput("*", "*")
-				: this.outputs[index]
-			output.label = input.label || input.name
-			output.type = input.type
-		}
-
-		// Удаление узлов, которые выходят за границы
-		while(this.outputs[setterInputs.length]!=null){
-			this.removeOutput(setterInputs.length)
-		}
-
+		// Обновление выходов
+		updateOutputsFromReferInputs(this, this.getSetterNode(), { fitSize })
 		// Обновление заголовка узла
 		this.#updateTitle()
-
-		if(fitSize) this.setSize(this.computeSize())
 	}
 
 
 	/**
-	 *	Выдает список инпутов рефера, без учета последнего
-	 */
-	 #getSetterActiveInputs = () => getSetterActiveInputs(this.getSetterNode())
-
-
-	 /**
      *  Обновление заголовка узла
      *  - Установлен setTitleFromNamespace, то заголовок равен NODE_CFG.title + namespace
      */
@@ -197,6 +202,22 @@ const NODE_CFG = _CFG.getNode
 		if(!_CFG.setTitleFromNamespace) return
         this.title = NODE_CFG.titleFromNamespace.replace("{namespace}", this.#nsWidget.value)
     }
+
+
+	/**
+	 *	Проверка узла
+	 */
+	validateNode(){
+		// проверка находится ли узел в том же графике что и сеттер
+		const setter = this.getSetterNode()
+		if(!setter) return null
+
+		// проверка находится ли сеттер в том же графике что и геттер
+		this.has_errors = setter.graph != this.graph
+
+		// возвращаем результат проверки
+		return !this.has_errors
+	}
 
 
 	/* MENU */

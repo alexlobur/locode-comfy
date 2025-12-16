@@ -5,6 +5,7 @@ import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, 
 import {drawFrozenIndicator} from "../props_utils.js"
 import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
 import {_CFG} from "./config.js"
+import Logger from "../../.core/utils/Logger.js"
 
 const NODE_CFG = _CFG.setNode
 
@@ -62,6 +63,8 @@ const NODE_CFG = _CFG.setNode
 
 		// Нормализация инпутов
 		this._normalizeInputs()
+
+        // LoSetNode.emitNodesChanged(this)
     }
 
 
@@ -203,12 +206,12 @@ const NODE_CFG = _CFG.setNode
             this.pos[0] + this.size[0] + _CFG.onCreateGetterOffset[0],
             this.pos[1] + _CFG.onCreateGetterOffset[1]
         ]
-        app.graph.add(getter)
+        this.graph.add(getter)
 
         // Установка текущего сеттера
         getter.setNamespace(this.namespace)
 
-        app.graph.setDirtyCanvas(true, true)
+        this.graph.setDirtyCanvas(true, true)
     }
 
 
@@ -229,8 +232,8 @@ const NODE_CFG = _CFG.setNode
     /**
 	 *	Добавление виджета
 	 */
-     #addNamespaceWidget(){
-        const widget = this.addWidget("string", "namespace", "",
+     #addNamespaceWidget(namespace=''){
+        const widget = this.addWidget("string", "namespace", namespace,
 			(val) => {
                 val = val.trim()
                 // проверка имени

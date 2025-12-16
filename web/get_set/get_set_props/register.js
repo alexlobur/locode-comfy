@@ -1,7 +1,7 @@
 import {app} from "../../../../scripts/app.js"
 import { LoSetPropsExtends } from "./lo_set_props.js"
 import { LoGetPropsExtends } from "./lo_get_props.js"
-import GetSetProps, { _CFG } from "./get_set_props_vm.js"
+import { _CFG } from "./config.js"
 import Logger from "../../.core/utils/Logger.js"
 
 

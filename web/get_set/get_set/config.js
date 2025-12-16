@@ -14,7 +14,7 @@ export const _CFG = {
     /**
      *  Сдвиг при создании геттера относительно сеттера [x, y]
      */
-    onCreateGetterOffset: [100, 0],
+    onCreateGetterOffset: [30, 0],
 
     /**
      *  Задержка применения изменений
@@ -25,7 +25,7 @@ export const _CFG = {
      *  Конфиг узла сеттера
      */
     setNode: {
-        type:               "Lo:Set",
+        type:               "Set [lo]",
         title:              "Set:",
         titleFromNamespace: "Set: {namespace}",
         inputPrefix:        "in",
@@ -46,7 +46,7 @@ export const _CFG = {
      *  Конфиг узла геттера
      */
     getNode: {
-        type:               "Lo:Get",
+        type:               "Get [lo]",
         title:              "Get:",
         titleFromNamespace: "Get: {namespace}",
         outputPrefix:       "out",

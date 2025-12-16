@@ -1,24 +1,61 @@
-.locode-sidebar-nodes{
+.locode-sidebar{
     display: flex; flex-direction: column;
+    gap: 4px;
+    height: 100%;
+    overflow: auto;
+    padding: 4px;
+}
+
+.-section{
     padding: 16px;
     user-select: none;
-    gap: 16px;
+    background-color: var(--p-content-background);
+    transition: all 0.2s;
+    border-radius: 8px;
+
+    & .--topbar{
+
+    }
+
+    & .--content{
+        display: flex; flex-direction: column;
+        gap: 16px;
+        margin-top: 16px;
+        max-height: 100%;
+        transition: all 0.2s;
+    }
+
+    &.collapsed{
+        padding: 8px 16px 4px 16px;
+    }
+
+    &.collapsed .--content{
+        overflow: clip;
+        gap: 0;
+        max-height: 0;
+        margin-top: 0;
+    }
+
 }
 
-.locode-sidebar-nodes .header{
+
+.locode-sidebar .header{
     font-size: 16px;
     font-weight: 600;
+    margin-bottom: 4px;
     color: color-mix(in srgb, var(--p-text-color) 75%, transparent);
+    cursor: pointer;
 }
 
 
-.locode-sidebar-nodes .info{
+.locode-sidebar .info{
     font-size: 12px;
     text-align: right;
     color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
 }
 
-.locode-sidebar-nodes .label{
+
+.locode-sidebar .label{
     font-size: 13px;
     /* color: var(--p-button-text-secondary-color); */
     color: color-mix(in srgb, var(--p-text-color) 50%, transparent);
@@ -26,7 +63,7 @@
 }
 
 
-.locode-sidebar-nodes INPUT {
+.locode-sidebar INPUT {
     padding: 8px;
     border-radius: 8px;
     font-size: 16px;
@@ -52,21 +89,21 @@
 }
 
 
+/* COMPONENTS */
 
+/* color-block */
 
-/* color-selector */
-
-.locode-sidebar-nodes .color-selector{
+.locode-sidebar .color-block .color-selector{
     margin-top: 8px;
 }
 
-.locode-sidebar-nodes .color-selector ul{
+.locode-sidebar .color-block .color-selector ul{
     display: flex; flex-direction: row; gap: 3px; flex-wrap: wrap;
     justify-content: flex-end;
     margin: 0; padding: 0; list-style: none;
 }
 
-.locode-sidebar-nodes .color-selector ul > LI{
+.locode-sidebar .color-block .color-selector ul > li{
     display: block;
     width: 15px; height: 15px;
     border-radius: 50%;
@@ -87,13 +124,13 @@
 
 /* shapes */
 
-.locode-sidebar-nodes .shapes{
+.locode-sidebar .shapes-block{
     display: flex; flex-direction: row; gap: 4px;
     justify-content: center;
 }
 
 
-.locode-sidebar-nodes .shapes BUTTON{
+.locode-sidebar .shapes-block BUTTON{
     &{
         position: relative;
         width: 36px; height: 36px;
@@ -137,14 +174,14 @@
 
 /* options */
 
-.locode-sidebar-nodes .options{
+.locode-sidebar .options-block{
     margin: 16px 0;
     display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap;
     justify-content: center;
 }
 
 
-.locode-sidebar-nodes .options BUTTON{
+.locode-sidebar .options-block BUTTON{
     padding: 0 16px;
     height: 28px;
     display: flex; align-items: center; justify-content: center;
@@ -167,9 +204,22 @@
 }
 
 
-/* nodes_offset */
+/* input-block */
+.locode-sidebar .input-block.in-row{
+    display: grid; grid-template-columns: auto 1fr; gap: 4px;
+    justify-content: center;
+    align-items: center;
 
-.locode-sidebar-nodes .nodes_offset{
+    & > input{
+        width: 100%;
+    }
+
+}
+
+
+/* nodes-offset */
+
+.locode-sidebar .nodes-offset{
     display: grid; grid-template-columns: auto 1fr 1fr; gap: 4px;
     justify-content: center;
     align-items: center;
@@ -179,13 +229,13 @@
 
 /* modes */
 
-.locode-sidebar-nodes .modes{
+.locode-sidebar .modes-block{
     display: flex; flex-direction: row; gap: 2px;
     justify-content: center;
 }
 
 
-.locode-sidebar-nodes .modes BUTTON{
+.locode-sidebar .modes-block BUTTON{
 
     &{
         width: 36px; height: 36px;

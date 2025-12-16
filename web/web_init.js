@@ -1,15 +1,11 @@
 import {app} from "../../../scripts/app.js"
 import Logger from "./.core/utils/Logger.js"
 import LoCore from "./.core/lo_core.js"
-import SubgraphModal from "./common/subgraph_modal/subgraph_modal.js"
 import {updateDeprecatedBanner} from "./common/deprecated_banner/deprecated_banner.js"
 import { overrideComputeSizeMinWidth } from "./.core/utils/nodes_utils.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
 import { registerSidebarTab } from "./common/sidebar/sidebar.js"
-
-
-const DEPRECATED_TYPES = new Set()
 
 
 //---
@@ -22,7 +18,7 @@ app.registerExtension({
     // BEFORE NODE REGISTER
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         // список устаревших нодов
-        if(nodeData.deprecated) DEPRECATED_TYPES.add(nodeType.comfyClass)
+        if(nodeData.deprecated) LoCore.DEPRECATED_TYPES.add(nodeType.comfyClass)
 
         // Добавление пункта в контекстное меню для ВСЕХ нодов
         setContextMenu(nodeType)
@@ -46,11 +42,6 @@ app.registerExtension({
     // SETUP
     async setup(app){
         LoCore.init()
-
-        // Обновление баннера устаревших нодов
-        LoCore.events.on("graph_load",          ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
-        LoCore.events.on("graph_node_added",    ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
-        LoCore.events.on("graph_node_removed",  ()=>updateDeprecatedBanner(DEPRECATED_TYPES))
 
         // Добавление контекстного меню для выделения
         setSelectionContextMenu()

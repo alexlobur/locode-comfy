@@ -2,7 +2,8 @@ import Logger from "../../.core/utils/Logger.js"
 import {app} from "../../../../scripts/app.js"
 import {setObjectParams, makeUniqueName} from "../../.core/utils/base_utils.js"
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
-import GetSetPropsVM, {_CFG} from "./get_set_props_vm.js"
+import { _CFG } from "./config.js"
+import GetSetPropsVM from "./get_set_props_vm.js"
 import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput, watchSlotLabel} from "../../.core/utils/nodes_utils.js"
 import {drawFrozenIndicator} from "../props_utils.js"
 
@@ -98,6 +99,20 @@ export function LoSetPropsExtends(proto){
 
 
     /**
+     *  Переопределение отсоединения выхода
+     */
+    const _disconnectOutput = proto.disconnectOutput
+    proto.disconnectOutput = function(slot){
+        try{
+            const ret = _disconnectOutput?.apply(this, arguments)
+            return ret
+        } catch(e){
+            Logger.error(e, this)
+        }
+    }
+
+
+    /**
      *  Удаление узла
      */
     const _onRemoved = proto.onRemoved
@@ -181,10 +196,8 @@ export function LoSetPropsExtends(proto){
             // вешаем слушатель на label
             watchSlotLabel( this.outputs[0], {
                 onChanged: (_) => VM.setterOutputRenamed(this),
-                onSet: (value) => {
-                    return makeUniqueName(value, VM.findSetters().map( item => item.propsName ))
-                }
             })
+
             // обновление графики
             this.setDirtyCanvas(true, true)
 
@@ -225,7 +238,7 @@ export function LoSetPropsExtends(proto){
             this.pos[0] + this.size[0] + _CFG.onCreateGetterOffset[0],
             this.pos[1] + _CFG.onCreateGetterOffset[1]
         ]
-        app.graph.add(getter)
+        this.graph.add(getter)
 
         // Установка текущего сеттера
         getter.updateSetterId(this.id)
@@ -236,7 +249,7 @@ export function LoSetPropsExtends(proto){
         } catch(e){
             Logger.error(e, this)
         }
-        app.graph.setDirtyCanvas(true, true)
+        this.graph.setDirtyCanvas(true, true)
     }
 
 

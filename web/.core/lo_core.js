@@ -8,16 +8,39 @@ import { EventEmitter } from "./notify/EventEmitter.js"
  *  Singleton класс для Locode Core
  */
 class _LoCore {
-    #inited = false
+
+
+    DEPRECATED_TYPES = new Set()
+
+    /**
+     * Инициализирован
+     */
     get inited(){ return this.#inited }
+    #inited = false
 
-    #events = new EventEmitter()
+    /**
+     * События
+     */
     get events(){ return this.#events }
+    #events = new EventEmitter()
 
-    #debug = false
+    /**
+     * Отладка
+     */
     get debug(){ return this.#debug }
+    #debug = false
+
+    /**
+     * Настройки
+     */
+    get settings(){ return this.#settings }
+    #settings = new _Settings()
 
 
+    /**---
+     * 
+     * Конструктор
+     */
     constructor(debug=true){
         this.#debug = debug
 
@@ -37,6 +60,9 @@ class _LoCore {
     }
 
 
+    /**
+     *  Инициализация
+     */
     init(){
         if(this.#inited) return
 
@@ -53,25 +79,63 @@ class _LoCore {
     #initEvents(){
         const that = this
 
+        /**
+         *  Цепляется к функции и эмитит событие
+         *  @param {Function} fn - функция
+         *  @param {string} eventName - имя события
+         */
+        const wrapWithEvent = (fn, eventName) => {
+            return function(){
+                that.events.emit(eventName, ...arguments)
+                return fn?.apply(this, arguments)
+            }
+        }
+
         // загрузка графа
-        app.loadGraphData = wrapWithEvent(app.loadGraphData, "graph_load", this.events)
+        app.loadGraphData = wrapWithEvent(app.loadGraphData, "graph_load")
 
         // добавление узла к графу
-        app.graph.onNodeAdded = wrapWithEvent(app.graph.onNodeAdded, "graph_node_added", this.events)
+        app.graph.onNodeAdded = wrapWithEvent(app.graph.onNodeAdded, "graph_node_added")
 
         // удаление узла из графа
-        app.graph.onNodeRemoved = wrapWithEvent(app.graph.onNodeRemoved, "graph_node_removed", this.events)
+        app.graph.onNodeRemoved = wrapWithEvent(app.graph.onNodeRemoved, "graph_node_removed")
 
         // выделение узлов
-        app.canvas.onSelectionChange = wrapWithEvent(app.canvas.onSelectionChange, "canvas_selection_changed", this.events)
+        app.canvas.onSelectionChange = wrapWithEvent(app.canvas.onSelectionChange, "canvas_selection_changed")
 
         // перемещение узла
-        app.canvas.onNodeMoved = wrapWithEvent(app.canvas.onNodeMoved, "canvas_node_moved", this.events)
+        app.canvas.onNodeMoved = wrapWithEvent(app.canvas.onNodeMoved, "canvas_node_moved")
 
         // открытие сабграфа
-        app.canvas.openSubgraph = wrapWithEvent(app.canvas.openSubgraph, "canvas_open_subgraph", this.events)
+        app.canvas.openSubgraph = wrapWithEvent(app.canvas.openSubgraph, "canvas_open_subgraph")
 
         Logger.debug("Events initialized", app)
+    }
+
+}
+
+
+/**
+ *  Класс для работы с настройками
+ */
+class _Settings {
+    #prefix = "LoCode."
+
+    get sidebarNodeDesignCollapsed(){ return this.#get("sidebarNodeDesignCollapsed") ?? false }
+    set sidebarNodeDesignCollapsed(value){ this.#set("sidebarNodeDesignCollapsed", value) }
+
+    get sidebarGroupDesignCollapsed(){ return this.#get("sidebarGroupDesignCollapsed") ?? false }
+    set sidebarGroupDesignCollapsed(value){ this.#set("sidebarGroupDesignCollapsed", value) }
+
+    get sidebarNodesInspectorCollapsed(){ return this.#get("sidebarNodesInspectorCollapsed") ?? false }
+    set sidebarNodesInspectorCollapsed(value){ this.#set("sidebarNodesInspectorCollapsed", value) }
+
+    #get(key){
+        return JSON.parse(localStorage.getItem(`${this.#prefix}${key}`))
+    }
+
+    #set(key, value){
+        localStorage.setItem(`${this.#prefix}${key}`, JSON.stringify(value))
     }
 
 }
@@ -81,14 +145,3 @@ const LoCore = new _LoCore(true)
 export default LoCore
 
 
-/**
- *  Цепляется к функции и эмитит событие
- *  @param {Function} fn - функция
- *  @param {string} eventName - имя события
- */
-function wrapWithEvent( fn, eventName, events ){
-    return function(){
-        events.emit(eventName, ...arguments )
-        return fn?.apply(this, arguments)
-    }
-}
