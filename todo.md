@@ -3,10 +3,7 @@
 
 ### VER 0.4
 
-* deprecated banner / error nodes -> Nodes Inspector
-    Проверка отсутствующих узлов
-    Проверка deprecated узлов
-    Проверка линков узлов
+* Nodes Inspector - Проверка линков узлов
 
 - - - 
 

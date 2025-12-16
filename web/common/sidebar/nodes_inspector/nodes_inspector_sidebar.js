@@ -1,4 +1,3 @@
-import { app } from "../../../../../scripts/app.js"
 import LoCore from "../../../.core/lo_core.js"
 import Logger from "../../../.core/utils/Logger.js"
 import {createElement, importCss} from "../../../.core/utils/dom_utils.js"
@@ -6,6 +5,7 @@ import {SidebarComponents} from "../components/sidebar_components.js"
 import {findNodeById, foreachNodes, gotoNode} from "../../../.core/utils/nodes_utils.js"
 
 importCss("nodes_inspector_sidebar.css", import.meta)
+
 
 /**
  * Singleton класс для работы с инспектором узлов (NodesInspector)
@@ -176,7 +176,7 @@ export default class NodesInspectorSidebar {
 			hasErrors: []
 		}
 
-		foreachNodes(app.graph.nodes, (node, parentNodeIds)=>{
+		foreachNodes(null, (node, parentNodeIds)=>{
 			// устаревший узел
 			if(LoCore.DEPRECATED_TYPES.has(node.type)){
 				result.deprecated.push({ node: node, ids: [...parentNodeIds, node.id] })

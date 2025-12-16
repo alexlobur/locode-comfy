@@ -1,4 +1,4 @@
-/* items */
+/* nodes list */
 
 .locode-nodes-inspector .nodes-list{
     display: grid;
@@ -60,5 +60,4 @@
     }
 
 }
-
 

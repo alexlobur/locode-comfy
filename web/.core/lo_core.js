@@ -130,6 +130,10 @@ class _Settings {
     get sidebarNodesInspectorCollapsed(){ return this.#get("sidebarNodesInspectorCollapsed") ?? false }
     set sidebarNodesInspectorCollapsed(value){ this.#set("sidebarNodesInspectorCollapsed", value) }
 
+    get sidebarLinksInspectorCollapsed(){ return this.#get("sidebarLinksInspectorCollapsed") ?? false }
+    set sidebarLinksInspectorCollapsed(value){ this.#set("sidebarLinksInspectorCollapsed", value) }
+
+
     #get(key){
         return JSON.parse(localStorage.getItem(`${this.#prefix}${key}`))
     }

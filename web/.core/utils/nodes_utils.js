@@ -32,6 +32,31 @@ export function foreachNodes(nodes=null, callBack=null, parentNodesIds=[]){
 
 
 /**
+ *  Проход по списку всех ссылок графа (по дереву)
+ * 
+ *  @param {?function(LLink)} callBack Колбэк функция при проходе каждой ссылки
+ *  @returns {LLink[]} Список всех ссылок графа
+ */
+export function foreachLinks(callBack=null){
+    // берём все ссылки из графа
+    const links = Array.from(app.graph.links?.values()??[])
+
+    // затем из сабграфов
+    const subgraphs = foreachSubgraphs( null, (subgraph)=>{
+        links.push(...Array.from(subgraph.links?.values()??[]))
+    })
+
+    // проходим по всем ссылкам
+    for(const link of links){
+        callBack?.(link)
+    }
+
+    return links
+}
+
+
+
+/**
  *  Проход по списку всех групп графа (по дереву)
  * 
  * @param {LGraphGroup[]|null} groups
@@ -170,6 +195,8 @@ export function findLinkById(id){
     }
     return null
 }
+
+
 
 
 /**

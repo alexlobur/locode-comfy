@@ -1,0 +1,19 @@
+/* links list */
+
+.locode-links-inspector .links-list{
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    font-size: 12px;
+
+    &:empty{
+        display: none;
+    }
+
+}
+
+
+.locode-links-inspector .links-list > DIV{
+    border-top: 1px solid color-mix(in srgb, var(--p-text-color) 15%, transparent);
+    padding: 8px;
+}
+

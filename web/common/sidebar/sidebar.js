@@ -1,7 +1,8 @@
-import { createElement, importCss } from "../../.core/utils/dom_utils.js"
+import {importCss} from "../../.core/utils/dom_utils.js"
 import NodeDesignSidebar from "./node_design/node_design_sidebar.js"
 import GroupDesignSidebar from "./group_design/group_design_sidebar.js"
 import NodesInspectorSidebar from "./nodes_inspector/nodes_inspector_sidebar.js"
+import LinksInspectorSidebar from "./links_inspector/links_inspector_sidebar.js"
 
 importCss("./css/sidebar.css", import.meta)
 
@@ -15,10 +16,7 @@ class LoSidebar {
      * Боковая панель для дизайна узлов
      */
     get nodeDesignSidebar(){
-        if(!this.#nodeDesignSidebar){
-            this.#nodeDesignSidebar = (new NodeDesignSidebar()).element
-        }
-        return this.#nodeDesignSidebar
+        return this.#nodeDesignSidebar ??= (new NodeDesignSidebar()).element
     }
     #nodeDesignSidebar = null
 
@@ -27,24 +25,27 @@ class LoSidebar {
      * Боковая панель для дизайна групп
      */
     get groupDesignSidebar(){
-        if(!this.#groupDesignSidebar){
-            this.#groupDesignSidebar = (new GroupDesignSidebar()).element
-        }
-        return this.#groupDesignSidebar
+        return this.#groupDesignSidebar ??= (new GroupDesignSidebar()).element
     }
     #groupDesignSidebar = null
 
 
     /**
-     * Боковая панель для инспектора узлов
+     * Боковая панель для инспектора узлов (NodesInspector)
      */
     get nodesInspectorSidebar(){
-        if(!this.#nodesInspectorSidebar){
-            this.#nodesInspectorSidebar = (new NodesInspectorSidebar()).element
-        }
-        return this.#nodesInspectorSidebar
+        return this.#nodesInspectorSidebar ??= (new NodesInspectorSidebar()).element
     }
     #nodesInspectorSidebar = null
+
+
+    /**
+     * Боковая панель для инспектора ссылок (LinksInspector)
+     */
+    get linksInspectorSidebar(){
+        return this.#linksInspectorSidebar ??= (new LinksInspectorSidebar()).element
+    }
+    #linksInspectorSidebar = null
 
 
     /**
@@ -57,11 +58,11 @@ class LoSidebar {
             this.nodeDesignSidebar,
             this.groupDesignSidebar,
             this.nodesInspectorSidebar,
+            this.linksInspectorSidebar,
         )
     }
 
 }
-
 
 
 /**
