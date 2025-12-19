@@ -1,7 +1,5 @@
 import {app} from "../../../scripts/app.js"
-import Logger from "./.core/utils/Logger.js"
 import LoCore from "./.core/lo_core.js"
-import {updateDeprecatedBanner} from "./common/deprecated_banner/deprecated_banner.js"
 import { overrideComputeSizeMinWidth } from "./.core/utils/nodes_utils.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"

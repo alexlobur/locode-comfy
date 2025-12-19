@@ -59,13 +59,12 @@ const NODE_CFG = _CFG.getNode
      */
     onConfigure(){
         try{
-
 			// Нормализация выходов
 			this.#updateOutputsFromSetter()
-
 		} catch(e) {
             Logger.error(e, this)
         }
+        super.onConfigure(arguments)
     }
 
 
@@ -270,21 +269,8 @@ const NODE_CFG = _CFG.getNode
 	static setUp() {
 		LiteGraph.registerNodeType( NODE_CFG.type, this )
         this.category = _CFG.category
+
+		// Переопределение границы минимальной ширины узла (computeSize)
+		overrideComputeSizeMinWidth( this.prototype, NODE_CFG.minWidth )
     }
 }
-
-
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-//
-//  OVERRIDES
-//
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-
-// Переопределение границы минимальной ширины узла (computeSize)
-overrideComputeSizeMinWidth(
-    LoGetNode.prototype,
-    NODE_CFG.minWidth
-)
-

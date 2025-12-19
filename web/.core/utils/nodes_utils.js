@@ -319,6 +319,7 @@ export function overrideOnConnectInput( proto, {
     callbackAfter = ()=>true,
     setTypeFromOutput = true,
     setLabelFromOutput = true,
+    setLocalizationNameFromOutput = false,
 } = {}){
     proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
         // Вызов callbackBefore
@@ -333,13 +334,23 @@ export function overrideOnConnectInput( proto, {
         // Замена Label
         if(setLabelFromOutput){
             input.label = makeUniqueName(
-                outputSlot.label || outputSlot.name,
+                outputSlot.label || outputSlot.localization_name || outputSlot.name,
                 this.inputs.map( item => item.label ),
                 {
                     excludeIndex: index
                 }
             )
         }
+
+        // Замена localization_name
+        if(setLocalizationNameFromOutput){
+            input.localization_name = makeUniqueName(
+                outputSlot.label || outputSlot.localization_name || outputSlot.name,
+                this.inputs.map( item => item.localization_name ),
+                { excludeIndex: index }
+            )
+        }
+
 
         // Вызов callbackAfter
         return callbackAfter.call(this, index, type, outputSlot, outputNode, outputIndex)

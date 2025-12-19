@@ -1,9 +1,8 @@
-import { LO_NODES_DEFAULTS } from "../../config.js";
+import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "../../config.js";
 
 
 // Конфиги узлов
 export const _CFG = {
-    extName:        "locode.GetSet",
 	category:       "locode/params",
 
     /**
@@ -30,7 +29,7 @@ export const _CFG = {
         titleFromNamespace: "Set: {namespace}",
         inputPrefix:        "in",
         nodesDefaults: { ...LO_NODES_DEFAULTS["LoSet"] },
-        minWidth:       150,
+        minWidth:       LO_NODES_MIN_WIDTH_OVERRIDES["LoSet"],
         menu: {
             title: "Lo:Set",
             submenu: {
@@ -51,7 +50,7 @@ export const _CFG = {
         titleFromNamespace: "Get: {namespace}",
         outputPrefix:       "out",
         nodesDefaults: { ...LO_NODES_DEFAULTS["LoGet"] },
-        minWidth:       150,
+        minWidth:       LO_NODES_MIN_WIDTH_OVERRIDES["LoGet"],
         menu: {
             title: "Lo:Get",
             submenu: {

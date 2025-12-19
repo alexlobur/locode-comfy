@@ -61,6 +61,7 @@ export const LO_NODES_DEFAULTS = {
     "LoGet"         : { ...LO_COLORS_DEF.params, shape: 1 },
     "LoSetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
     "LoGetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
+    "LoRerouter"    : { ...LO_COLORS_DEF.params, shape: 1 },
 
 }
 

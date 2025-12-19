@@ -1,7 +1,6 @@
 // Конфиги узлов
 export const _CFG = {
 
-    extName:        "locode.GetSetProps",
     applyDelay:     100, // задержка применения изменений
     onCreateGetterOffset: [30, 0],  // Сдвиг при создании геттера относительно сеттера [x, y]
     maxFindLinkedSettersDepth: 10,  // максимальная глубина поиска связанных сеттеров

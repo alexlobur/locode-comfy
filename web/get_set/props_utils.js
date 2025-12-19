@@ -105,3 +105,12 @@ export function updateOutputsFromReferInputs(node, referNode, { fitSize=false }=
 
     if(fitSize) node.setSize(node.computeSize())
 }
+
+
+/**
+ *  Расчет ширины текста слота
+ */
+export function computeSlotTextWidth(text, fontStyle){
+    return LGraphCanvas._measureText?.(text, fontStyle) ?? LiteGraph.NODE_TEXT_SIZE * (text?.length ?? 0) * 0.6
+}
+

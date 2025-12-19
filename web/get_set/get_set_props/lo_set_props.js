@@ -289,6 +289,9 @@ export function LoSetPropsExtends(proto){
 
 }
 
+// Тип узла (static)
+LoSetPropsExtends.nodeType = NODE_CFG.type
+
 
 /*
 ------

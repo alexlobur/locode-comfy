@@ -31,8 +31,9 @@
 ### VER 0.5
 
 * Lo:ReProps - типа зеркало свойств: что на входе, то на выходе
-* Lo:ReRotes - типа зеркало свойств: что на входе, то на выходе
+* Lo:ReRoter - типа зеркало свойств: что на входе, то на выходе
 * Lo:Texts - добавление подключения Replacers
+* Lo:Texts - добавление групп
 * Lo:DynamicPrompt - распознование промптов вида {some|any} [array1, array2, array3]
 * Lo:Replacers:
     - Reorder

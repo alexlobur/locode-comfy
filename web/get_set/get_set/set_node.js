@@ -72,9 +72,9 @@ const NODE_CFG = _CFG.setNode
      *  Конфигурация узла
      */
     onConfigure(){
-        super.onConfigure(arguments)
         this.#oldNamespace = this.#nsWidget.value
         LoSetNode.emitNodesChanged(this)
+        super.onConfigure(arguments)
     }
 
 
@@ -314,6 +314,12 @@ const NODE_CFG = _CFG.setNode
     static setUp(){
 		LiteGraph.registerNodeType( _CFG.setNode.type, this )
         this.category = _CFG.category
+
+        // Переопределение присоединения к слоту
+        overrideOnConnectInput( this.prototype )
+
+        // Переопределение границы минимальной ширины узла (computeSize)
+        overrideComputeSizeMinWidth( this.prototype, NODE_CFG.minWidth )
     }
 
 
@@ -336,18 +342,4 @@ const NODE_CFG = _CFG.setNode
     }
 
 }
-
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-//
-//  OVERRIDES
-//
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-// Переопределение присоединения к слоту
-overrideOnConnectInput(LoSetNode.prototype)
-
-
-// Переопределение границы минимальной ширины узла (computeSize)
-overrideComputeSizeMinWidth( LoSetNode.prototype, NODE_CFG.minWidth )
 

@@ -191,6 +191,8 @@ export function LoGetPropsExtends(proto){
 
 }
 
+// Тип узла (static)
+LoGetPropsExtends.nodeType = NODE_CFG.type
 
 
 /*
