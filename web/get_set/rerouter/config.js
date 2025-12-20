@@ -27,6 +27,7 @@ export const _CFG = {
             ...LO_NODES_DEFAULTS["LoReRouter"],
             isVirtualNode:      true,
             serialize_widgets:  true,
+            size:               [40, 40],
         },
 
         // меню узла
@@ -36,6 +37,8 @@ export const _CFG = {
                 freezeInputs:       "Freeze Inputs",
                 unfreezeInputs:     "Unfreeze Inputs",
                 continueRoutes:     "Continue Routes",
+                hideSlotsLabels:    "Hide Slots Labels",
+                unhideSlotsLabels:  "Show Slots Labels",
             }
         }
     },
@@ -47,7 +50,7 @@ export const _CFG = {
         spacing:        LiteGraph.NODE_SLOT_HEIGHT * 0.6666,
         minWidth:       LiteGraph.NODE_SLOT_HEIGHT * 1,
         // горизонтальный отступ для текста слота
-        textPadding:    LiteGraph.NODE_SLOT_HEIGHT * 0.6,
+        textPadding:    LiteGraph.NODE_SLOT_HEIGHT * 0.3333,
     }
 
 }

@@ -1,5 +1,5 @@
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
-import {getSetterActiveInputs} from "../props_utils.js"
+import {PropsUtils} from "../props_utils.js"
 import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
 import {app} from "../../../../scripts/app.js"
 import { _CFG } from "./config.js"
@@ -85,9 +85,9 @@ class _GetSetPropsVM{
 
 
     /**
-     *	Выдает список инпутов сеттера, без последнего
+     *	Выдает список инпутов сеттера
      */
-    getSetterActiveInputs = (setterNode) => getSetterActiveInputs(setterNode)
+    getSetterActiveInputs = (setterNode) => PropsUtils.getSetterActiveInputs(setterNode)
 
 
 }

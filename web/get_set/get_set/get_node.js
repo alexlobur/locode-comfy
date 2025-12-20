@@ -4,7 +4,7 @@ import {setObjectParams} from "../../.core/utils/base_utils.js"
 import {overrideComputeSizeMinWidth} from "../../.core/utils/nodes_utils.js"
 import {LoSetNode} from "./set_node.js"
 import {_CFG} from "./config.js"
-import { updateOutputsFromReferInputs } from "../props_utils.js"
+import { PropsUtils } from "../props_utils.js"
 
 
 // const LGraphNode = LiteGraph.LGraphNode
@@ -187,7 +187,7 @@ const NODE_CFG = _CFG.getNode
 		if(!this.validateNode()) return
 
 		// Обновление выходов
-		updateOutputsFromReferInputs(this, this.getSetterNode(), { fitSize })
+		PropsUtils.updateOutputsFromRefer(this, this.getSetterNode(), { fitSize })
 		// Обновление заголовка узла
 		this.#updateTitle()
 	}

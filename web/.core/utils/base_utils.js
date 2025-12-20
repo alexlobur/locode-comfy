@@ -95,7 +95,7 @@ export function watchProperty(object, property, { propertyStorageName=null, befo
     propertyStorageName = propertyStorageName??`_${property}`
 
     // если свойство уже наблюдается, то выходим
-    if(object[propertyStorageName]) return object
+    if(object[propertyStorageName]!==undefined) return object
 
     // сохраняем предыдущее значение
     object[propertyStorageName] = object[property]

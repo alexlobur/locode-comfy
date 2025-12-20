@@ -1,7 +1,7 @@
 import Logger from "../../.core/utils/Logger.js"
-import {setObjectParams, watchProperty} from "../../.core/utils/base_utils.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInputDynamic} from "../../.core/utils/nodes_utils.js"
-import {updateOutputsFromReferInputs} from "../props_utils.js"
+import {makeUniqueName, setObjectParams, watchProperty} from "../../.core/utils/base_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs} from "../../.core/utils/nodes_utils.js"
+import {PropsUtils} from "../props_utils.js"
 import {_CFG} from "./config.js"
 
 const NODE_CFG = _CFG.node
@@ -22,6 +22,12 @@ const NODE_CFG = _CFG.node
      *  Заморожены ли параметры ввода
      */
     get frozen(){ return this.properties?.frozen??false }
+
+
+	/**
+	 *  Видимость меток слотов
+	 */
+	get slotsLabelsVisible(){ return this.properties?.slotsLabelsVisible??true }
 
 
 	/**---
@@ -47,37 +53,97 @@ const NODE_CFG = _CFG.node
 
 		// Нормализация слотов
 		this._normalizeSlots()
-
-		Logger.debug("onNodeCreated", this)
     }
 
 
-	/**
-     *  Конфигурация узла
-     */
-    onConfigure(){
-		Logger.debug("onConfigure", this)
-    }
+	// /**
+    //  *  Конфигурация узла
+    //  */
+    // onConfigure(){}
+
+
+	// getSlotMenuOptions(){
+	// 	super.getSlotMenuOptions(...arguments)
+	// 	Logger.debug("getSlotMenuOptions", arguments)
+	// }
+
+	getExtraSlotMenuOptions(){
+
+		app.canvas.createDialog(
+			"<span class='name'>Name</span><input autofocus type='text'/><button>OK</button>",
+		)
+
+		Logger.debug("getExtraSlotMenuOptions", arguments)
+		return [
+		]
+	}
 
 
 	/**
      *  Присоединение к динамическому инпуту
-     *  NOTE: Переопределяется ниже.
      */
-    // onConnectInput()
+	onConnectInput(index, type, outputSlot, outputNode, outputIndex){
+		const input = this.inputs[index]
+
+		// параметры инпута из выхода
+		const label = outputSlot.label || outputSlot.localized_name || outputSlot.name || outputSlot.type || '*'
+		input.label = makeUniqueName(label, this.inputs.map(input=>input.label), { excludeIndex: index })
+		input.type = type
+	}
 
 
 	/**
      *  При изменении соединений	// side: 1 = input, 2 = output
      */
     onConnectionsChange(side, index, connected, link, slot){
-        // input
+		// input
         if(side==1){
-            setTimeout(()=>{
-                this._normalizeSlots()
-            }, _CFG.applyDelay)
+            setTimeout(()=>this._normalizeSlots(), _CFG.applyDelay)
         }
     }
+
+
+	/**
+	 *  Нормализация слотов
+	 */
+	_normalizeSlots(){
+        // если заморожены, то не нормализуем
+        if(this.frozen) return
+
+		// нормализация инпутов
+		normalizeDynamicInputs( this, {
+			onLabelChanged: (_, input, value)=>{
+				const index = this.inputs.indexOf(input)
+				if(index===-1) return // инпут не найден, такого не должно быть
+				this.outputs[index].localized_name = value
+			}
+		})
+		// добавление пустого инпута в конец
+		addEmptyNodeInput(this)
+
+		// установка слушателя на изменения label
+		for(const output of this.outputs){
+			watchProperty(output, "label", {
+				onChanged: (value)=>{
+					const index = this.outputs.indexOf(output)
+					if(index===-1) return // выход не найден, такого не должно быть
+					output.localized_name = value
+					this.inputs[index].localized_name = value
+				}
+			})
+		}
+
+		// Нормализация выходов
+		PropsUtils.updateOutputsFromRefer(this, this)
+
+		// переопределение renderingLabel для слотов
+		Logger.debug("normalizeSlots", this.slots)
+		this.slots.forEach( slot=>{
+			try{
+				Object.defineProperty(slot, "renderingLabel", { get: ()=> "" })
+			}catch(e){}
+		})
+	}
 
 
 	/**
@@ -109,10 +175,10 @@ const NODE_CFG = _CFG.node
 		ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
 		for (let index = 0; index < this.outputs.length; index++){
 			const output = this.outputs[index]
-			const text = output.label || output.localized_name || output.name || output.type || ''
+			const text = output.label || output.localized_name || output.name || output.type || '*'
 			const measure = ctx.measureText(text)
-			const x = this.size[0] // - measure.width - _CFG.slots.textPadding
-			const y = _CFG.slots.padVertical + index * _CFG.slots.spacing + measure.actualBoundingBoxAscent/2
+			const x = output.pos[0] - measure.width - _CFG.slots.textPadding
+			const y = output.pos[1] + measure.actualBoundingBoxAscent/2
 			ctx.fillText(text, x, y)
 		}
 		ctx.restore()
@@ -186,62 +252,7 @@ const NODE_CFG = _CFG.node
 	}
 
 
-	drawSlots(){
-		// сохраняем labels
-		const labels = new Map()
-
-		this.inputs.forEach(input => {
-			labels.set(input, input._label)
-			input._label = ' '
-		})
-		this.outputs.forEach(output => {
-			labels.set(output, output._label)
-			output._label = ' '
-		})
-
-		// рисуем слоты
-		super.drawSlots(...arguments)
-
-		// восстанавливаем labels
-		labels.forEach((label, key) => { key._label = label })
-	}
-
-
 	/* METHODS */
-
-	/**
-	 *  Нормализация слотов
-	 */
-	_normalizeSlots(){
-        // если заморожены, то не нормализуем
-        if(this.frozen) return
-
-		// нормализация инпутов
-		normalizeDynamicInputs( this, {
-			onLabelChanged: (_, input, value)=>{
-				const index = this.inputs.indexOf(input)
-				if(index===-1) return
-				this.outputs[index]._label = value
-			}
-		})
-		// добавление пустого инпута в конец
-		addEmptyNodeInput(this)
-
-		// Нормализация выходов
-		updateOutputsFromReferInputs(this, this)
-
-		// установка слушателя на изменения label
-		for(const output of this.outputs){
-			watchProperty(output, "label", {
-				onChanged: (value)=>{
-					Logger.debug("output label changed", value, output)
-					const index = this.outputs.indexOf(output)
-					if(index===-1) return
-					this.inputs[index]._label = value
-				}
-			})
-		}
-	}
 
 
 	/**
@@ -257,18 +268,30 @@ const NODE_CFG = _CFG.node
             if(!lastInput.connected) this.inputs.pop()
         }
 
-		this._normalizeSlots() // Нормализация слотов
+		// Нормализация слотов
+		this._normalizeSlots()
 
+		// обновление размера узла - чтобы сработал перерасчет позиций слотов
 		this.setSize(this.size)
-        // this.setDirtyCanvas(true, true)
     }
 
 
-
+	/**
+	 *  Продолжение маршрутов
+	 */
 	_continueRoutes(){
 		Logger.debug("continueRoutes", this)
 	}
 
+
+	/**
+	 *  Переключение видимости меток слотов
+	 */
+	_slotsLabelsVisibilityToggle(){
+		this.properties = this.properties || {}
+		this.properties.slotsLabelsVisible = !this.properties.slotsLabelsVisible
+		Logger.debug("slotsLabelsVisibilityToggle", this)
+	}
 
 
 	/* MENU */
@@ -295,6 +318,12 @@ const NODE_CFG = _CFG.node
 							content:   NODE_CFG.menu.submenu.continueRoutes,
 							callback:  ()=> this._continueRoutes()
 						},
+						{
+							content:   this.slotsLabelsVisible
+								? NODE_CFG.menu.submenu.unhideSlotsLabels
+								: NODE_CFG.menu.submenu.hideSlotsLabels,
+							callback:  ()=> this._slotsLabelsVisibilityToggle()
+						},
 					],
 				},
 			},
@@ -310,9 +339,6 @@ const NODE_CFG = _CFG.node
 
 		// параметры прототипа
 		setObjectParams(this, NODE_CFG.prototype)
-
-		// Переопределение присоединения к слоту
-		overrideOnConnectInputDynamic(this.prototype)
 	}
 
 }

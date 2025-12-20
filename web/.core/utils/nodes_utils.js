@@ -252,16 +252,12 @@ export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
         return (findLinkById(input.link)!=null)    // проверка существования ссылки
     })
 
-    // Обновление типов
+    // нормализация инпутов
     for(const input of node.inputs){
 
         // обновление типа из выхода узла по ссылке
         const link = findLinkById(input.link)
-        if(link){
-            input.type = link.type
-            // const originNode = app.graph.getNodeById(link.origin_id)
-            // input.type = originNode?.outputs[link.origin_slot].type??"*"
-        }
+        if(link) input.type = link.type
 
         // вешаем слушатель на label
         if(onLabelChanged){
@@ -287,7 +283,6 @@ export function overrideOnConnectInputDynamic( proto, {
     callbackAfter = ()=>true,
     setTypeFromOutput = true,
     setLabelFromOutput = true,
-    setLocalizationNameFromOutput = false,
 } = {}){
     proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
         // Вызов callbackBefore
@@ -309,16 +304,6 @@ export function overrideOnConnectInputDynamic( proto, {
                 }
             )
         }
-
-        // Замена localization_name
-        if(setLocalizationNameFromOutput){
-            input.localization_name = makeUniqueName(
-                outputSlot.label || outputSlot.localization_name || outputSlot.name,
-                this.inputs.map( item => item.localization_name ),
-                { excludeIndex: index }
-            )
-        }
-
 
         // Вызов callbackAfter
         return callbackAfter.call(this, index, type, outputSlot, outputNode, outputIndex)

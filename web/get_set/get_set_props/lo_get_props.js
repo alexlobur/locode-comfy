@@ -3,7 +3,7 @@ import {setObjectParams} from "../../.core/utils/base_utils.js"
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import { _CFG } from "./config.js"
 import GetSetPropsVM from "./get_set_props_vm.js"
-import {updateOutputsFromReferInputs} from "../props_utils.js"
+import {PropsUtils} from "../props_utils.js"
 
 
 const VM = GetSetPropsVM
@@ -172,7 +172,7 @@ export function LoGetPropsExtends(proto){
 	 *	Обновление выходов на основе узла-сеттера
 	 */
 	proto._updateOutputsFromRefer = function(fitSize=false){
-		updateOutputsFromReferInputs(this, VM.getSetterById(this.setterId), { fitSize })
+		PropsUtils.updateOutputsFromRefer(this, VM.getSetterById(this.setterId), { fitSize })
 	}
 
 

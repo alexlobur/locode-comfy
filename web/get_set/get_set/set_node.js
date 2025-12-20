@@ -2,7 +2,7 @@ import {app} from "../../../../scripts/app.js"
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 import {makeUniqueName, setObjectParams} from "../../.core/utils/base_utils.js"
 import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, overrideOnConnectInputDynamic} from "../../.core/utils/nodes_utils.js"
-import {drawFrozenIndicator} from "../props_utils.js"
+import {PropsUtils} from "../props_utils.js"
 import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
 import {_CFG} from "./config.js"
 import Logger from "../../.core/utils/Logger.js"
@@ -139,7 +139,7 @@ const NODE_CFG = _CFG.setNode
      *  - Иначе рисуется бокс заголовка узла
      */
     drawTitleBox(ctx, { scale, low_quality = false, title_height = LiteGraph.NODE_TITLE_HEIGHT, box_size = 10 }){
-        if(this.frozen) drawFrozenIndicator(ctx, { centerPos: [title_height*0.5, -title_height*0.5] })
+        if(this.frozen) PropsUtils.drawFrozenIndicator(ctx, { centerPos: [title_height*0.5, -title_height*0.5] })
         else super.drawTitleBox(ctx, { scale, low_quality, title_height, box_size })
     }
 

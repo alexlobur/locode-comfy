@@ -4,7 +4,7 @@ import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInputDynamic
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import { _CFG } from "./config.js"
 import GetSetPropsVM from "./get_set_props_vm.js"
-import {drawFrozenIndicator} from "../props_utils.js"
+import {PropsUtils} from "../props_utils.js"
 
 const VM = GetSetPropsVM
 const {setNode: NODE_CFG} = _CFG
@@ -155,7 +155,7 @@ export function LoSetPropsExtends(proto){
     const _drawTitleBox = proto.drawTitleBox
     proto.drawTitleBox = function(ctx, { scale, low_quality = false, title_height = LiteGraph.NODE_TITLE_HEIGHT, box_size = 10 }){
         if(this.frozen){
-            drawFrozenIndicator(ctx, { centerPos: [title_height*0.5, -title_height*0.5] })
+            PropsUtils.drawFrozenIndicator(ctx, { centerPos: [title_height*0.5, -title_height*0.5] })
         } else {
             _drawTitleBox?.apply(this, arguments)
         }
