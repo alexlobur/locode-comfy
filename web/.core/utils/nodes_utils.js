@@ -1,7 +1,8 @@
 import {app} from "../../../../scripts/app.js"
-import Logger from "./Logger.js"
-import {makeUniqueName} from "./base_utils.js"
+import {makeUniqueName, watchProperty} from "./base_utils.js"
 
+
+/* GRAPH */
 
 /**
  *  Проход по списку всех узлов графа (по дереву)
@@ -53,7 +54,6 @@ export function foreachLinks(callBack=null){
 
     return links
 }
-
 
 
 /**
@@ -197,8 +197,6 @@ export function findLinkById(id){
 }
 
 
-
-
 /**
  *  Пытается перейти к узлу
  */
@@ -216,60 +214,12 @@ export function gotoNode(node, select = true){
 }
 
 
-/**
- *  Принимает список объектов, у который есть параметр `name`,
- *  Возвращает именованный объект.
- *  
- *  @param {*[]} namedList
- */
-export function listToNamedObject( namedList ){
-    const resut = {}
-    for (const item of namedList){
-        resut[item.name] = item
-    }
-    return resut
-}
+/* INPUTS & OUTPUTS */
 
 
 /**
- *  Нормализация динамических инпутов
- *  Удаление пустых
+ *  Добавление типового пустого инпута
  * 
- *  @param {LGraphNode} node 
- *  @param {(node, index, input)=>void} onLabelChanged - функция для обработки изменений Label
- *  @returns {void}
- */
-export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
-
-    // удаление инпутов без соединения
-    node.inputs = node.inputs.filter( input =>{
-        if(!input.isConnected) return false        // проверка наличия соединения
-        return (findLinkById(input.link)!=null)    // проверка существования ссылки
-    })
-
-    // Обновление типов
-    let index=0
-    for (const input of node.inputs){
-        // обновление типа из выхода узла по ссылке
-        const link = findLinkById(input.link)
-        if(link){
-            input.type = link.type
-            // const originNode = app.graph.getNodeById(link.origin_id)
-            // input.type = originNode?.outputs[link.origin_slot].type??"*"
-        }
-        // вешаем слушатель на label
-        if(onLabelChanged){
-            watchSlotLabel( input, {
-                onChanged: (input) => onLabelChanged?.(node, index, input)
-            })
-        }
-        index++
-    }
-}
-
-
-/**
- *  Типовой пустой инпут
  *  @param {LGraphNode} node
  *  @param {string} prefix Префикс для имени инпута. Если не указан, то будет использоваться "any".
  *  @param {string} type Тип инпута. Если не указан, то будет использоваться "*".
@@ -284,29 +234,47 @@ export function addEmptyNodeInput(node, { prefix="any", type="*", label="*", opt
 
 
 /**
- *  Отслеживание изменений label слота
- *  @param {INodeInputSlot} slot 
- *  @param {function(slot: INodeInputSlot)=>void} onChanged - функция для обработки изменений
- *  @param {function(value: string)=>string} onSet - функция для установки значения
- *  @returns {INodeInputSlot}
+ *  Нормализация динамических инпутов.
+ * 
+ *  - Удаление пустых инпутов.
+ *  - Обновление типов из выходов.
+ *  - Вешаем слушатель на изменения label.
+ * 
+ *  @param {LGraphNode} node
+ *  @param {(node, input, value)=>void} onLabelChanged - функция для обработки изменений Label
+ *  @returns {void}
  */
-export function watchSlotLabel(slot, { onSet, onChanged }={}){
-    if(slot._label) return
+export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
 
-    slot._label = slot.label
-    Object.defineProperty( slot, "label", {
-        set(value){
-            slot._label = onSet?.(value)??value
-            onChanged?.(slot)
-        },
-        get(){ return slot._label }
+    // удаление инпутов без соединения
+    node.inputs = node.inputs.filter( input =>{
+        if(!input.isConnected) return false        // проверка наличия соединения
+        return (findLinkById(input.link)!=null)    // проверка существования ссылки
     })
-    return slot
+
+    // Обновление типов
+    for(const input of node.inputs){
+
+        // обновление типа из выхода узла по ссылке
+        const link = findLinkById(input.link)
+        if(link){
+            input.type = link.type
+            // const originNode = app.graph.getNodeById(link.origin_id)
+            // input.type = originNode?.outputs[link.origin_slot].type??"*"
+        }
+
+        // вешаем слушатель на label
+        if(onLabelChanged){
+            watchProperty( input, "label", {
+                onChanged: (value) => onLabelChanged?.(node, input, value)
+            })
+        }
+    }
 }
 
 
 /**
- *  Переопределение присоединения к слоту.
+ *  Переопределение присоединения к динамическому инпуту.
  * 
  *  @param {LGraphNode} proto Узел или Прототип
  *  @param {bool} setTypeFromOutput — заменить тип из выхода
@@ -314,7 +282,7 @@ export function watchSlotLabel(slot, { onSet, onChanged }={}){
  *  @param {(index, type, outputSlot, outputNode, outputIndex)=>boolean} callbackBefore — функция для обработки перед изменениями
  *  @param {(index, type, outputSlot, outputNode, outputIndex)=>boolean} callbackAfter — функция для обработки после изменений
  */
-export function overrideOnConnectInput( proto, {
+export function overrideOnConnectInputDynamic( proto, {
     callbackBefore = ()=>true,
     callbackAfter = ()=>true,
     setTypeFromOutput = true,
@@ -357,6 +325,8 @@ export function overrideOnConnectInput( proto, {
     }
 }
 
+
+/* MISCELLANEOUS */
 
 /**
  *  Переопределение границы минимальной ширины узла (computeSize).

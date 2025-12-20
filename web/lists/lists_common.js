@@ -1,5 +1,5 @@
 import {app} from "../../../scripts/app.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput} from "../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInputDynamic} from "../.core/utils/nodes_utils.js"
 
 
 // Конфиг узла
@@ -49,7 +49,7 @@ app.registerExtension({
 
 
         // Переопределение присоединения к слоту
-        overrideOnConnectInput(nodeType.prototype, {
+        overrideOnConnectInputDynamic(nodeType.prototype, {
             callbackAfter: function(){
                 // нормализуем с задержкой после добавления линка
                 setTimeout(()=> _normalizeInputs(this, nodeType), NODE_CFG.applyDelay )

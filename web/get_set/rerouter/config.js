@@ -35,7 +35,7 @@ export const _CFG = {
             submenu: {
                 freezeInputs:       "Freeze Inputs",
                 unfreezeInputs:     "Unfreeze Inputs",
-                continueeRoutes:    "Continue Routes",
+                continueRoutes:     "Continue Routes",
             }
         }
     },
@@ -43,9 +43,10 @@ export const _CFG = {
     // slots settings
     slots: {
         padHorizontal:  LiteGraph.NODE_SLOT_HEIGHT * 0.25, //333,
-        padVertical:    LiteGraph.NODE_SLOT_HEIGHT * 0.75,
-        spacing:        LiteGraph.NODE_SLOT_HEIGHT * 0.5,
+        padVertical:    LiteGraph.NODE_SLOT_HEIGHT * 0.6666,
+        spacing:        LiteGraph.NODE_SLOT_HEIGHT * 0.6666,
         minWidth:       LiteGraph.NODE_SLOT_HEIGHT * 1,
+        // горизонтальный отступ для текста слота
         textPadding:    LiteGraph.NODE_SLOT_HEIGHT * 0.6,
     }
 

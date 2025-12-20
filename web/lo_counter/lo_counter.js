@@ -1,5 +1,5 @@
 import { app } from "../../../scripts/app.js"
-import { listToNamedObject} from "../.core/utils/nodes_utils.js"
+import {listToNamedObject} from "../.core/utils/base_utils.js"
 import { clamp } from "../.core/utils/base_utils.js"
 import Logger from "../.core/utils/Logger.js"
 

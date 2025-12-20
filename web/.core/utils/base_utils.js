@@ -61,3 +61,56 @@ export function genUid(length = 8){
 }
 
 
+/**
+ *  Принимает список объектов, у который есть параметр `name`,
+ *  Возвращает именованный объект с ключами из `name`
+ *  
+ *  @param {*[]} namedList
+ */
+export function listToNamedObject( namedList ){
+    const resut = {}
+    for (const item of namedList){
+        resut[item.name] = item
+    }
+    return resut
+}
+
+
+/**
+ *  Наблюдение за свойством объекта.
+ *  
+ *  - Определяет свойство как геттер/сеттер.
+ *  - Вешает слушатель на изменения.
+ *
+ *  @param {object} object - объект
+ *  @param {string} property - имя свойства для наблюдения
+ *  @param {function(prevValue: any, newValue: any)=>any} beforeSet - функция для обработки перед установкой значения
+ *  @param {function(value: any)=>void} onChanged - функция для обработки изменений
+ *  @param {string} propertyStorageName - имя свойства для хранения значения (по умолчанию `_${property}`)
+ *  @returns {object}
+ */
+export function watchProperty(object, property, { propertyStorageName=null, beforeSet, onChanged }={}){
+
+    // имя свойства для хранения значения
+    propertyStorageName = propertyStorageName??`_${property}`
+
+    // если свойство уже наблюдается, то выходим
+    if(object[propertyStorageName]) return object
+
+    // сохраняем предыдущее значение
+    object[propertyStorageName] = object[property]
+
+    // определяем свойство как геттер/сеттер
+    Object.defineProperty( object, property, {
+        // сеттер
+        set(value){
+            object[propertyStorageName] = beforeSet!==undefined ? beforeSet(object[propertyStorageName], value) : value
+            onChanged?.(value)
+        },
+        // геттер
+        get(){
+            return object[propertyStorageName]
+        }
+    })
+    return object
+}

@@ -1,7 +1,7 @@
 import Logger from "../../.core/utils/Logger.js"
-import {setObjectParams} from "../../.core/utils/base_utils.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInput} from "../../.core/utils/nodes_utils.js"
-import {computeSlotTextWidth, updateOutputsFromReferInputs} from "../props_utils.js"
+import {setObjectParams, watchProperty} from "../../.core/utils/base_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInputDynamic} from "../../.core/utils/nodes_utils.js"
+import {updateOutputsFromReferInputs} from "../props_utils.js"
 import {_CFG} from "./config.js"
 
 const NODE_CFG = _CFG.node
@@ -45,11 +45,10 @@ const NODE_CFG = _CFG.node
 		// Начальные значения
 		this.title = NODE_CFG.title
 
-		// Нормализация инпутов
-		this._normalizeInputs()
+		// Нормализация слотов
+		this._normalizeSlots()
 
-		// Обновление выходов
-		this._updateOutputs()
+		Logger.debug("onNodeCreated", this)
     }
 
 
@@ -57,13 +56,7 @@ const NODE_CFG = _CFG.node
      *  Конфигурация узла
      */
     onConfigure(){
-        try{
-			// Нормализация выходов
-			this._updateOutputs()
-		} catch(e) {
-            Logger.error(e, this)
-        }
-        super.onConfigure(arguments)
+		Logger.debug("onConfigure", this)
     }
 
 
@@ -81,9 +74,8 @@ const NODE_CFG = _CFG.node
         // input
         if(side==1){
             setTimeout(()=>{
-                this._normalizeInputs()
-				this._updateOutputs()
-            }, _CFG.applyDelay )
+                this._normalizeSlots()
+            }, _CFG.applyDelay)
         }
     }
 
@@ -102,8 +94,7 @@ const NODE_CFG = _CFG.node
      *  После клонирования
      */
     _onCloned(){
-        this._normalizeInputs()
-		this._updateOutputs()
+        this._normalizeSlots()
     }
 
 
@@ -118,7 +109,7 @@ const NODE_CFG = _CFG.node
 		ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
 		for (let index = 0; index < this.outputs.length; index++){
 			const output = this.outputs[index]
-			const text = "!!!!" // output.localized_name || output.name || output.type || ''
+			const text = output.label || output.localized_name || output.name || output.type || ''
 			const measure = ctx.measureText(text)
 			const x = this.size[0] // - measure.width - _CFG.slots.textPadding
 			const y = _CFG.slots.padVertical + index * _CFG.slots.spacing + measure.actualBoundingBoxAscent/2
@@ -162,65 +153,94 @@ const NODE_CFG = _CFG.node
 	 */
 	setSize(size){
 		super.setSize(size)
-		this._updateSlotsPositions()
+		this.#updateSlotsPositions()
 	}
 
 
 	/**
 	 *  Обновление позиций слотов
 	 */
-	_updateSlotsPositions(){
+	#updateSlotsPositions(){
+		const verticalOffset = this.#getVerticalOffset()
+
 		this.inputs.forEach((input, index) => {
 			input.pos = [
 				_CFG.slots.padHorizontal,
-				_CFG.slots.padVertical + index * _CFG.slots.spacing
+				verticalOffset + index * _CFG.slots.spacing
 			]
 		})
 		this.outputs.forEach((output, index) => {
 			output.pos = [
 				this.size[0] - _CFG.slots.padHorizontal,
-				_CFG.slots.padVertical + index * _CFG.slots.spacing
+				verticalOffset + index * _CFG.slots.spacing
 			]
 		})
 	}
 
 
+	/**
+	 *  Определение вертикального отступа, чтобы слоты были по центру узла
+	 */
+	#getVerticalOffset(){
+		return (this.size[1] - (this.inputs.length-1) * _CFG.slots.spacing) / 2
+	}
+
+
+	drawSlots(){
+		// сохраняем labels
+		const labels = new Map()
+
+		this.inputs.forEach(input => {
+			labels.set(input, input._label)
+			input._label = ' '
+		})
+		this.outputs.forEach(output => {
+			labels.set(output, output._label)
+			output._label = ' '
+		})
+
+		// рисуем слоты
+		super.drawSlots(...arguments)
+
+		// восстанавливаем labels
+		labels.forEach((label, key) => { key._label = label })
+	}
+
+
 	/* METHODS */
 
-    /**
-     *  Нормализация инпутов
-     */
-    _normalizeInputs(){
+	/**
+	 *  Нормализация слотов
+	 */
+	_normalizeSlots(){
         // если заморожены, то не нормализуем
         if(this.frozen) return
 
 		// нормализация инпутов
-        normalizeDynamicInputs( this, {
-			onLabelChanged: (_, index, input)=>{
-				input._label = " "
-				Logger.debug("onLabelChanged", Array.from(this.outputs))
-				// this.outputs[index].label = input.label
-				this.expandToFitContent()
-				this.setDirtyCanvas(true, true)
+		normalizeDynamicInputs( this, {
+			onLabelChanged: (_, input, value)=>{
+				const index = this.inputs.indexOf(input)
+				if(index===-1) return
+				this.outputs[index]._label = value
 			}
 		})
-
-		Logger.debug("normalizeInputs", this)
-
 		// добавление пустого инпута в конец
-        addEmptyNodeInput(this)
-	}
+		addEmptyNodeInput(this)
 
-
-	/**
-	 *	Обновление выходов
-	 */
-	 _updateOutputs(){
-		// Обновление выходов
+		// Нормализация выходов
 		updateOutputsFromReferInputs(this, this)
 
-		// задаем пустое localized_name выходов
-		this.outputs.forEach(output => { output.label = " " })
+		// установка слушателя на изменения label
+		for(const output of this.outputs){
+			watchProperty(output, "label", {
+				onChanged: (value)=>{
+					Logger.debug("output label changed", value, output)
+					const index = this.outputs.indexOf(output)
+					if(index===-1) return
+					this.inputs[index]._label = value
+				}
+			})
+		}
 	}
 
 
@@ -237,9 +257,18 @@ const NODE_CFG = _CFG.node
             if(!lastInput.connected) this.inputs.pop()
         }
 
-        this._normalizeInputs() // Нормализация инпутов
-        this.setDirtyCanvas(true, true)
+		this._normalizeSlots() // Нормализация слотов
+
+		this.setSize(this.size)
+        // this.setDirtyCanvas(true, true)
     }
+
+
+
+	_continueRoutes(){
+		Logger.debug("continueRoutes", this)
+	}
+
 
 
 	/* MENU */
@@ -262,6 +291,10 @@ const NODE_CFG = _CFG.node
                                 : NODE_CFG.menu.submenu.freezeInputs,
 							callback:  ()=> this._freezeInputsToggle()
 						},
+						{
+							content:   NODE_CFG.menu.submenu.continueRoutes,
+							callback:  ()=> this._continueRoutes()
+						},
 					],
 				},
 			},
@@ -273,23 +306,13 @@ const NODE_CFG = _CFG.node
 	/* STATIC */
 
     static setUp(){
-		LiteGraph.registerNodeType( NODE_CFG.type, this )
+		LiteGraph.registerNodeType(NODE_CFG.type, this)
 
 		// параметры прототипа
 		setObjectParams(this, NODE_CFG.prototype)
 
 		// Переопределение присоединения к слоту
-		overrideOnConnectInput( this.prototype, {
-			setLabelFromOutput: false,
-			setLocalizationNameFromOutput: true,
-			callbackAfter: function(index, type, outputSlot, outputNode, outputIndex){
-				this.inputs[index].label = " "
-			}
-		})
-
-		// // Переопределение границы минимальной ширины узла (computeSize)
-		// overrideComputeSizeMinWidth( this.prototype, NODE_CFG.minWidth )
-
+		overrideOnConnectInputDynamic(this.prototype)
 	}
 
 }

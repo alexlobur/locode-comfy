@@ -1,7 +1,7 @@
 import {app} from "../../../../scripts/app.js"
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 import {makeUniqueName, setObjectParams} from "../../.core/utils/base_utils.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, overrideOnConnectInput} from "../../.core/utils/nodes_utils.js"
+import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, overrideOnConnectInputDynamic} from "../../.core/utils/nodes_utils.js"
 import {drawFrozenIndicator} from "../props_utils.js"
 import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
 import {_CFG} from "./config.js"
@@ -316,7 +316,7 @@ const NODE_CFG = _CFG.setNode
         this.category = _CFG.category
 
         // Переопределение присоединения к слоту
-        overrideOnConnectInput( this.prototype )
+        overrideOnConnectInputDynamic( this.prototype )
 
         // Переопределение границы минимальной ширины узла (computeSize)
         overrideComputeSizeMinWidth( this.prototype, NODE_CFG.minWidth )
