@@ -19,6 +19,19 @@ const NODE_CFG = _CFG.node
 
 
 	/**
+	 *	TODO: Режим отображения узла
+	 *
+	 *	- system: классический режим отображения узла (как в системе)
+	 *	- standart: стандартный режим отображения узла
+	 *	- adapted: подстраивается под размеры узла
+	 *	- compact: компактный режим отображения узла
+	 *	@returns {string} - режим отображения узла
+	 *	@default 'default'
+	 */
+	get viewMode(){ return this.properties?.mode??'system' }
+
+
+	/**
      *  Заморожены ли параметры ввода
      */
     get frozen(){ return this.properties?.frozen??false }
@@ -27,7 +40,7 @@ const NODE_CFG = _CFG.node
 	/**
 	 *  Видимость меток слотов
 	 */
-	get slotsLabelsVisible(){ return this.properties?.slotsLabelsVisible??true }
+	get hideLabels(){ return this.properties?.hideLabels??false }
 
 
 	/**---
@@ -36,6 +49,24 @@ const NODE_CFG = _CFG.node
      */
     constructor(title=NODE_CFG.title){
 		super(title)
+
+		// Начальные значения свойств
+		this.properties = {
+			...(this.properties || {}),
+			frozen:		false,
+			hideLabels:	false,
+			viewMode:	_CFG.viewModes[0],
+		}
+
+		// Описание свойства
+		this.properties_info ||= []
+		this.properties_info.push({
+			name:			"viewMode",
+			type:			"enum", // или "string"
+			widget:			"combo",    			// ключевое — combo
+			values:			_CFG.viewModes,			// варианты
+			default_value:	_CFG.viewModes[0]
+		})
 
 		// Начальные значения
 		setObjectParams(this, NODE_CFG.defaults)
@@ -51,41 +82,31 @@ const NODE_CFG = _CFG.node
 		// Начальные значения
 		this.title = NODE_CFG.title
 
+		// время создания узла
+		this._createdTime = Date.now()
+
 		// Нормализация слотов
 		this._normalizeSlots()
     }
 
 
-	// /**
-    //  *  Конфигурация узла
-    //  */
-    // onConfigure(){}
-
-
-	// getSlotMenuOptions(){
-	// 	super.getSlotMenuOptions(...arguments)
-	// 	Logger.debug("getSlotMenuOptions", arguments)
-	// }
-
-	getExtraSlotMenuOptions(){
-
-		app.canvas.createDialog(
-			"<span class='name'>Name</span><input autofocus type='text'/><button>OK</button>",
-		)
-
-		Logger.debug("getExtraSlotMenuOptions", arguments)
-		return [
-		]
+	/**
+	 *  Конфигурация узла
+	 */
+	onConfigure(){
+		this._normalizeSlots()
 	}
 
 
 	/**
-     *  Присоединение к динамическому инпуту
+     *  Присоединение к инпуту
      */
 	onConnectInput(index, type, outputSlot, outputNode, outputIndex){
-		const input = this.inputs[index]
+		// если этот узел заморожен, то выходим
+		if(this.frozen) return true
 
 		// параметры инпута из выхода
+		const input = this.inputs[index]
 		const label = outputSlot.label || outputSlot.localized_name || outputSlot.name || outputSlot.type || '*'
 		input.label = makeUniqueName(label, this.inputs.map(input=>input.label), { excludeIndex: index })
 		input.type = type
@@ -104,45 +125,54 @@ const NODE_CFG = _CFG.node
 
 
 	/**
+	 *  При изменении свойств узла
+	 */
+	onPropertyChanged(property, value){
+		// задержка, чтобы не реагировать на изменения свойств узла сразу после создания
+		if(Date.now() - this._createdTime < _CFG.afterCreateDelay) return
+
+		// заморозка
+		if(property==="frozen"){
+			this.freezeInputsToggle(value)
+		}
+		// режим отображения
+		if(property==="viewMode"){
+			this.setViewMode(value)
+		}
+	}
+
+
+	/**
 	 *  Нормализация слотов
 	 */
 	_normalizeSlots(){
-        // если заморожены, то не нормализуем
-        if(this.frozen) return
-
 		// нормализация инпутов
 		normalizeDynamicInputs( this, {
-			onLabelChanged: (_, input, value)=>{
+			onLabelChanged:		(_, input, value) => {
 				const index = this.inputs.indexOf(input)
-				if(index===-1) return // инпут не найден, такого не должно быть
-				this.outputs[index].localized_name = value
-			}
+				this.outputs[index][ this.outputs[index]._label!==undefined ? "_label" : "label" ] = value
+			},
+			removeEmptyInputs:	!this.frozen,
 		})
-		// добавление пустого инпута в конец
-		addEmptyNodeInput(this)
 
-		// установка слушателя на изменения label
-		for(const output of this.outputs){
-			watchProperty(output, "label", {
-				onChanged: (value)=>{
-					const index = this.outputs.indexOf(output)
-					if(index===-1) return // выход не найден, такого не должно быть
-					output.localized_name = value
-					this.inputs[index].localized_name = value
-				}
-			})
-		}
+		// добавление пустого инпута в конец
+		if(!this.frozen) addEmptyNodeInput(this)
 
 		// Нормализация выходов
 		PropsUtils.updateOutputsFromRefer(this, this)
 
-		// переопределение renderingLabel для слотов
-		Logger.debug("normalizeSlots", this.slots)
-		this.slots.forEach( slot=>{
-			try{
-				Object.defineProperty(slot, "renderingLabel", { get: ()=> "" })
-			}catch(e){}
-		})
+		// вешаем слушатель на изменения label выходов
+		this.outputs.forEach( output=>
+			watchProperty( output, "label", {
+				onChanged: (value) => {
+					const index = this.outputs.indexOf(output)
+					this.inputs[index][ this.inputs[index]._label!==undefined ? "_label" : "label" ] = value
+				}
+			})
+		)
+
+		// переопределение свойств отображения слотов
+		this.slots.forEach( slot=>this.#redefineSlotDisplayProperties(slot) )
 	}
 
 
@@ -151,16 +181,8 @@ const NODE_CFG = _CFG.node
      */
     clone(){
         const cloned = super.clone()
-        cloned._onCloned()
+		cloned._normalizeSlots()
         return cloned
-    }
-
-
-    /**
-     *  После клонирования
-     */
-    _onCloned(){
-        this._normalizeSlots()
     }
 
 
@@ -170,14 +192,32 @@ const NODE_CFG = _CFG.node
 	 *  Рисование переднего плана узла
 	 */
 	onDrawForeground(ctx){
+		// если метки слотов не видны, то выходим
+		if(this.hideLabels) return
+
+		// если узел свернут, то рисуем количество выходов
+		// if(this.collapsed){
+		// 	ctx.save()
+		// 	ctx.fillStyle = _CFG.slots.textColor
+		// 	ctx.font = this.titleFontStyle
+		// 	const text = `×${this.outputs.length}`
+		// 	const measure = ctx.measureText(text)
+		// 	const x = (this.boundingRect[2] - measure.width)/2
+		// 	const y = this.boundingRect[3] - (this.boundingRect[3] - measure.actualBoundingBoxAscent)/2
+		// 	ctx.fillText(text, x, y)
+		// 	ctx.restore()
+		// 	return
+		// }
+
 		// рисуем типы выходов
 		ctx.save()
-		ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
+		ctx.fillStyle = _CFG.slots.textColor
+		ctx.font = _CFG.slots.textFont
 		for (let index = 0; index < this.outputs.length; index++){
 			const output = this.outputs[index]
-			const text = output.label || output.localized_name || output.name || output.type || '*'
+			const text = this.#getSlotRenderingLabel(output)
 			const measure = ctx.measureText(text)
-			const x = output.pos[0] - measure.width - _CFG.slots.textPadding
+			const x = this.size[0] - measure.width - _CFG.slots.textPadding
 			const y = output.pos[1] + measure.actualBoundingBoxAscent/2
 			ctx.fillText(text, x, y)
 		}
@@ -186,28 +226,52 @@ const NODE_CFG = _CFG.node
 
 
 	/**
-	 *  Расчет размера узла
+	 *  Переопределение свойств отображения слота
+	 */
+	#redefineSlotDisplayProperties(slot){
+
+		// определение типа слота
+		const isOutputSlot = slot.links !== undefined
+
+		watchProperty( slot, "renderingLabel", { initialValue: "", setValue: ()=> "" })
+		watchProperty( slot, "pos", {
+			getValue: (value)=>{
+				const index = isOutputSlot ? this.outputs.indexOf(slot) : this.inputs.indexOf(slot)
+				return this.#getSlotPosition(slot, index)
+			}
+		})
+	}
+
+
+	/**
+	 *  Получение текста для отображения в слоте
+	 */
+	#getSlotRenderingLabel(slot){
+		return (slot.label || slot.localized_name || slot.name || slot.type || '*').trim()
+	}
+
+
+	/**
+	 *  Расчет минимального размера узла
 	 */
 	computeSize(){
-		// получаем расчетный размер узла
-		// let size = super.computeSize(...arguments)
-
 		// начальная ширина узла
 		let width = _CFG.slots.minWidth
-
-		// // расчет ширины инпутов
-		// // ширину выходов не считаем, т.к. они не имеют текста
-		// for (const input of this.inputs){
-		// 	const text = input.label || input.localized_name || input.name || ''
-		// 	// расчет ширины текста
-		// 	const text_width = computeSlotTextWidth(text.trim(), this.innerFontStyle)
-		// 	if (text_width > slots_width) slots_width = text_width
-		// }
-		// добавление ширины слота
-		// slots_width = slots_width + 2 * LiteGraph.NODE_SLOT_HEIGHT
-
-		// высота узла
 		const height = _CFG.slots.padVertical * 2 + (this.inputs.length-1) * _CFG.slots.spacing
+
+		// если метки слотов не видны, то возвращаем начальную ширину и высоту
+		if(this.hideLabels){
+			return [width, height]
+		}
+
+		// расчет ширины текста инпутов
+		const textWidth = Math.max(
+			...this.inputs.map(
+				input=>PropsUtils.computeSlotTextWidth(this.#getSlotRenderingLabel(input), _CFG.slots.textFont)
+			)
+		)
+		// ширина / высота
+		width = textWidth + 2 * _CFG.slots.textPadding
 
 		// возвращаем ширину и высоту
 		return [width, height]
@@ -215,86 +279,29 @@ const NODE_CFG = _CFG.node
 
 
 	/**
-	 *  Установка размера узла
+	 *  Получение расчетной позиции слота
 	 */
-	setSize(size){
-		super.setSize(size)
-		this.#updateSlotsPositions()
+	#getSlotPosition(slot, index){
+		// определение типа слота
+		const isOutput = slot.links !== undefined
+
+		// расчет вертикального отступа
+		const verticalOffset = (this.boundingRect[3] - (this.inputs.length-1) * _CFG.slots.spacing) / 2
+
+		// расчет горизонтальной позиции слота
+		const x = isOutput
+			? this.boundingRect[2] - _CFG.slots.padHorizontal
+			: _CFG.slots.padHorizontal
+
+		// расчет вертикальной позиции слота
+		const y = verticalOffset + index * _CFG.slots.spacing
+
+		return [x, y]
+
 	}
 
 
-	/**
-	 *  Обновление позиций слотов
-	 */
-	#updateSlotsPositions(){
-		const verticalOffset = this.#getVerticalOffset()
-
-		this.inputs.forEach((input, index) => {
-			input.pos = [
-				_CFG.slots.padHorizontal,
-				verticalOffset + index * _CFG.slots.spacing
-			]
-		})
-		this.outputs.forEach((output, index) => {
-			output.pos = [
-				this.size[0] - _CFG.slots.padHorizontal,
-				verticalOffset + index * _CFG.slots.spacing
-			]
-		})
-	}
-
-
-	/**
-	 *  Определение вертикального отступа, чтобы слоты были по центру узла
-	 */
-	#getVerticalOffset(){
-		return (this.size[1] - (this.inputs.length-1) * _CFG.slots.spacing) / 2
-	}
-
-
-	/* METHODS */
-
-
-	/**
-     *  Заморозка инпутов
-     */
-    _freezeInputsToggle(){
-        this.properties = this.properties || {}
-        this.properties.frozen = !this.properties.frozen
-
-        // Если заморожено, то удаляем последний инпут, если он пустой
-        if(this.frozen && this.inputs.length > 0){
-            const lastInput = this.inputs[this.inputs.length - 1]
-            if(!lastInput.connected) this.inputs.pop()
-        }
-
-		// Нормализация слотов
-		this._normalizeSlots()
-
-		// обновление размера узла - чтобы сработал перерасчет позиций слотов
-		this.setSize(this.size)
-    }
-
-
-	/**
-	 *  Продолжение маршрутов
-	 */
-	_continueRoutes(){
-		Logger.debug("continueRoutes", this)
-	}
-
-
-	/**
-	 *  Переключение видимости меток слотов
-	 */
-	_slotsLabelsVisibilityToggle(){
-		this.properties = this.properties || {}
-		this.properties.slotsLabelsVisible = !this.properties.slotsLabelsVisible
-		Logger.debug("slotsLabelsVisibilityToggle", this)
-	}
-
-
-	/* MENU */
+	/* MENU & METHODS */
 
 	/**
      *	Дополнительные опции
@@ -306,29 +313,101 @@ const NODE_CFG = _CFG.node
 				content:  NODE_CFG.menu.title,
 				has_submenu: true,
 				submenu: {
-					// title: NODE_CFG.menu.title,
 					options: [
 						{
-							content:   this.frozen
-                                ? NODE_CFG.menu.submenu.unfreezeInputs
-                                : NODE_CFG.menu.submenu.freezeInputs,
-							callback:  ()=> this._freezeInputsToggle()
+							content:	NODE_CFG.menu.submenu.inputsFreezing[this.frozen ? 1 : 0],
+							callback:	()=> this.freezeInputsToggle()
+						},{
+							content:	NODE_CFG.menu.submenu.continueRoutes,
+							callback:	()=> this.cloneWithRoutes()
+						},{
+							content:	NODE_CFG.menu.submenu.slotsLabelsVisibility[this.hideLabels ? 0 : 1],
+							callback:	()=> this.slotsLabelsVisibilityToggle()
+						},{
+							content:	NODE_CFG.menu.submenu.viewMode.title,
+							has_submenu: true,
+							submenu: {
+								options: NODE_CFG.menu.submenu.viewMode.options().map(mode=>({
+									content:	mode,
+									callback:	()=> this.setViewMode(mode)
+								}))
+							},
 						},
-						{
-							content:   NODE_CFG.menu.submenu.continueRoutes,
-							callback:  ()=> this._continueRoutes()
-						},
-						{
-							content:   this.slotsLabelsVisible
-								? NODE_CFG.menu.submenu.unhideSlotsLabels
-								: NODE_CFG.menu.submenu.hideSlotsLabels,
-							callback:  ()=> this._slotsLabelsVisibilityToggle()
-						},
-					],
+				],
 				},
 			},
 			null
 		)
+	}
+
+
+	/**
+     *  Заморозка инпутов
+     */
+    freezeInputsToggle(force=null){
+        this.properties.frozen = force ?? !this.properties.frozen
+
+		// Если заморожено, то удаляем последний инпут, если он пустой
+        if(this.frozen && this.inputs.length > 0){
+            const lastInput = this.inputs[this.inputs.length - 1]
+            if(!lastInput.connected) this.inputs.pop()
+        }
+
+		// Нормализация слотов
+		this._normalizeSlots()
+    }
+
+
+	/**
+	 *  Продолжение маршрутов
+	 */
+	cloneWithRoutes(){
+
+		const frozen = this.frozen			// сохранение состояния заморозки узла
+		this.properties.frozen = true		// заморозка узла
+		const cloned = this.clone()			// создание клона узла
+		this.properties.frozen = frozen		// восстановление заморозки узла
+
+		// установка позиции клона
+		cloned.pos = [
+			this.pos[0] + this.size[0] + _CFG.onContinueRoutesOffset[0],
+			this.pos[1] + _CFG.onContinueRoutesOffset[1]
+		]
+
+		// добавление клона в граф
+		this.graph.add(cloned)
+
+		// Соединение выходов клона с входами текущего узла
+		cloned.outputs.forEach((output, index) => {
+			this.connect(index, cloned, index)
+		})
+
+		// восстановление заморозки узла
+		cloned.properties.frozen = frozen
+
+		// нормализация слотов клона
+		cloned._normalizeSlots()
+
+		this.graph.setDirtyCanvas(true, true)
+    }
+
+
+	/**
+	 *  Переключение видимости меток слотов
+	 */
+	slotsLabelsVisibilityToggle(){
+		this.properties.hideLabels = !this.hideLabels
+		this.expandToFitContent()
+	}
+
+
+	/**
+	 *  Установка режима отображения узла
+	 */
+	setViewMode(mode){
+		if(!_CFG.viewModes.includes(mode)) return
+		this.properties.viewMode = mode
+		this.expandToFitContent()
 	}
 
 

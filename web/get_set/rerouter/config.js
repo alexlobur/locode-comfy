@@ -4,10 +4,21 @@ import { LO_NODES_DEFAULTS } from "../../config.js"
 // Конфиги узлов
 export const _CFG = {
 
-    /**
-     *  Задержка применения изменений
-     */
+    // Задержка применения изменений
     applyDelay: 100,
+
+    // Задержка после создания узла
+    afterCreateDelay: 500,
+
+    // Сдвиг при продолжении маршрутов
+    onContinueRoutesOffset: [100, 0],
+
+    // Режимы отображения узлов
+    viewModes: [
+        "System",
+        "Standard",
+        "Adaptive",
+    ],
 
     // параметры узла
     node: {
@@ -23,22 +34,24 @@ export const _CFG = {
         },
 
         // начальные значения узла
-        defaults:  {
+        defaults: {
             ...LO_NODES_DEFAULTS["LoReRouter"],
             isVirtualNode:      true,
             serialize_widgets:  true,
-            size:               [40, 40],
+            size:               [50, 30],
         },
 
         // меню узла
         menu: {
             title: "ReRoutes [Lo]",
             submenu: {
-                freezeInputs:       "Freeze Inputs",
-                unfreezeInputs:     "Unfreeze Inputs",
-                continueRoutes:     "Continue Routes",
-                hideSlotsLabels:    "Hide Slots Labels",
-                unhideSlotsLabels:  "Show Slots Labels",
+                continueRoutes:         "Continue Routes",
+                inputsFreezing:         [ "Freeze Inputs", "Unfreeze Inputs" ],
+                slotsLabelsVisibility:  [ "Show Slots Labels", "Hide Slots Labels" ],
+                viewMode: {
+                    title: "View Mode",
+                    options: ()=> _CFG.viewModes,
+                }
             }
         }
     },
@@ -50,7 +63,9 @@ export const _CFG = {
         spacing:        LiteGraph.NODE_SLOT_HEIGHT * 0.6666,
         minWidth:       LiteGraph.NODE_SLOT_HEIGHT * 1,
         // горизонтальный отступ для текста слота
-        textPadding:    LiteGraph.NODE_SLOT_HEIGHT * 0.3333,
+        textPadding:    LiteGraph.NODE_SLOT_HEIGHT * 0.6,
+        textFont:       "9px Arial",
+        textColor:      "rgba(255, 255, 255, 0.5)",
     }
 
 }

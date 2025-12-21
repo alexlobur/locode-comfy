@@ -244,13 +244,15 @@ export function addEmptyNodeInput(node, { prefix="any", type="*", label="*", opt
  *  @param {(node, input, value)=>void} onLabelChanged - функция для обработки изменений Label
  *  @returns {void}
  */
-export function normalizeDynamicInputs(node, { onLabelChanged=null }={}){
+export function normalizeDynamicInputs(node, { removeEmptyInputs=true, onLabelChanged=null }={}){
 
     // удаление инпутов без соединения
-    node.inputs = node.inputs.filter( input =>{
-        if(!input.isConnected) return false        // проверка наличия соединения
-        return (findLinkById(input.link)!=null)    // проверка существования ссылки
-    })
+    if(removeEmptyInputs){
+        node.inputs = node.inputs.filter( input => {
+            if(!input.isConnected) return false             // проверка наличия соединения
+            return (findLinkById(input.link)!=null)         // проверка существования ссылки
+        })
+    }
 
     // нормализация инпутов
     for(const input of node.inputs){

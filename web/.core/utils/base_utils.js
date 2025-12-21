@@ -84,12 +84,14 @@ export function listToNamedObject( namedList ){
  *
  *  @param {object} object - объект
  *  @param {string} property - имя свойства для наблюдения
- *  @param {function(prevValue: any, newValue: any)=>any} beforeSet - функция для обработки перед установкой значения
- *  @param {function(value: any)=>void} onChanged - функция для обработки изменений
+ *  @param {*} initialValue - начальное значение свойства (по умолчанию `undefined`)
  *  @param {string} propertyStorageName - имя свойства для хранения значения (по умолчанию `_${property}`)
+ *  @param {function(prevValue: any, newValue: any)=>any} setValue - функция для обработки перед установкой значения
+ *  @param {function(value: any)=>any} getValue - функция для обработки перед получением значения
+ *  @param {function(value: any)=>void} onChanged - функция для обработки изменений
  *  @returns {object}
  */
-export function watchProperty(object, property, { propertyStorageName=null, beforeSet, onChanged }={}){
+export function watchProperty(object, property, { initialValue=undefined, propertyStorageName=null, setValue, getValue, onChanged }={}){
 
     // имя свойства для хранения значения
     propertyStorageName = propertyStorageName??`_${property}`
@@ -97,19 +99,19 @@ export function watchProperty(object, property, { propertyStorageName=null, befo
     // если свойство уже наблюдается, то выходим
     if(object[propertyStorageName]!==undefined) return object
 
-    // сохраняем предыдущее значение
-    object[propertyStorageName] = object[property]
+    // сохраняем начальное значение
+    object[propertyStorageName] = initialValue!==undefined ? initialValue : object[property]
 
     // определяем свойство как геттер/сеттер
     Object.defineProperty( object, property, {
         // сеттер
         set(value){
-            object[propertyStorageName] = beforeSet!==undefined ? beforeSet(object[propertyStorageName], value) : value
+            object[propertyStorageName] = setValue!==undefined ? setValue(object[propertyStorageName], value) : value
             onChanged?.(value)
         },
         // геттер
         get(){
-            return object[propertyStorageName]
+            return getValue!==undefined ? getValue(object[propertyStorageName]) : object[propertyStorageName]
         }
     })
     return object
