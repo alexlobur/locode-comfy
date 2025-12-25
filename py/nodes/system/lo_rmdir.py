@@ -1,6 +1,8 @@
 import os
+import time
 import shutil
 from ...utils.anytype import any_type
+from ...utils.utils import comfyui_abspath
 
 
 #---
@@ -11,11 +13,12 @@ from ...utils.anytype import any_type
 
 class LoRmDir:
 
-    NODE_MAPPINGS = ("LoRmDir", "Lo:RmDir")
+    NODE_MAPPINGS = ("LoRmDir", "RmDir")
     CATEGORY = "locode/system"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Removes a directory.
+Removes a directory and all its contents.
+If the path is relative, it will be converted to an absolute path starting from the ComfyUI folder.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -24,7 +27,7 @@ Removes a directory.
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return True
+        return time.time()
 
 
     @classmethod
@@ -38,24 +41,33 @@ Removes a directory.
             }
         }
 
-    RETURN_TYPES = ( any_type, )
-    RETURN_NAMES = ("pass_any",)
+    RETURN_TYPES = ( any_type, "STRING", "BOOLEAN", )
+    RETURN_NAMES = ("pass_any", "path", "is_removed", )
     FUNCTION = "execute"
-
-    CATEGORY = "locode/system"
-    AUTHOR = "LoCode"
 
 
     #
     #   Запуск функции
     #
-    def execute(self, path: str, pass_any):
-        print(f"[LoRmDir] Removing directory: {path}")
+    def execute(self, path: str, pass_any=None):
+
+        # если путь не указан, выбрасываем ошибку
+        if not path.strip():
+            raise ValueError("Path is required")
+
+        # приводим путь к абсолютному пути
+        path = comfyui_abspath(path)
+
+        # проверяем, существует ли директория
+        if not os.path.exists(path):
+            print(f"Directory does not exist: {path}")
+            return (pass_any, path, False,)
+
+        # удаляем директорию (даже если она не пустая)
         try:
-            # удаляем директорию (даже если она не пустая)
-            if os.path.exists(path):
-                shutil.rmtree(path)
-            return (pass_any,)
+            shutil.rmtree(path)
+            print(f"Directory removed: {path}")
+            return (pass_any, path, True,)
         except Exception as e:
-            print(f"[LoRmDir] Error removing directory: {e}")
-            return (pass_any,)
+            print(f"Error removing directory: {e}")
+            return (pass_any, path, False,)

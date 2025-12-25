@@ -20,6 +20,7 @@ export const PropsUtils = Object.freeze({
         fitSize=false,
         propertiesScope=['name', 'localized_name', 'label', 'type'],
         onOutputUpdated=null,
+        ouputStartIndex=0,
     }={}) => {
         // если сеттера нет, то не обновляем выходы
         if(!referNode) return
@@ -28,24 +29,25 @@ export const PropsUtils = Object.freeze({
         const setterInputs = PropsUtils.getSetterActiveInputs(referNode)
 
         // обновление выходов на основе активных инпутов сеттера
-        for (let index = 0; index < setterInputs.length; index++){
-            const input = setterInputs[index]
+        for (let inputIndex = 0; inputIndex < setterInputs.length; inputIndex++){
 
-            // получение выхода
-            const output = !node.outputs[index]
-                ? node.addOutput(`out_${index}`, input.type)
-                : node.outputs[index]
+            // получение инпута, входа и индекса выхода
+            const input = setterInputs[inputIndex]
+            const outputIndex = ouputStartIndex + inputIndex
+            const output = !node.outputs[outputIndex]
+                ? node.addOutput(`out_${outputIndex}`, input.type)
+                : node.outputs[outputIndex]
 
             // обновление свойств выхода
             propertiesScope.forEach(property => output[property] = input[property])
 
             // вызов callback
-            onOutputUpdated?.call(node, output, input, index)
+            onOutputUpdated?.call(node, output, input, outputIndex)
         }
 
         // удаление выходов, которые выходят за границы
-        while(node.outputs[setterInputs.length]!=null){
-            node.removeOutput(setterInputs.length)
+        while(node.outputs[setterInputs.length+ouputStartIndex]!=null){
+            node.removeOutput(setterInputs.length+ouputStartIndex)
         }
 
         // обновление размера узла

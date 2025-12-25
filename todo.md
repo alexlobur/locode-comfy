@@ -1,26 +1,23 @@
 ## TODO
 
+### VER 0.5
 
-### VER 0.4
+* SideBar - Вывод всех нодов
+* SideBar - Проверка линков узлов ???
+* SideBar - SubGraph
 
-* Nodes Inspector - Проверка линков узлов
-* Lo:ReRoter (Hub ???) - типа зеркало свойств: что на входе, то на выходе
 
-- - - 
+- - -
 
-* FIXME: SET -> кнопка заморозить...
-* FIXME: GET PROPS -> добавить сверху: props
+* FIXME: SWITCHER -> может можно не грузить все?
 * FIXME: SET/GET -> {MODELS} ???
-* FIXME: md - отступы... отбивка, HR
 * Тестирование Lazy у Get/SetProps.
 
 - - -
 
-* У Comment разобраться с высотой
-
+* Дать описания
 * Названия?
 * Удаление DEPRECATED
-* Проверка описаний
 
 * Выпуск на git / Comfy
     - разделить на библиотеки?
@@ -29,13 +26,13 @@
     - выпуск
 
 
-### VER 0.5
+### VER 0.6
 
-* Lo:Texts - добавление подключения Replacers
-* Lo:Texts - добавление групп
-* Lo:DynamicPrompt - распознование промптов вида {some|any} [array1, array2, array3]
-* Lo:Replacers:
+* SET -> вывод кнопки заморозки ???
+* Texts - добавление подключения Replacers
+* Texts - добавление групп
+* DynamicPrompt - распознование промптов вида {some|any} [array1, array2, array3]
+* Replacers:
     - Reorder
 * Comment - добавить тень под текстом?
-
 * SubGraph Editor ???

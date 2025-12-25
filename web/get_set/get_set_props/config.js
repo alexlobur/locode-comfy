@@ -1,13 +1,13 @@
 // Конфиги узлов
 export const _CFG = {
 
-    applyDelay:     100, // задержка применения изменений
-    onCreateGetterOffset: [30, 0],  // Сдвиг при создании геттера относительно сеттера [x, y]
-    maxFindLinkedSettersDepth: 10,  // максимальная глубина поиска связанных сеттеров
+    applyDelay:                 100,        // задержка применения изменений
+    afterCreateDelay:           500,        // Задержка после создания узла
+    onCreateGetterOffset:       [30, 0],    // Сдвиг при создании геттера относительно сеттера [x, y]
+    maxFindLinkedSettersDepth:  10,         // максимальная глубина поиска связанных сеттеров
 
     setNode: {
         type:           "LoSetProps",
-        // title:          "Set:",
         inputPrefix:    "in",
         outputProps: {
             color_on:   "#FFF",
@@ -16,10 +16,9 @@ export const _CFG = {
         },
         minWidth:       140,
         menu: {
-            title: "Lo:SetProps",
+            title: "SetProps",
             submenu: {
-                freezeInputs: "Freeze Inputs",
-                unfreezeInputs: "Unfreeze Inputs",
+                frozenInputs: [ "Freeze Inputs", "Unfreeze Inputs" ],
                 createGetter: "Create Getter",
             }
         }
@@ -27,9 +26,8 @@ export const _CFG = {
 
     getNode: {
         type:           "LoGetProps",
-        // title:          "Get:",
         outputPrefix:   "out",
-        inputProps: {
+        propsSlot: {
             color_on:   "#FFF",
             color_off:  "#000",
             label:      "props"

@@ -17,7 +17,25 @@
 .locode-markdown :last-child {
     margin-bottom: 0;
 }
-  
+
+.locode-markdown H1 {
+    margin-top: 28px;
+    line-height: 120%;
+}
+
+.locode-markdown H2 {
+    margin-top: 24px;
+}
+
+.locode-markdown H3 {
+    margin-top: 20px;
+}
+
+.locode-markdown HR {
+    border-top: none;
+    opacity: 0.15;
+}
+
 .locode-markdown blockquote {
     border-left: solid;
     margin-left: 1em;

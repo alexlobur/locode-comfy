@@ -9,7 +9,7 @@ from ...utils.anytype import any_type
 
 class LoToBool:
 
-    NODE_MAPPINGS = ("LoToBool", "Lo:ToBool")
+    NODE_MAPPINGS = ("LoToBool", "ToBool")
     AUTHOR = "LoCode"
     CATEGORY = "locode/convert"
     DESCRIPTION = """
@@ -29,11 +29,6 @@ Converts any type to Boolean.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     @classmethod

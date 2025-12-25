@@ -8,7 +8,7 @@ from ...utils.anytype import any_type
 #---
 class ReplacersApply:
 
-    NODE_MAPPINGS = ("LoReplacersApply", "Lo:ReplacersApply") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoReplacersApply", "ReplacersApply") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/replacers"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -17,10 +17,6 @@ Applying Replacers from Lo:Replacers to a String
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
     @classmethod
     def INPUT_TYPES(cls):

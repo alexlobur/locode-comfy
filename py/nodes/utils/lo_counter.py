@@ -5,7 +5,7 @@
 #---
 class LoCounter:
 
-    NODE_MAPPINGS = ("LoCounter", "Lo:Counter") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoCounter", "Counter") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     AUTHOR = "LoCode"
     CATEGORY = "locode/utils"
     DESCRIPTION = """
@@ -13,7 +13,7 @@ Two-position counter.
 When minor becomes greater than max_minor, it resets to zero, and major is incremented.
 """
 
-    # ---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
@@ -29,11 +29,6 @@ When minor becomes greater than max_minor, it resets to zero, and major is incre
     RETURN_TYPES = ( "INT", "INT", "INT", )
     RETURN_NAMES = ("major", "minor", "max_minor", )
     FUNCTION = "execute"
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     def execute(self, major: int, minor: int, max_minor: int):

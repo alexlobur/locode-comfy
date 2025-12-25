@@ -9,7 +9,7 @@ import math
 
 class LoToInt:
 
-    NODE_MAPPINGS = ("LoToInt", "Lo:ToInt")
+    NODE_MAPPINGS = ("LoToInt", "ToInt")
     AUTHOR = "LoCode"
     CATEGORY = "locode/convert"
     DESCRIPTION = """
@@ -17,12 +17,6 @@ Converts any type to an Integer.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
-
 
     @classmethod
     def INPUT_TYPES(cls):

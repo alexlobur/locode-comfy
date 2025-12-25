@@ -8,7 +8,7 @@ from ...utils.anytype import any_type
 #---
 class LoIsNone:
 
-    NODE_MAPPINGS = ("LoIsNone", "Lo:IsNone")
+    NODE_MAPPINGS = ("LoIsNone", "IsNone")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
@@ -16,6 +16,7 @@ Check value of any type for None.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def INPUT_TYPES(cls):

@@ -5,7 +5,7 @@
 #---
 class LoListJoin:
 
-    NODE_MAPPINGS = ("LoListJoin", "Lo:ListJoin") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoListJoin", "ListJoin") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -13,11 +13,6 @@ Count items in list
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     @classmethod

@@ -5,38 +5,47 @@ import os
 #
 #   Воспроизводим звук оповещения
 #
-def play(name: str):
+def play_beep(sound_name: str) -> bool:
+    # получаем список звуков
+    sounds = get_beep_sounds()
 
-    # имя файла
-    filename = SOUNDS.get(name, None)
-
-    # если такого звука нет, выходим
-    if filename is None: return
-
-    # базовая директория: корень пакета locode-comfy (два уровня вверх от этого файла)
-    base_dir = os.path.abspath( os.path.dirname(__file__) + "/../" )
-
-    # путь к файлу
-    path = os.path.join(base_dir, "res", filename)
-    if not os.path.exists(path): return
+    # проверяем, что звук существует
+    if sound_name not in sounds:
+        print(f"Sound {sound_name} not found")
+        return False
 
     # воспроизводим звук
+    play(sounds[sound_name])
+    return True
+
+
+#
+#   Воспроизводим звук
+#
+def play(path: str):
+
+    # проверяем, что файл существует
+    if not os.path.exists(path): return
+
+    # пытаемся воспроизвести звук
     try:
         mci = ctypes.windll.winmm.mciSendStringW
         mci(f'open "{path}" type mpegvideo alias mymp3', None, 0, 0)
         mci('play mymp3 wait', None, 0, 0)
         mci('close mymp3', None, 0, 0)
     except Exception as e:
-        print(f"Ошибка при воспроизведении звука: {e}")
+        print(f"Ошибка при воспроизведении звука {path}: {e}")
 
 
-# Звуки оповещения
-SOUNDS = {
-    "start":    "drop.mp3",
-    "step":     "bdin.mp3",
-    "finish":   "notify.mp3",
-    "finish2":  "jink.mp3",
-    "beep":     "beep.mp3",
-    "notify":   "notify.mp3",
-    "drop":     "drop.mp3",
-}
+#
+#   Получение списка звуковых файлов из папки res/beeps
+#
+def get_beep_sounds():
+    # базовая директория: корень пакета locode-comfy (два уровня вверх от этого файла)
+    dir_path = os.path.abspath( os.path.dirname(__file__) + "/../res/beeps" )
+
+    # получаем список звуковых файлов
+    files = os.listdir(dir_path)
+
+    # возвращаем список звуковых файлов в виде {имя1: путь1, имя2: путь2, ...}
+    return { file.split(".")[0]: os.path.join(dir_path, file) for file in files }

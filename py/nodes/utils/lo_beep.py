@@ -1,3 +1,4 @@
+import time
 from ...utils.anytype import any_type
 from ...utils import play_sound
 
@@ -8,33 +9,33 @@ from ...utils import play_sound
 #
 #---
 class LoBeep:
-    """
-    Воспроизводит звук оповещения.
 
-    Правила:
-      - На вход принимаются:
-        - любое значение (ANY).
-        - Звук оповещения (STRING).
-      - На выходе:
-        - любое значение (ANY).
-    """
+    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoBeep", "Beep")
+    CATEGORY = "locode/utils"
+    AUTHOR = "LoCode"
+    DESCRIPTION = """
+Plays a sound. To add your own sound, place it in the `res/beeps` folder.
+"""
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return True
+        return time.time()
 
 
     @classmethod
     def INPUT_TYPES(cls):
-        # Звуки оповещения
-        sounds = list(play_sound.SOUNDS.keys())
-        sounds.insert(0, "none")
+        # звуки оповещения
+        soundNames = list(play_sound.get_beep_sounds().keys())
 
+        # возвращаем типы входных данных
         return {
             "required": {
                 "any": (any_type,),
-                "sound": (sounds, {"default": "none"}),
+                "sound": (soundNames, {"default": soundNames[0]}),
             },
         }
 
@@ -45,25 +46,15 @@ class LoBeep:
     FUNCTION = "execute"
     OUTPUT_NODE = True
 
-    # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    NODE_MAPPINGS = ("LoBeep", "Lo:Beep")
-
-    CATEGORY = "locode/utils"
-    AUTHOR = "LoCode"
-    DESCRIPTION = """
-Plays a sound notification.
-"""
-
 
     #
     #   Вычисляем значение
     #
-    def execute(self, any: any, sound: str):
-        # Звук оповещения
-        play_sound.play(sound)
+    def execute(self, any: any_type, sound: str):
+
+        # воспроизводим звук
+        play_sound.play_beep(sound)
+
         # Возвращаем значение
         return (any,)
-
-
-
 

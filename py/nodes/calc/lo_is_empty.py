@@ -8,7 +8,7 @@ from ...utils.anytype import any_type
 #---
 class LoIsEmpty:
 
-    NODE_MAPPINGS = ("LoIsEmpty", "Lo:IsEmpty")
+    NODE_MAPPINGS = ("LoIsEmpty", "IsEmpty")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
@@ -24,8 +24,8 @@ Check value of any type for Empty.
 Use Lo:IsNone to precisely check for None.
 """
 
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def INPUT_TYPES(cls):

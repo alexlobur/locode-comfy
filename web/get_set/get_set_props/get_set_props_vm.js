@@ -1,6 +1,6 @@
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 import {PropsUtils} from "../props_utils.js"
-import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
+import {LoGraphUtils} from "../../.core/utils/lo_graph_utils.js"
 import {app} from "../../../../scripts/app.js"
 import { _CFG } from "./config.js"
 
@@ -54,7 +54,7 @@ class _GetSetPropsVM{
             .filter(link => !skipTypes.includes(link.origin_type))
 
             for (const link of links){
-            const node = findNodeBy({ id: link.origin_id })
+            const node = LoGraphUtils.findNodeBy({ id: link.origin_id })
             if (node.type == _CFG.setNode.type){
                 result.push(node)
             } else {
@@ -70,7 +70,7 @@ class _GetSetPropsVM{
      *  @returns
      */
     findSetters(){
-        return findNodesBy({ type: _CFG.setNode.type })
+        return LoGraphUtils.findNodesBy({ type: _CFG.setNode.type })
     }
 
 
@@ -80,7 +80,7 @@ class _GetSetPropsVM{
      *  @returns {LGraphNode}
      */
     getSetterById(id){
-        return findNodeBy({ id })
+        return LoGraphUtils.findNodeBy({ id })
     }
 
 

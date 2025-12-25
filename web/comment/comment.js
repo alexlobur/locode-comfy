@@ -7,19 +7,31 @@ import { CommentData } from "./CommentData.js"
 
 // Конфиг узла
 const NODE_CFG = {
-	nodeSize:		[ 200, 100 ],
+	nodeMinSize:	[ 30, 30 ],
 	nodeType:		"Lo:Comment",
-	nodeCategory:	"locode/ui",
-	nodeDescription: "Comment...",
+	title: 			"Lo:Comment",
 	commentDataDefault: new CommentData({
-        header:			new TextData({ value: "Lo:Comment", color: '#FFFFFF66', font: '600 14px Arial, sans-serif' }),
+        header:			new TextData({ value: "Comment", color: '#FFFFFF66', font: '600 14px Arial, sans-serif' }),
         text:			new TextData({ value: 'Double click to Edit...', color: '#FFFFFF66', font: '400 10px Arial, sans-serif' }),
 		padding:		10.0,
         bgColor:		'#33333344',
 		borderRadius:	10.0,
         borderColor:	'#FFFFFF66',
         borderSize:		0.0,
-	})
+	}),
+
+	nodeDefaults: {
+		size:			[ 200, 100 ],
+		resizable:		true,
+		isVirtualNode:	true,
+	},
+	proto: {
+		category: 		"locode/ui",
+		description:	"Comment...",
+		title_mode:		LiteGraph.NO_TITLE, // .NORMAL_TITLE .AUTOHIDE_TITLE .TRANSPARENT_TITLE .NO_TITLE
+		collapsable:	false,
+	}
+
 }
 
 
@@ -39,22 +51,15 @@ export class LoCommentNode extends LGraphNode {
 
 	/**---
 	 */
-	constructor(title = LoCommentNode.title){
-		super(title)
+	constructor(){
+		super(NODE_CFG.title)
 
-		this.isVirtualNode = true
-		this.resizable = true
-		// this.serialize_widgets = true
-        // this.isDropEnabled = false
-
-		// Визуальные настройки нода (минимальные)
-		this.size = NODE_CFG.nodeSize
-		// this.clip_area = true
-		// this.render_shadow = false
-		// this.widgets_up = true
+		// Начальные параметры узла
+		Object.assign(this, NODE_CFG.nodeDefaults)
 
 		// Начальные свойства
 		this.properties = {
+			...this.properties || {},
 			data: this.properties.data || NODE_CFG.commentDataDefault.toJson()
 		}
 
@@ -114,6 +119,14 @@ export class LoCommentNode extends LGraphNode {
 		this.#drawBackground(ctx, x, y, size[0], size[1], data)
 		this.#drawBorder(ctx, x, y, size[0], size[1], data)
 		this.#drawText(ctx, x, y, size[0], size[1], data)
+	}
+
+
+	/**
+	 *  Расчет минимального размера узла
+	 */
+	computeSize(){
+		return [...NODE_CFG.nodeMinSize]
 	}
 
 
@@ -214,21 +227,12 @@ export class LoCommentNode extends LGraphNode {
 	// onResize = (...args) => {
     // }
 
-
 	static setUp() {
-        LiteGraph.registerNodeType(this.type, this)
-        if (this._category) this.category = this._category
+        LiteGraph.registerNodeType(NODE_CFG.nodeType, this)
+		Object.assign(this, NODE_CFG.proto)
     }
 
 }
-
-LoCommentNode.type			= NODE_CFG.nodeType
-LoCommentNode.title			= NODE_CFG.nodeType
-LoCommentNode.category		= NODE_CFG.nodeCategory
-LoCommentNode._category		= NODE_CFG.nodeCategory
-LoCommentNode.description	= NODE_CFG.nodeDescription
-LoCommentNode.title_mode	= LiteGraph.NO_TITLE // .NORMAL_TITLE .AUTOHIDE_TITLE .TRANSPARENT_TITLE .NO_TITLE
-LoCommentNode.collapsable	= false
 
 
 // Замена отрисовки узла
@@ -244,22 +248,6 @@ LGraphCanvas.prototype.drawNode = function (node, ctx) {
     const v = oldDrawNode.apply(this, arguments)
     return v
 }
-
-
-// const oldGetNodeOnPos = LGraph.prototype.getNodeOnPos
-// LGraph.prototype.getNodeOnPos = function (x, y, nodes_list) {
-//     var _a, _b
-//     if (nodes_list &&
-//         rgthree.processingMouseDown &&
-//         ((_a = rgthree.lastCanvasMouseEvent) === null || _a === void 0 ? void 0 : _a.type.includes("down")) &&
-//         ((_b = rgthree.lastCanvasMouseEvent) === null || _b === void 0 ? void 0 : _b.which) === 1) {
-//         let isDoubleClick = LiteGraph.getTime() - LGraphCanvas.active_canvas.last_mouseclick < 300;
-//         if (!isDoubleClick) {
-//             nodes_list = [...nodes_list].filter((n) => { var _a; return !(n instanceof Label) || !((_a = n.flags) === null || _a === void 0 ? void 0 : _a.pinned); })
-//         }
-//     }
-//     return oldGetNodeOnPos.apply(this, [x, y, nodes_list])
-// }
 
 
 /**---

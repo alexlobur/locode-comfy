@@ -1,11 +1,10 @@
 import {app} from "../../../../scripts/app.js"
 import {EventEmitter} from "../../.core/notify/EventEmitter.js"
 import {makeUniqueName, setObjectParams} from "../../.core/utils/base_utils.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideComputeSizeMinWidth, overrideOnConnectInputDynamic} from "../../.core/utils/nodes_utils.js"
 import {PropsUtils} from "../props_utils.js"
-import {findNodesBy, findNodeBy} from "../../.core/utils/nodes_utils.js"
+import {LoGraphUtils} from "../../.core/utils/lo_graph_utils.js"
+import {LoNodesUtils} from "../../.core/utils/lo_nodes_utils.js"
 import {_CFG} from "./config.js"
-import Logger from "../../.core/utils/Logger.js"
 
 const NODE_CFG = _CFG.setNode
 
@@ -154,12 +153,12 @@ const NODE_CFG = _CFG.setNode
         if(this.frozen) return
 
         // нормализация инпутов
-        normalizeDynamicInputs(this, {
+        LoNodesUtils.normalizeDynamicInputs(this, {
             onLabelChanged: (node, index, input)=>LoSetNode.emitInputChanged(node, index, input)
         })
 
         // добавление пустого инпута в конец
-        addEmptyNodeInput(this)
+        LoNodesUtils.addEmptyInput(this)
     }
 
 
@@ -316,10 +315,10 @@ const NODE_CFG = _CFG.setNode
         this.category = _CFG.category
 
         // Переопределение присоединения к слоту
-        overrideOnConnectInputDynamic( this.prototype )
+        LoNodesUtils.overrideOnConnectInputDynamic( this.prototype )
 
         // Переопределение границы минимальной ширины узла (computeSize)
-        overrideComputeSizeMinWidth( this.prototype, NODE_CFG.minWidth )
+        LoNodesUtils.overrideComputeSize( this.prototype, NODE_CFG.minWidth )
     }
 
 
@@ -327,7 +326,7 @@ const NODE_CFG = _CFG.setNode
 	 *	Получение списка пространства имен воркфлоу
 	 */
      static getNamespaces({ excludeNodesIds = [] }={}){
-        return findNodesBy({ type: _CFG.setNode.type })
+        return LoGraphUtils.findNodesBy({ type: _CFG.setNode.type })
             .filter( node => !excludeNodesIds.includes(node.id) )
             .map( node => node.namespace )
             .filter( namespace => namespace!="" )
@@ -338,7 +337,7 @@ const NODE_CFG = _CFG.setNode
      *  Получение узла SetNode по namespace 
      */
     static findNodeByNamespace(name){
-        return findNodeBy({ type: _CFG.setNode.type, namespace: name })
+        return LoGraphUtils.findNodeBy({ type: _CFG.setNode.type, namespace: name })
     }
 
 }

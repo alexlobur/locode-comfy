@@ -1,4 +1,6 @@
+import time
 import random
+
 
 #---
 #
@@ -7,7 +9,7 @@ import random
 #---
 class LoRandomBool:
 
-    NODE_MAPPINGS = ("LoRandomBool", "Lo:RandomBool")
+    NODE_MAPPINGS = ("LoRandomBool", "RandomBool")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
@@ -19,7 +21,7 @@ Generate random Bool value
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return True
+        return time.time()
 
 
     @classmethod
@@ -36,5 +38,4 @@ Generate random Bool value
 
 
     def execute(self, true_weight):
-        result = random.random() < true_weight
-        return (result,)
+        return (random.random() < true_weight,)

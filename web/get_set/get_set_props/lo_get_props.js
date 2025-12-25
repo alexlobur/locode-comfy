@@ -34,32 +34,24 @@ export function LoGetPropsExtends(proto){
     const _onNodeCreated = proto.onNodeCreated
     proto.onNodeCreated = function(){
         const ret = _onNodeCreated?.apply(this, arguments)
-		try{
 
-			// Начальные значения
-			this.title = NODE_CFG.title
-			this.serialize_widgets = true
+		// Начальные значения
+		this.title = NODE_CFG.title
+		this.serialize_widgets = true
+		this.setterId = -1
 
-			// Виджеты
-			this._setterWidget = createSetterSelectWidget( this, (s) => this.updateSetterId(s))
-			this._typesWidget = createGetterTypesWidget(this)
+		// Виджеты
+		this._setterWidget = createSetterSelectWidget( this, (s) => this.updateSetterId(s))
+		this._typesWidget = createGetterTypesWidget(this)
 
-			// Свойства
-			this.setterId = -1
+		// Начальные слоты
+		this._setPropsSlots()
+		this._updateOutputsFromRefer()
 
-			// Начальные параметры входа
-			this._setInputParams()
+		// слушатели событий
+		this._setEventsHandlers()
 
-			// Начальные выходы
-			this._updateOutputsFromRefer()
-
-			// слушатели событий
-			this._setEventsHandlers()
-
-		} catch(e) {
-			Logger.error(e, this)
-		}
-        return ret
+		return ret
     }
 
 
@@ -69,37 +61,38 @@ export function LoGetPropsExtends(proto){
     const _onConfigure = proto.onConfigure
     proto.onConfigure = function(){
         const ret = _onConfigure?.apply(this, arguments)
-        try{
 
-			// Нормализация выходов
-			this._updateOutputsFromRefer()
+		// Нормализация выходов
+		this._updateOutputsFromRefer()
 
-		} catch(e) {
-            Logger.error(e, this)
-        }
-        return ret
+		return ret
     }
 
 
-    /**
+	/**
      *  При присоединении
      */
     proto.onConnectInput = function (index, type, outputSlot, outputNode, outputIndex){
-		// если узел уже указан сеттер, то не проверяем
-		if(this.setterId != -1 && [this.inputs[index].type, "*"].includes(type) ){
-			return true
-		}
 		// проверка типа
+		if(![this.inputs[index].type, "*"].includes(type)) return false
+
+		// если тип совпадает, то установка сеттера
 		if(type == this.inputs[index].type){
 			this.updateSetterId(outputNode.id)
 			return true
 		}
-		// если тип "*", поиск подходящих узлов по дереву
+
+		// если уже указан сеттер
+		if(this.setterId != -1) return true
+
+		// если тип "*", то поиск подходящих узлов по дереву
 		const setters = VM.findLinkedSetters(outputNode)
+		Logger.debug("setters", setters)
 		if(setters.length>0){
 			this.updateSetterId(setters[0].id)
 			return true
 		}
+
 		return false
     }
 
@@ -112,6 +105,55 @@ export function LoGetPropsExtends(proto){
         const ret = _onRemoved?.apply(this, arguments)
 		this._removeEventsHandlers()
         return ret
+    }
+
+
+	/* METHODS */
+
+	/**
+	 *	Обновление установки значения setterId
+	 *	@param {?number} setterId ID сеттера
+	 */
+	 proto.updateSetterId = function(setterId){
+		this.setterId = setterId??-1
+		this._setterWidget._updateValues(this.setterId)
+		this._updateOutputsFromRefer(true)
+		this._setPropsSlots()
+		this.setDirtyCanvas(true, true)
+	}
+
+
+	/**
+	 *	Обновление выходов на основе узла-сеттера
+	 */
+	proto._updateOutputsFromRefer = function(fitSize=false){
+		const setter = VM.getSetterById(this.setterId)
+
+		if(setter){
+			PropsUtils.updateOutputsFromRefer(this, setter, {
+				fitSize: fitSize,
+				ouputStartIndex: 1,
+			})
+		} else {
+			while(this.outputs[1]!=null){
+				this.removeOutput(1)
+			}
+		}
+	}
+
+
+	/**
+     *  Обновление параметров входа
+     */
+    proto._setPropsSlots = function (){
+        // узел сеттера
+		const setter = VM.getSetterById(this.setterId)
+		const params = {
+			...NODE_CFG.propsSlot,
+			label: setter?.propsName??NODE_CFG.propsSlot.label,
+		}
+		setObjectParams(this.inputs[0], params)
+		setObjectParams(this.outputs[0], params)
     }
 
 
@@ -151,45 +193,8 @@ export function LoGetPropsExtends(proto){
 		this._setterHandlers = null
 	}
 
-
-	/* METHODS */
-
-
-	/**
-	 *	Обновление установки значения setterId
-	 *	@param {?number} setterId ID сеттера
-	 */
-	proto.updateSetterId = function(setterId){
-		this.setterId = setterId??-1
-		this._setterWidget._updateValues(this.setterId)
-		this._updateOutputsFromRefer(true)
-		this._setInputParams()
-		this.setDirtyCanvas(true, true)
-	}
-
-
-	/**
-	 *	Обновление выходов на основе узла-сеттера
-	 */
-	proto._updateOutputsFromRefer = function(fitSize=false){
-		PropsUtils.updateOutputsFromRefer(this, VM.getSetterById(this.setterId), { fitSize })
-	}
-
-
-	/**
-     *  Обновление параметров входа
-     */
-    proto._setInputParams = function (){
-        // узел сеттера
-		const setter = VM.getSetterById(this.setterId)
-		const params = {
-			...NODE_CFG.inputProps,
-			label:	setter?.propsName??NODE_CFG.inputProps.label,
-		}
-		setObjectParams(this.inputs[0], params)
-    }
-
 }
+
 
 // Тип узла (static)
 LoGetPropsExtends.nodeType = NODE_CFG.type
@@ -248,7 +253,10 @@ function createSetterSelectWidget(node, onSetValue){
 	const widget = node.addCustomWidget(
 		new HiddenWidget( node, "props_types", {
 			type: "list",
-			getValue: () => node.outputs.map(output => output.type),
+			getValue: () =>{
+				const outputs = node.outputs.filter((output, index) => index > 0 )
+				return outputs.map(output => output.type)
+			}
 		})
 	)
 	return widget

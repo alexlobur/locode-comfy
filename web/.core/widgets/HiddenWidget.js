@@ -3,9 +3,10 @@
  */
 export class HiddenWidget {
 
-    serialize = false
     name = ""
     type = "custom"
+    options = {}    // опции виджета, иначе кидает ошибку
+    serialize = false
 
     #node
     #getValue
@@ -19,16 +20,19 @@ export class HiddenWidget {
     /**
      *  HiddenWidget
      * 
-     *  @param {string} name имя виджета
      *  @param {string} node ссылка на узел
+     *  @param {string} name имя виджета
      *  @param {string} type тип виджета
+     *  @param {boolean} serialize признак того, что значение виджета будет сериализовано
+     *  @param {object} options опции виджета
      *  @param {()=> *} getValue вызывается, когда нужно получить значение
      *  @param {(val)=>void} setValue вызывается, когда нужно установить значение
      */
-    constructor(node, name, { type="custom", serialize=false, getValue=null, setValue=null }={}){
+    constructor(node, name, { type="custom", serialize=false, options={}, getValue=null, setValue=null }={}){
         this.name = name
         this.type = type
         this.serialize = serialize
+        this.options = options
         this.#node = node
         this.#getValue = getValue
         this.#setValue = setValue

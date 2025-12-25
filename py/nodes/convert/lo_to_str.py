@@ -9,7 +9,7 @@ from ...utils.anytype import any_type
 
 class LoToStr:
 
-    NODE_MAPPINGS = ("LoToStr", "Lo:ToStr")
+    NODE_MAPPINGS = ("LoToStr", "ToStr")
     AUTHOR = "LoCode"
     CATEGORY = "locode/convert"
     DESCRIPTION = """
@@ -17,12 +17,6 @@ Converts any type to a string.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
-
 
     @classmethod
     def INPUT_TYPES(cls):

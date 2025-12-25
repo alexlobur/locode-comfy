@@ -7,7 +7,7 @@ from ...utils.anytype import any_type
 #---
 class LoEvals:
 
-    NODE_MAPPINGS = ("LoEvals", "Lo:Evals")
+    NODE_MAPPINGS = ("LoEvals", "Evals")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
@@ -15,6 +15,9 @@ Evaluates an expression with variables.
 The variable name is taken from the input name (or label, if exists).
 You can redefine the variable name (input label) using the context menu > "Rename Slot".
 """
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
     @classmethod
     def INPUT_TYPES(cls):

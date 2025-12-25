@@ -9,7 +9,7 @@ from ...utils.anytype import any_type
 #---
 class LoFromList:
 
-    NODE_MAPPINGS = ("LoFromList", "Lo:FromList")
+    NODE_MAPPINGS = ("LoFromList", "FromList")
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -22,16 +22,11 @@ So if index=10 and list has 7 items, then the result index will be 10 % 7 = 3.
 
 
     @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
-
-
-    @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "index": ("INT", {"default": 0, "step": 1, "tooltip": "Index of the element in list" }),
-                "any_list": ("LIST", {"default": [], "tooltip": "List of values" }),
+                "list": ("LIST", {"default": [], "tooltip": "List of values" }),
                 "modulo": ("BOOLEAN", {"default": False, "tooltip": "If enabled, wraps index using modulo operation (index % list_length)" }),
                 "none_on_error": ("BOOLEAN", {"default": False, "tooltip": "If enabled, returns None instead of raising an error" }),
             },
@@ -45,10 +40,10 @@ So if index=10 and list has 7 items, then the result index will be 10 % 7 = 3.
     #
     #   Вычисляем значение
     #
-    def execute(self, index: int, any_list: list, modulo: bool, none_on_error: bool ):
+    def execute(self, index: int, list: list, modulo: bool, none_on_error: bool ):
 
         # Если список пустой
-        if len(any_list) == 0:
+        if len(list) == 0:
             error_msg = "List is empty"
             if none_on_error:
                 print(f"Lo:FromList error: {error_msg}")
@@ -58,8 +53,8 @@ So if index=10 and list has 7 items, then the result index will be 10 % 7 = 3.
 
         # Обычный режим: проверяем границы
         if not modulo:
-            if index < 0 or index >= len(any_list):
-                error_msg = f"Index {index} is out of range [0, {len(any_list)})"
+            if index < 0 or index >= len(list):
+                error_msg = f"Index {index} is out of range [0, {len(list)})"
                 if none_on_error:
                     print(f"Lo:FromList error: {error_msg}")
                     return (None,)
@@ -69,8 +64,8 @@ So if index=10 and list has 7 items, then the result index will be 10 % 7 = 3.
 
         # Режим с modulo: используем остаток от деления
         else:
-            index_final = index % len(any_list)
+            index_final = index % len(list)
 
         # Значение из списка
-        return (any_list[index_final], )
+        return (list[index_final], )
 

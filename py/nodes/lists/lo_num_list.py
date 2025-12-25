@@ -9,7 +9,7 @@ import re
 
 class LoNumList:
 
-    NODE_MAPPINGS = ("LoNumList", "Lo:NumList")
+    NODE_MAPPINGS = ("LoNumList", "NumList")
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -21,11 +21,6 @@ Outputs:
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     @classmethod

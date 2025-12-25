@@ -10,7 +10,7 @@ from ...utils.utils import fit_val
 #---
 class LoTexts:
 
-    NODE_MAPPINGS = ("LoTexts", "Lo:Texts")
+    NODE_MAPPINGS = ("LoTexts", "Texts")
     CATEGORY = "locode/params"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -23,12 +23,6 @@ Outputs:
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
-
 
     @classmethod
     def INPUT_TYPES(cls):

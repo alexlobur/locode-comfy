@@ -37,6 +37,13 @@ class _LoCore {
     #settings = new _Settings()
 
 
+    /**
+     * Граф сконфигурирован
+     */
+    get graphConfigured(){ return this.#graphConfigured }
+    #graphConfigured = false
+
+
     /**---
      * 
      * Конструктор
@@ -54,9 +61,13 @@ class _LoCore {
             titleStyle: "background-color: hsla(276, 87%, 49%, 1); color: #FFF; padding: 2px; border-radius: 4px; font-weight: 700; font-size: 10px;"
         })
 
+        // Событие сконфигурирования графа
+        this.events.on("graph_load", () => this.#graphConfigured = false)
+        this.events.on("graph_configure", () => this.#graphConfigured = true)
+
         // Логирование всех событий
-        // this.events.onAny((eventName, ...args) => Logger.debug(`Event: ${eventName}`, ...args))
-        this.events.emit("core_inited")
+        // this.events.onAny((eventName, ...args) => Logger.debug(`Event: ${eventName}`, ...args, this.graphConfigured ))
+        this.events.emit("core_created")
     }
 
 
@@ -70,6 +81,7 @@ class _LoCore {
         this.#initEvents()
 
         this.#inited = true
+        this.events.emit("core_inited")
     }
 
 
@@ -96,6 +108,9 @@ class _LoCore {
 
         // добавление узла к графу
         app.graph.onNodeAdded = wrapWithEvent(app.graph.onNodeAdded, "graph_node_added")
+
+        // конфигурирование графа
+        app.graph.onConfigure = wrapWithEvent(app.graph.onConfigure, "graph_configure")
 
         // удаление узла из графа
         app.graph.onNodeRemoved = wrapWithEvent(app.graph.onNodeRemoved, "graph_node_removed")

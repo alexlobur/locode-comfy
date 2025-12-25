@@ -1,16 +1,19 @@
 import {app} from "../../../scripts/app.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInputDynamic} from "../.core/utils/nodes_utils.js"
+import { LoNodeDynamicInputsOverrides } from "../.core/overrides/LoNodeDynamicInputsOverrides.js"
+import { LoNodesUtils } from "../.core/utils/lo_nodes_utils.js"
 
 
-// Конфиг узла
+// Конфиг узлов
 const NODE_CFG = {
-    extName:    "locode.LoListsCommon",
-    types:      ["LoListsMerge", "LoSetList"],
-    label: {
-        "LoListsMerge": "list",
+    types:              ["LoListsMerge", "LoSetList"],
+    extName:            'locode.LoListsCommon',
+    normalizeConfig: {
+        startName:  'any',
+        startIndex: 0,
+        label:      '*'
     },
-    applyDelay: 100, // задержка применения изменений
 }
+
 
 
 //---
@@ -23,48 +26,13 @@ app.registerExtension({
         // Проверяем, что имя узла соответствует нужному типу
         if (!NODE_CFG.types.includes(nodeType.comfyClass)) return
 
-
-        /**
-         *  Создание узла и инициализация виджета
-         */
-        const onNodeCreated = nodeType.prototype.onNodeCreated
-        nodeType.prototype.onNodeCreated = function(){
-            const ret = onNodeCreated?.apply(this, arguments)
-            // Обновление динамических инпутов
-            _normalizeInputs(this, nodeType)
-            return ret
-        }
-
-
-        /**
-         *  При изменении соединений
-         */
-        const _onConnectionsChange = nodeType.prototype.onConnectionsChange
-        nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output){
-            const ret = _onConnectionsChange?.apply(this, arguments)
-            // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>_normalizeInputs(this, nodeType), NODE_CFG.applyDelay )
-            return ret
-        }
-
-
-        // Переопределение присоединения к слоту
-        overrideOnConnectInputDynamic(nodeType.prototype, {
-            callbackAfter: function(){
-                // нормализуем с задержкой после добавления линка
-                setTimeout(()=> _normalizeInputs(this, nodeType), NODE_CFG.applyDelay )
-                return true
-            }
+        // Переопределение узла для динамических инпутов
+        new LoNodeDynamicInputsOverrides().override( nodeType.prototype, {
+            normalizeConfig: NODE_CFG.normalizeConfig,
         })
 
+        // Переопределение присоединения к слоту
+        LoNodesUtils.overrideOnConnectInputDynamic(nodeType.prototype, {})
     }
 
 })
-
-
-function _normalizeInputs(node, nodeType){
-    normalizeDynamicInputs(node)
-    const label = NODE_CFG.label[nodeType.comfyClass]!=null ? NODE_CFG.label[nodeType.comfyClass]+node.inputs.length : undefined
-    addEmptyNodeInput( node, { label: label })
-}
-

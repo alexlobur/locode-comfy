@@ -3,7 +3,7 @@ from ...utils.anytype import *
 
 class LoReplaceVars:
 
-    NODE_MAPPINGS = ("LoReplaceVars", "Lo:ReplaceVars") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoReplaceVars", "ReplaceVars") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/replacers"
     AUTHOR = "LoCode"
     DESCRIPTION ="""
@@ -13,11 +13,6 @@ You can redefine the parameter (input label) name using the context menu > "Rena
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     @classmethod

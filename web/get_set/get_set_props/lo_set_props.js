@@ -1,10 +1,10 @@
 import Logger from "../../.core/utils/Logger.js"
-import {setObjectParams, makeUniqueName, watchProperty} from "../../.core/utils/base_utils.js"
-import {addEmptyNodeInput, normalizeDynamicInputs, overrideOnConnectInputDynamic} from "../../.core/utils/nodes_utils.js"
+import {setObjectParams, watchProperty, matchCase} from "../../.core/utils/base_utils.js"
 import {HiddenWidget} from "../../.core/widgets/HiddenWidget.js"
 import { _CFG } from "./config.js"
 import GetSetPropsVM from "./get_set_props_vm.js"
 import {PropsUtils} from "../props_utils.js"
+import {LoNodesUtils} from "../../.core/utils/lo_nodes_utils.js"
 
 const VM = GetSetPropsVM
 const {setNode: NODE_CFG} = _CFG
@@ -37,16 +37,17 @@ export function LoSetPropsExtends(proto){
     proto.onNodeCreated = function(){
         const ret = _onNodeCreated?.apply(this, arguments)
 
-        // Начальные значения
-        this.title = NODE_CFG.title
-        // Добавление начального инпута
-        addEmptyNodeInput(this)
+        // запоминаем время создания узла
+        this._createdTime = Date.now()
 
         // Добавление виджета списка типов данных
         this._typesWidget = createSetterTypesWidget(this)
 
         // Параметры выхода
         this._setOutputParams()
+
+        // Нормализация инпутов, чтобы создать пустой инпут в конце
+        this._normalizeInputs()
 
         // оповещение об изменении
         VM.setterCreated(this)
@@ -64,16 +65,39 @@ export function LoSetPropsExtends(proto){
         // Параметры выхода
         this._setOutputParams()
 
+        // Нормализация инпутов
+        this._normalizeInputs()
+
         // оповещение об изменении
         VM.setterConfigured(this)
         return ret
     }
 
 
+	/**
+	 *  При изменении свойств узла
+	 */
+    const _onPropertyChanged = proto.onPropertyChanged
+	proto.onPropertyChanged = function(property, value){
+        const ret = _onPropertyChanged?.apply(this, arguments)
+
+        // задержка, чтобы не реагировать на изменения свойств узла сразу после создания
+		if(Date.now() - this._createdTime < _CFG.afterCreateDelay) return
+
+		// обновление состояния узла в зависимости от измененного свойства
+		matchCase(property, {
+			// заморозка узла
+			frozen: ()=> this._freezeInputsToggle(),
+		})
+
+        return ret
+	}
+
+
     /**
      *  Переопределение присоединения к слоту
      */
-    overrideOnConnectInputDynamic(proto)
+    LoNodesUtils.overrideOnConnectInputDynamic(proto)
 
 
     /**
@@ -98,20 +122,6 @@ export function LoSetPropsExtends(proto){
 
 
     /**
-     *  Переопределение отсоединения выхода
-     */
-    const _disconnectOutput = proto.disconnectOutput
-    proto.disconnectOutput = function(slot){
-        try{
-            const ret = _disconnectOutput?.apply(this, arguments)
-            return ret
-        } catch(e){
-            Logger.error(e, this)
-        }
-    }
-
-
-    /**
      *  Удаление узла
      */
     const _onRemoved = proto.onRemoved
@@ -132,13 +142,7 @@ export function LoSetPropsExtends(proto){
         const cloned = _clone?.apply(this, arguments)
         if(cloned){
             cloned._normalizeInputs()
-            cloned.size = cloned.computeSize()
-            if(cloned.outputs[0].label){
-                cloned.outputs[0].label = makeUniqueName(
-                    this.outputs[0].label,
-                    VM.findSetters().map( item => item.propsName )
-                )
-            }
+            cloned._setOutputParams()
             return cloned
         }
     }
@@ -168,16 +172,14 @@ export function LoSetPropsExtends(proto){
      *  Нормализация инпутов
      */
     proto._normalizeInputs = function(){
-        // если заморожены, то не нормализуем
-        if(this.frozen) return
-
         // нормализация инпутов
-        normalizeDynamicInputs(this, {
+        LoNodesUtils.normalizeDynamicInputs(this, {
+            removeEmptyInputs: !this.frozen,
             onLabelChanged: (node, index, input)=>VM.setterInputChanged(node, index, input)
         })
 
         // добавление пустого инпута в конец
-        addEmptyNodeInput(this)
+        if(!this.frozen) LoNodesUtils.addEmptyInput(this)
     }
 
 
@@ -206,23 +208,7 @@ export function LoSetPropsExtends(proto){
     }
 
 
-    /**
-     *  Заморозка инпутов
-     */
-    proto._freezeInputsToggle = function(){
-        this.properties = this.properties || {}
-        this.properties.frozen = !this.properties.frozen
-
-        // Если заморожено, то удаляем последний инпут, если он пустой
-        if(this.frozen && this.inputs.length > 0){
-            const lastInput = this.inputs[this.inputs.length - 1]
-            if(!lastInput.connected) this.inputs.pop()
-        }
-
-        // Нормализация инпутов
-        this._normalizeInputs()
-        this.setDirtyCanvas(true, true)
-    }
+    /* MENU & METHODS */
 
 
     /**
@@ -252,7 +238,21 @@ export function LoSetPropsExtends(proto){
     }
 
 
-    /* MENU */
+    /**
+     *  Заморозка инпутов
+     */
+    proto._freezeInputsToggle = function(){
+        // Если заморожено, то удаляем последний инпут, если он пустой
+        if(this.frozen && this.inputs.length > 0){
+            const lastInput = this.inputs[this.inputs.length - 1]
+            if(!lastInput.connected) this.inputs.pop()
+        }
+
+        // Нормализация инпутов
+        this._normalizeInputs()
+        this.setDirtyCanvas(true, true)
+    }
+
 
     /**
      *	Дополнительные опции
@@ -266,13 +266,10 @@ export function LoSetPropsExtends(proto){
 				content:  NODE_CFG.menu.title,
 				has_submenu: true,
 				submenu: {
-					// title: NODE_CFG.menu.title,
 					options: [
 						{
-							content:   this.frozen
-                                ? NODE_CFG.menu.submenu.unfreezeInputs
-                                : NODE_CFG.menu.submenu.freezeInputs,
-							callback:  ()=> this._freezeInputsToggle()
+							content: NODE_CFG.menu.submenu.frozenInputs[ this.frozen ? 1 : 0 ],
+							callback:  ()=> this.setProperty("frozen", !this.frozen)
 						},
 						{
 							content:   NODE_CFG.menu.submenu.createGetter,

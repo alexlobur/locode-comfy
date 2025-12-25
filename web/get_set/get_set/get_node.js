@@ -1,10 +1,10 @@
 import {app} from "../../../../scripts/app.js"
-import {gotoNode} from "../../.core/utils/nodes_utils.js"
+import {PropsUtils} from "../props_utils.js"
+import {LoGraphUtils} from "../../.core/utils/lo_graph_utils.js"
+import {LoNodesUtils} from "../../.core/utils/lo_nodes_utils.js"
 import {setObjectParams} from "../../.core/utils/base_utils.js"
-import {overrideComputeSizeMinWidth} from "../../.core/utils/nodes_utils.js"
 import {LoSetNode} from "./set_node.js"
 import {_CFG} from "./config.js"
-import { PropsUtils } from "../props_utils.js"
 
 
 // const LGraphNode = LiteGraph.LGraphNode
@@ -238,7 +238,7 @@ const NODE_CFG = _CFG.getNode
 					options: [
 						{
 							content:   NODE_CFG.menu.submenu.gotoSetter.replace("{id}", setter?.id),
-							callback:  ()=> gotoNode(setter)
+							callback:  ()=> LoGraphUtils.gotoNode(setter)
 						},
 					],
 				},
@@ -271,6 +271,6 @@ const NODE_CFG = _CFG.getNode
         this.category = _CFG.category
 
 		// Переопределение границы минимальной ширины узла (computeSize)
-		overrideComputeSizeMinWidth( this.prototype, NODE_CFG.minWidth )
+		LoNodesUtils.overrideComputeSize( this.prototype, NODE_CFG.minWidth )
     }
 }

@@ -8,7 +8,7 @@ from ...utils.anytype import any_type
 #---
 class LoSetList:
 
-    NODE_MAPPINGS = ("LoSetList", "Lo:SetList") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoSetList", "SetList")
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """

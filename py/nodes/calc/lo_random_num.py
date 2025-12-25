@@ -1,3 +1,4 @@
+import time
 import random
 
 
@@ -8,7 +9,7 @@ import random
 #---
 class LoRandomNum:
 
-    NODE_MAPPINGS = ("LoRandomNum", "Lo:RandomNum")
+    NODE_MAPPINGS = ("LoRandomNum", "RandomNum")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
@@ -20,15 +21,15 @@ Generate random Int and Float value
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        # Сообщаем ComfyUI, что узел изменяется каждый прогон (чтобы не кэшировать результат)
-        return True
+        return time.time()
+
 
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "min": ("FLOAT",),
-                "max": ("FLOAT",),
+                "min": ("FLOAT", {"default": 0.0 }),
+                "max": ("FLOAT", {"default": 1.0 }),
             },
         }
 

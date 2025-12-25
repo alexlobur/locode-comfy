@@ -1,7 +1,8 @@
 import { app } from "../../../scripts/app.js"
-import { loadScript, createElement, haltEvent } from "../.core/utils/dom_utils.js"
+import { createElement, haltEvent } from "../.core/utils/dom_utils.js"
 import { DocsNodeItem } from "./DocsNodeItem.js"
 import { clamp } from "../.core/utils/base_utils.js"
+import ScriptsLoader from "../.core/utils/scripts_loader.js"
 
 
 /**---
@@ -40,7 +41,7 @@ export class DocsContentWidget {
 		this.#createElement(name)
 
 		// Загружаем markdown-it
-		loadScript( new URL("../.core/utils/markdown-it.min.js", import.meta.url).href, {
+		ScriptsLoader.load( new URL("../.core/utils/markdown-it.min.js", import.meta.url).href, {
 			onLoad: () => {
 				this.#md = window.markdownit({ linkify: true, typographer: true })
 				this.setState()
@@ -162,7 +163,8 @@ export class DocsContentWidget {
 		this.#dom.text = createElement("div", {
 			classList: [ "text", "locode-markdown", "locode-scrollbar" ],
 			events: {
-				click: (event) => {
+				// двойной клик на тексте для редактирования
+				dblclick: (event) => {
 					event.preventDefault()
 					event.stopPropagation()
 					this.setState({ editMode: true })
@@ -281,5 +283,14 @@ export class DocsContentWidget {
 		this.#articles = value?.articles?.map(article => DocsNodeItem.fromJson(article)) ?? this.#articles
 		this.setState()
 	}
+
+	/**
+	 *	Очистка значения виджета
+	 */
+	clearValue = () => {
+		this.#articles = [ new DocsNodeItem( { title: "Untitled", text: "Put your text here..." } ) ]
+		this.setState()
+	}
+
 
 }

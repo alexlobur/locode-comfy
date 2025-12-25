@@ -8,12 +8,14 @@ from ...utils.anytype import any_type
 #---
 class LoCompareNum:
 
-    NODE_MAPPINGS = ("LoCompareNum", "Lo:CompareNum")
+    NODE_MAPPINGS = ("LoCompareNum", "CompareNum")
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
 Compare two values. Values will be converted to number.
 """
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod

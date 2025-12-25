@@ -1,6 +1,6 @@
 /**
  * 
- *  ### Скрытый виджет для получения измененных label инпутов узла
+ *  ### Скрытый виджет для сбора labels инпутов узла
  *
  *  Собирает изменненные `label` инпутов начинающихся `inputPrefix` и возвращает объект вида:
  *  ```
@@ -10,12 +10,14 @@
  *  }
  *  ```
  */
-export class InputsLabelsWidget {
+export class InputsLabelsCollectorWidget {
 
-    type = "object"
+    type = 'object'
     hidden = true
     serialize = false
-    #inputPrefix = "any"
+    options = {}    // опции виджета, иначе кидает ошибку
+
+    #inputPrefix = 'any'
     #node
 
     /**
@@ -23,25 +25,29 @@ export class InputsLabelsWidget {
      */
     get value(){ return this.#prepareResult() }
 
-
-    // Это экранирование типа - сюда не должно прийти
+    // Это экранирование — сюда не должно прийти
     set value(val){}
+
+    // Возвращает имя узла для сообщений об ошибках
+    get nodeName(){ return `${this.#node.type} [#${this.#node.id}] → "${this.#node.title}"` }
 
 
     /**
-     *  InputsLabelsWidget
+     *  InputsLabelsCollectorWidget
+     * 
      *  @param {*} name имя виджета
      *  @param {*} node ссылка на узел
      *  @param {*} inputPrefix Префик для поиска среди инпутов узла
      */
-    constructor(node, name, inputPrefix="any"){
+    constructor(node, name, inputPrefix='any'){
         this.name = name
         this.#node = node
         this.#inputPrefix = inputPrefix
     }
 
-    // Убираем высоту нахер
-    computeLayoutSize = () => ({ minWidth: 0, minHeight: 0, maxHeight: 0 })
+    // Убираем высоту
+    computeSize(width){ return [0, 0] }
+    computeLayoutSize = () => ({ minWidth: 0, minHeight: 0, maxHeight: 0, maxWidth: 0 })
 
 
     /**
@@ -57,7 +63,7 @@ export class InputsLabelsWidget {
         const labeledInputs = this.#node.inputs
             .filter(input => input.name.startsWith(this.#inputPrefix) && input.label!=undefined )
 
-            // получение объекта вида name => label из список инпутов начинающихся с префикса
+        // получение объекта вида name => label из список инпутов начинающихся с префикса
         for (const input of labeledInputs){
             // Имя метки
             const label = input.label || input.name
@@ -66,14 +72,14 @@ export class InputsLabelsWidget {
             const re = /^[a-zA-Z_][a-zA-Z0-9_]*$/
             if(!re.test(label)){
                 throw new Error(`
-                    Bad input name "${label}" in ${this.#node.title} [${this.#node.id}]
+                    Bad input name "${label}" in ${this.nodeName}
                     Allowed: "a-zA-Z0-9_"
                 `)
             }
 
             // Проверка на повтор имени
             if(known_names.includes(label)){
-                throw new Error(`The input name "${label}" already exists in ${this.#node.title} [${this.#node.id}]`)
+                throw new Error(`The input name "${label}" already exists in ${this.nodeName}`)
             }
 
             // Добавляем к объекту
@@ -82,7 +88,6 @@ export class InputsLabelsWidget {
         }
         return result
     }
-
 
 }
 

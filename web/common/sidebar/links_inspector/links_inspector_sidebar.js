@@ -2,7 +2,7 @@ import LoCore from "../../../.core/lo_core.js"
 import Logger from "../../../.core/utils/Logger.js"
 import {createElement, importCss} from "../../../.core/utils/dom_utils.js"
 import {SidebarComponents} from "../components/sidebar_components.js"
-import {findNodeById, foreachLinks, gotoNode} from "../../../.core/utils/nodes_utils.js"
+import {LoGraphUtils} from "../../../.core/utils/lo_graph_utils.js"
 
 importCss("links_inspector_sidebar.css", import.meta)
 
@@ -113,7 +113,7 @@ export default class LinksInspectorSidebar {
 	 */
 	 #refreshLinksList(parentElement){
 
-		const linksData = foreachLinks()
+		const linksData = LoGraphUtils.foreachLinks()
 
 		// список ссылок
 		const items = []
@@ -144,8 +144,8 @@ export default class LinksInspectorSidebar {
 	 *	Переход к Узлу
 	 */
 	#gotoNode(nodeId){
-		const node = findNodeById(nodeId)
-		gotoNode(node)
+		const node = LoGraphUtils.findNodeById(nodeId)
+		LoGraphUtils.gotoNode(node)
 		Logger.debug(node, nodeId)
 	}
 
@@ -158,7 +158,7 @@ export default class LinksInspectorSidebar {
 			allLinks: [],
 			brokenLinks: [],
 		}
-		result.allLinks = foreachLinks((link)=>{
+		result.allLinks = LoGraphUtils.foreachLinks((link)=>{
 			if(link.broken){
 				result.brokenLinks.push(link)
 			}

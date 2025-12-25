@@ -6,9 +6,13 @@ const LO_COLORS_DEF = {
     system:     { color: "hsl(320, 40%, 20%)", bgcolor: "hsl(320, 40%, 16%)" },
     // params:     { color: "hsl(204, 84.40%, 25.10%)", bgcolor: "hsl(204, 84%, 20%)" },
     params:     { color: "hsl(225, 50%, 32%)", bgcolor: "hsl(225, 50%, 27%)" },
+    notes:      { color: "#2f2f2f99", bgcolor: "#2a2a2a99" },
 }
 
 export const LO_NODES_DEFAULTS = {
+
+    // ui
+    "Docs"          : LO_COLORS_DEF.notes,
 
     // misc
     "LoTexts"           : LO_COLORS_DEF.blue,
@@ -22,6 +26,7 @@ export const LO_NODES_DEFAULTS = {
     "LoRandomBool"  : LO_COLORS_DEF.basic,
     "LoNotBool"     : LO_COLORS_DEF.basic,
     "LoIsEmpty"     : LO_COLORS_DEF.basic,
+    "LoIsNone"      : LO_COLORS_DEF.basic,
 
     // utils
     "LoSwitcher"    : LO_COLORS_DEF.basic,
@@ -61,7 +66,7 @@ export const LO_NODES_DEFAULTS = {
     "LoGet"         : { ...LO_COLORS_DEF.params, shape: 1 },
     "LoSetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
     "LoGetProps"    : { ...LO_COLORS_DEF.params, shape: 1 },
-    "LoRerouter"    : { ...LO_COLORS_DEF.params, shape: 1 },
+    "Reroutes"      : { ...LO_COLORS_DEF.params },
 
 }
 
@@ -75,18 +80,19 @@ export const LO_NODES_MIN_WIDTH_OVERRIDES = {
     // "LoTexts"           : 140,
 
     // calc
-    "LoEvals"       : 200,
-    "LoCompareNum"  : 200,
-    "LoRandomNum"   : 200,
-    "LoRandomBool"  : 200,
-    "LoNotBool"     : 140,
-    "LoIsEmpty"     : 140,
+    "LoEvals"       : 120,
+    "LoCompareNum"  : 180,
+    "LoRandomNum"   : 160,
+    "LoRandomBool"  : 160,
+    "LoNotBool"     : 120,
+    "LoIsEmpty"     : 120,
+    "LoIsNone"      : 120,
 
     // utils
-    "LoSwitcher"    : 180,
-    "LoCounter"     : 180,
-    "LoLog"         : 180,
-    "LoBeep"        : 180,
+    "LoSwitcher"    : 160,
+    "LoCounter"     : 160,
+    "LoLog"         : 160,
+    "LoBeep"        : 140,
 
     // convert
     "LoToInt"       : 140,
@@ -95,32 +101,32 @@ export const LO_NODES_MIN_WIDTH_OVERRIDES = {
     "LoToBool"      : 140,
 
     // replacers
-    "LoReplaceVars"     : 200,
+    "LoReplaceVars"     : 140,
     "LoReplacers"       : 200,
-    // "LoReplacersApply"  : 140,
+    "LoReplacersApply"  : 140,
 
     // lists
     "LoSetList"     : 140,
-    "LoFromList"    : 200,
+    "LoFromList"    : 180,
     "LoStrList"     : 140,
     "LoNumList"     : 140,
     "LoListLen"     : 140,
     "LoListJoin"    : 140,
-    "LoListsMerge"  : 200,
+    "LoListsMerge"  : 160,
 
     // system
-    "LoMkDir"           : 200,
-    "LoRmDir"           : 200,
-    "LoReadDir"         : 200,
-    "LoFileExists"      : 200,
-    "LoCountDirImages"  : 200,
+    "LoMkDir"           : 180,
+    "LoRmDir"           : 180,
+    "LoReadDir"         : 180,
+    "LoFileExists"      : 180,
+    "LoCountDirImages"  : 180,
 
     // props
     "LoSet"             : 140,
     "LoGet"             : 140,
     "LoSetProps"        : 160,
     "LoGetProps"        : 160,
-    "LoGetVideoProps"   : 200,
-    "LoSetVideoProps"   : 200,
+    "LoGetVideoProps"   : 180,
+    "LoSetVideoProps"   : 180,
 
 }

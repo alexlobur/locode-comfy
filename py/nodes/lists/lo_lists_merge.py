@@ -5,7 +5,7 @@
 #---
 class LoListsMerge:
 
-    NODE_MAPPINGS = ("LoListsMerge", "Lo:ListsMerge") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoListsMerge", "ListsMerge") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -16,15 +16,10 @@ Merging lists in one list
 
 
     @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
-
-
-    @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "remove_dupes": ( "BOOLEAN", { "default": False, "tooltip" : "Remove duplacates" }),
+                "skip_dupes": ( "BOOLEAN", { "default": False, "tooltip" : "Remove duplacates" }),
             },
         }
 
@@ -36,7 +31,7 @@ Merging lists in one list
     #
     #   Вычисляем значение
     #
-    def execute(self, remove_dupes: bool, **kwargs):
+    def execute(self, skip_dupes: bool, **kwargs):
 
         # объединяем списки в один полученные в kwargs
         merged = []
@@ -47,8 +42,8 @@ Merging lists in one list
                 # если значение не список, то добавляем его в список
                 merged.append(value)
 
-        # удаляем дубликаты если remove_dupes = True
-        if remove_dupes:
+        # удаляем дубликаты если skip_dupes = True
+        if skip_dupes:
             seen = set()
             unique_merged = []
             for item in merged:

@@ -1,9 +1,9 @@
 import {app} from "../../../scripts/app.js"
 import LoCore from "./.core/lo_core.js"
-import { overrideComputeSizeMinWidth } from "./.core/utils/nodes_utils.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
 import { registerSidebarTab } from "./common/sidebar/sidebar.js"
+import { LoNodeComputeSizeOverride } from "./.core/overrides/LoNodeComputeSizeOverride.js"
 
 
 //---
@@ -26,7 +26,10 @@ app.registerExtension({
 
         // Переопределение границы минимальной ширины узла (computeSize)
         // Не сработает с виртуальными нодами - для них нужно переопределять computeSize напрямую
-        overrideComputeSizeMinWidth(nodeType.prototype, LO_NODES_MIN_WIDTH_OVERRIDES[nodeType.comfyClass])
+        new LoNodeComputeSizeOverride().override( nodeType.prototype, {
+            minWidth:       LO_NODES_MIN_WIDTH_OVERRIDES[nodeType.comfyClass],
+            overrideWidth:  true
+        })
     },
 
 

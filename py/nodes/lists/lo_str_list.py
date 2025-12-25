@@ -5,7 +5,7 @@
 #---
 class LoStrList:
 
-    NODE_MAPPINGS = ("LoStrList", "Lo:StrList")
+    NODE_MAPPINGS = ("LoStrList", "StrList")
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -13,11 +13,6 @@ Converts a String into a list of Strings.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     @classmethod

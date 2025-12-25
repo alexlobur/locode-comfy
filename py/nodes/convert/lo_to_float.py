@@ -8,7 +8,7 @@ from ...utils.anytype import any_type
 #---
 class LoToFloat:
 
-    NODE_MAPPINGS = ("LoToFloat", "Lo:ToFloat")
+    NODE_MAPPINGS = ("LoToFloat", "ToFloat")
     AUTHOR = "LoCode"
     CATEGORY = "locode/convert"
     DESCRIPTION = """
@@ -16,12 +16,6 @@ Converts any type to Float number.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
-
 
     @classmethod
     def INPUT_TYPES(cls):

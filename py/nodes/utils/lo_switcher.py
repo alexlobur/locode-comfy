@@ -1,8 +1,15 @@
 from ...utils.anytype import any_type
 
+
+#---
+#
+#   Выбрать значение из списка по индексу
+#
+#---
+
 class LoSwitcher:
 
-    NODE_MAPPINGS = ("LoSwitcher", "Lo:Switcher") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoSwitcher", "Switcher") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     AUTHOR = "LoCode"
     CATEGORY = "locode/utils"
     DESCRIPTION = """
@@ -10,7 +17,7 @@ Selects a value from a list of values based on the index_seed.
 The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items, then the result index will be 10 % 7 = 3.
 """
 
-    # ---
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod

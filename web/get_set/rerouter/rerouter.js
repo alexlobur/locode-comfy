@@ -1,6 +1,5 @@
-import Logger from "../../.core/utils/Logger.js"
-import {makeUniqueName, setObjectParams, watchProperty} from "../../.core/utils/base_utils.js"
-import {addEmptyNodeInput, normalizeDynamicInputs} from "../../.core/utils/nodes_utils.js"
+import {makeUniqueName, setObjectParams, watchProperty, matchCase} from "../../.core/utils/base_utils.js"
+import { LoNodesUtils } from "../../.core/utils/lo_nodes_utils.js"
 import {PropsUtils} from "../props_utils.js"
 import {_CFG} from "./config.js"
 
@@ -10,37 +9,29 @@ const NODE_CFG = _CFG.node
 /**----
  *	
  *	REROUTER NODE
- *
+ *	
+ *	@author Locode
+ *	@version 1.0.0
+ *	@since 1.0.0
+ *	@description Node for managing routes
  */
  export class LoRerouter extends LGraphNode {
 
-
-	get collapsible(){ return false }
-
-
 	/**
-	 *	TODO: Режим отображения узла
-	 *
-	 *	- system: классический режим отображения узла (как в системе)
-	 *	- standart: стандартный режим отображения узла
-	 *	- adapted: подстраивается под размеры узла
-	 *	- compact: компактный режим отображения узла
-	 *	@returns {string} - режим отображения узла
-	 *	@default 'default'
+	 *	Режим отображения узла
+	 *	@returns {string} режим отображения узла
 	 */
-	get viewMode(){ return this.properties?.mode??'system' }
-
+	get viewMode(){ return this.properties.viewMode }
 
 	/**
      *  Заморожены ли параметры ввода
      */
-    get frozen(){ return this.properties?.frozen??false }
-
+    get frozen(){ return this.properties.frozen }
 
 	/**
 	 *  Видимость меток слотов
 	 */
-	get hideLabels(){ return this.properties?.hideLabels??false }
+	get hideLabels(){ return this.properties.hideLabels }
 
 
 	/**---
@@ -86,7 +77,7 @@ const NODE_CFG = _CFG.node
 		this._createdTime = Date.now()
 
 		// Нормализация слотов
-		this._normalizeSlots()
+		this.#normalizeSlots()
     }
 
 
@@ -94,7 +85,7 @@ const NODE_CFG = _CFG.node
 	 *  Конфигурация узла
 	 */
 	onConfigure(){
-		this._normalizeSlots()
+		this.#normalizeSlots()
 	}
 
 
@@ -119,7 +110,7 @@ const NODE_CFG = _CFG.node
     onConnectionsChange(side, index, connected, link, slot){
 		// input
         if(side==1){
-            setTimeout(()=>this._normalizeSlots(), _CFG.applyDelay)
+            setTimeout(()=>this.#normalizeSlots(), _CFG.applyDelay)
         }
     }
 
@@ -131,23 +122,108 @@ const NODE_CFG = _CFG.node
 		// задержка, чтобы не реагировать на изменения свойств узла сразу после создания
 		if(Date.now() - this._createdTime < _CFG.afterCreateDelay) return
 
-		// заморозка
-		if(property==="frozen"){
-			this.freezeInputsToggle(value)
+		// обновление состояния узла в зависимости от измененного свойства
+		matchCase(property, {
+			// заморозка узла
+			frozen:		()=> this.#updateFrozenState(),
+			// режим отображения узла
+			viewMode:	()=> this.#updateViewMode(),
+			// видимость меток слотов
+			hideLabels:	()=> this.#updateLabelsVisibility(),
+		})
+	}
+
+
+
+	/* NODE DRAW */
+
+	/**
+	 *  Рисование переднего плана узла
+	 */
+	onDrawForeground(ctx){
+		// если метки слотов не видны, то выходим
+		if(this.hideLabels) return
+
+		// расчет параметров слотов
+		const params = this.#getSlotsParams()
+
+		// если узел свернут, то рисуем количество выходов
+		const collapsed = params.spacing < _CFG.slots.collapseOnSpacing
+		if(collapsed){
+			ctx.save()
+			ctx.fillStyle = _CFG.slots.textColor
+			ctx.font = this.titleFontStyle
+
+			// рисуем заголовок узла, если он выходит за пределы узла обрезаем
+			const text = `${this.title.trim()} ×${this.outputs.length}`
+			const measure = ctx.measureText(text)
+
+			// устанавливаем область обрезки по границам узла
+			ctx.beginPath()
+			ctx.rect(params.textPadding, 0, this.size[0] - 2 * params.textPadding, this.size[1])
+			ctx.clip()
+
+			const x = (this.size[0] - measure.width)/2
+			const y = (this.size[1] + measure.actualBoundingBoxAscent)/2
+			ctx.fillText(text, x, y)
+			ctx.restore()
+			return
 		}
-		// режим отображения
-		if(property==="viewMode"){
-			this.setViewMode(value)
+
+		// рисуем типы выходов
+		ctx.save()
+		ctx.fillStyle = _CFG.slots.textColor
+		ctx.font = params.textFont
+		for (let index = 0; index < this.outputs.length; index++){
+			const output = this.outputs[index]
+			const text = this.#getSlotRenderingLabel(output)
+			const measure = ctx.measureText(text)
+			const x = this.size[0] - measure.width - params.textPadding
+			const y = output.pos[1] + measure.actualBoundingBoxAscent/2
+			ctx.fillText(text, x, y)
 		}
+		ctx.restore()
 	}
 
 
 	/**
+	 *  Расчет минимального размера узла
+	 */
+	computeSize(){
+		// расчет параметров слотов
+		const params = this.#getSlotsParams()
+
+		// начальная ширина / высота узла
+		let width = _CFG.node.minSize[0]
+		const height = params.verticalMinOffset * 2 + (this.inputs.length-1) * params.minSpacing
+
+		// если метки слотов не видны, то возвращаем начальную ширину и высоту
+		if(this.hideLabels){
+			return [width, height]
+		}
+
+		// расчет ширины текста инпутов
+		const textWidth = Math.max(
+			...this.inputs.map(
+				input=>PropsUtils.computeSlotTextWidth(this.#getSlotRenderingLabel(input), params.textFont)
+			)
+		)
+		// ширина / высота
+		width = textWidth + 2 * params.textPadding
+
+		// возвращаем ширину и высоту
+		return [width, height]
+	}
+
+
+	/* SLOTS */
+
+	/**
 	 *  Нормализация слотов
 	 */
-	_normalizeSlots(){
+	#normalizeSlots(){
 		// нормализация инпутов
-		normalizeDynamicInputs( this, {
+		LoNodesUtils.normalizeDynamicInputs( this, {
 			onLabelChanged:		(_, input, value) => {
 				const index = this.inputs.indexOf(input)
 				this.outputs[index][ this.outputs[index]._label!==undefined ? "_label" : "label" ] = value
@@ -156,7 +232,7 @@ const NODE_CFG = _CFG.node
 		})
 
 		// добавление пустого инпута в конец
-		if(!this.frozen) addEmptyNodeInput(this)
+		if(!this.frozen) LoNodesUtils.addEmptyInput(this)
 
 		// Нормализация выходов
 		PropsUtils.updateOutputsFromRefer(this, this)
@@ -177,63 +253,18 @@ const NODE_CFG = _CFG.node
 
 
 	/**
-     *  Клонирование виджета
-     */
-    clone(){
-        const cloned = super.clone()
-		cloned._normalizeSlots()
-        return cloned
-    }
-
-
-	/* NODE DRAW */
-
-	/**
-	 *  Рисование переднего плана узла
-	 */
-	onDrawForeground(ctx){
-		// если метки слотов не видны, то выходим
-		if(this.hideLabels) return
-
-		// если узел свернут, то рисуем количество выходов
-		// if(this.collapsed){
-		// 	ctx.save()
-		// 	ctx.fillStyle = _CFG.slots.textColor
-		// 	ctx.font = this.titleFontStyle
-		// 	const text = `×${this.outputs.length}`
-		// 	const measure = ctx.measureText(text)
-		// 	const x = (this.boundingRect[2] - measure.width)/2
-		// 	const y = this.boundingRect[3] - (this.boundingRect[3] - measure.actualBoundingBoxAscent)/2
-		// 	ctx.fillText(text, x, y)
-		// 	ctx.restore()
-		// 	return
-		// }
-
-		// рисуем типы выходов
-		ctx.save()
-		ctx.fillStyle = _CFG.slots.textColor
-		ctx.font = _CFG.slots.textFont
-		for (let index = 0; index < this.outputs.length; index++){
-			const output = this.outputs[index]
-			const text = this.#getSlotRenderingLabel(output)
-			const measure = ctx.measureText(text)
-			const x = this.size[0] - measure.width - _CFG.slots.textPadding
-			const y = output.pos[1] + measure.actualBoundingBoxAscent/2
-			ctx.fillText(text, x, y)
-		}
-		ctx.restore()
-	}
-
-
-	/**
 	 *  Переопределение свойств отображения слота
 	 */
 	#redefineSlotDisplayProperties(slot){
-
 		// определение типа слота
 		const isOutputSlot = slot.links !== undefined
 
-		watchProperty( slot, "renderingLabel", { initialValue: "", setValue: ()=> "" })
+		// переопределение свойства renderingLabel
+		watchProperty( slot, "renderingLabel", {
+			getValue: ()=> ""
+		})
+
+		// переопределение свойства pos
 		watchProperty( slot, "pos", {
 			getValue: (value)=>{
 				const index = isOutputSlot ? this.outputs.indexOf(slot) : this.inputs.indexOf(slot)
@@ -244,60 +275,102 @@ const NODE_CFG = _CFG.node
 
 
 	/**
-	 *  Получение текста для отображения в слоте
-	 */
-	#getSlotRenderingLabel(slot){
-		return (slot.label || slot.localized_name || slot.name || slot.type || '*').trim()
-	}
-
-
-	/**
-	 *  Расчет минимального размера узла
-	 */
-	computeSize(){
-		// начальная ширина узла
-		let width = _CFG.slots.minWidth
-		const height = _CFG.slots.padVertical * 2 + (this.inputs.length-1) * _CFG.slots.spacing
-
-		// если метки слотов не видны, то возвращаем начальную ширину и высоту
-		if(this.hideLabels){
-			return [width, height]
-		}
-
-		// расчет ширины текста инпутов
-		const textWidth = Math.max(
-			...this.inputs.map(
-				input=>PropsUtils.computeSlotTextWidth(this.#getSlotRenderingLabel(input), _CFG.slots.textFont)
-			)
-		)
-		// ширина / высота
-		width = textWidth + 2 * _CFG.slots.textPadding
-
-		// возвращаем ширину и высоту
-		return [width, height]
-	}
-
-
-	/**
 	 *  Получение расчетной позиции слота
 	 */
 	#getSlotPosition(slot, index){
 		// определение типа слота
 		const isOutput = slot.links !== undefined
 
-		// расчет вертикального отступа
-		const verticalOffset = (this.boundingRect[3] - (this.inputs.length-1) * _CFG.slots.spacing) / 2
+		// расчет параметров слотов
+		const params = this.#getSlotsParams()
 
-		// расчет горизонтальной позиции слота
-		const x = isOutput
-			? this.boundingRect[2] - _CFG.slots.padHorizontal
+		// возвращаем расчетную позицию слота
+		return [
+			isOutput ? this.size[0] - params.horizontalOffset : params.horizontalOffset,
+			params.verticalOffset + index * params.spacing
+		]
+	}
+
+
+	/**
+	 *  Расчет параметров слотов
+	 */
+	#getSlotsParams(){
+		// размер узла
+		const height = this.size[1]
+
+		// Если размер и режим отображения не изменились, то возвращаем параметры слотов из кеша
+		if(	this._cachedSlotsParams
+			&& this._cachedSlotsParams.height===height
+			&& this._cachedSlotsParams.viewMode===this.viewMode
+			&& this._cachedSlotsParams.inputsLength===this.inputs.length
+		){
+			return this._cachedSlotsParams.params
+		}
+
+		// Минимальное расстояние между слотами для режимов отображения
+		const minSpacing = matchCase( this.viewMode, {
+			Compact:	()=> _CFG.slots.spacing,
+			System:		()=> _CFG.slots.spacingSystem,
+			Adaptive:	()=> 0,
+		})
+
+		// Расстояние между слотами
+		const spacing = this.viewMode!=="Adaptive"
+			? minSpacing
+			: Math.min ((height - _CFG.slots.padVertical*2) / this.inputs.length, _CFG.slots.spacingSystem)
+
+		// Минимальный вертикальный отступ для режимов отображения
+		const verticalMinOffset = matchCase( this.viewMode, {
+			Compact:	()=> _CFG.slots.padVertical,
+			System:		()=> _CFG.slots.padVerticalSystem,
+			Adaptive:	()=> _CFG.slots.padVertical,
+		})
+
+		// расчет вертикального отступа для слота
+		const verticalOffset = (height - (this.inputs.length-1) * spacing) / 2
+
+		// расчет горизонтального отступа для слота
+		const horizontalOffset = this.viewMode==="System"
+			? _CFG.slots.padHorizontalSystem
 			: _CFG.slots.padHorizontal
 
-		// расчет вертикальной позиции слота
-		const y = verticalOffset + index * _CFG.slots.spacing
+		// расчет шрифта для текста слотов
+		const textFont = this.viewMode==="System"
+			? _CFG.slots.textFontSystem
+			: _CFG.slots.textFont
 
-		return [x, y]
+		// расчет горизонтального отступа для текста слотов
+		const textPadding = this.viewMode==="System"
+			? _CFG.slots.textPaddingSystem
+			: _CFG.slots.textPadding
 
+		// кеширование параметров слотов
+		this._cachedSlotsParams = {
+			height:			height,
+			viewMode:		this.viewMode,
+			inputsLength:	this.inputs.length,
+			params: {
+				minSpacing,
+				spacing,
+				verticalMinOffset,
+				verticalOffset,
+				horizontalOffset,
+				textFont,
+				textPadding,
+			}
+		}
+
+		// возвращаем расстояние между слотами и вертикальный отступ для слота
+		return this._cachedSlotsParams.params
+	}
+
+
+	/**
+	 *  Получение текста для отображения в слоте
+	 */
+	#getSlotRenderingLabel(slot){
+		return (slot.label || slot.localized_name || slot.name || slot.type || '*').trim()
 	}
 
 
@@ -315,21 +388,21 @@ const NODE_CFG = _CFG.node
 				submenu: {
 					options: [
 						{
-							content:	NODE_CFG.menu.submenu.inputsFreezing[this.frozen ? 1 : 0],
-							callback:	()=> this.freezeInputsToggle()
-						},{
 							content:	NODE_CFG.menu.submenu.continueRoutes,
 							callback:	()=> this.cloneWithRoutes()
 						},{
+							content:	NODE_CFG.menu.submenu.inputsFreezing[this.frozen ? 1 : 0],
+							callback:	()=> this.setProperty("frozen", !this.frozen)
+						},{
 							content:	NODE_CFG.menu.submenu.slotsLabelsVisibility[this.hideLabels ? 0 : 1],
-							callback:	()=> this.slotsLabelsVisibilityToggle()
+							callback:	()=> this.setProperty("hideLabels", !this.hideLabels)
 						},{
 							content:	NODE_CFG.menu.submenu.viewMode.title,
 							has_submenu: true,
 							submenu: {
 								options: NODE_CFG.menu.submenu.viewMode.options().map(mode=>({
 									content:	mode,
-									callback:	()=> this.setViewMode(mode)
+									callback:	()=> this.setProperty("viewMode", mode)
 								}))
 							},
 						},
@@ -342,20 +415,37 @@ const NODE_CFG = _CFG.node
 
 
 	/**
-     *  Заморозка инпутов
+     *	Обновление состояния заморозки узла
      */
-    freezeInputsToggle(force=null){
-        this.properties.frozen = force ?? !this.properties.frozen
-
+    #updateFrozenState(){
 		// Если заморожено, то удаляем последний инпут, если он пустой
         if(this.frozen && this.inputs.length > 0){
             const lastInput = this.inputs[this.inputs.length - 1]
             if(!lastInput.connected) this.inputs.pop()
         }
 
-		// Нормализация слотов
-		this._normalizeSlots()
+		this.#normalizeSlots()
+		this.expandToFitContent()	// Нормализация слотов
+		this.setDirtyCanvas(true, true)
     }
+
+
+	/**
+	 *	Обновление видимости меток слотов
+	 */
+	#updateLabelsVisibility(){
+		this.expandToFitContent()
+		this.setDirtyCanvas(true, true)
+	}
+
+
+	/**
+	 *  Обновление режима отображения узла
+	 */
+	#updateViewMode(){
+		this.expandToFitContent()
+		this.setDirtyCanvas(true, true)
+	}
 
 
 	/**
@@ -386,29 +476,10 @@ const NODE_CFG = _CFG.node
 		cloned.properties.frozen = frozen
 
 		// нормализация слотов клона
-		cloned._normalizeSlots()
+		cloned.#normalizeSlots()
 
 		this.graph.setDirtyCanvas(true, true)
     }
-
-
-	/**
-	 *  Переключение видимости меток слотов
-	 */
-	slotsLabelsVisibilityToggle(){
-		this.properties.hideLabels = !this.hideLabels
-		this.expandToFitContent()
-	}
-
-
-	/**
-	 *  Установка режима отображения узла
-	 */
-	setViewMode(mode){
-		if(!_CFG.viewModes.includes(mode)) return
-		this.properties.viewMode = mode
-		this.expandToFitContent()
-	}
 
 
 	/* STATIC */

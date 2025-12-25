@@ -1,4 +1,3 @@
-from .py.nodes.calc.lo_eval import LoEval
 from .py.nodes.calc.lo_evals import LoEvals
 from .py.nodes.calc.lo_compare_num import LoCompareNum
 from .py.nodes.calc.lo_random_num import LoRandomNum
@@ -6,7 +5,6 @@ from .py.nodes.calc.lo_random_bool import LoRandomBool
 from .py.nodes.calc.lo_is_empty import LoIsEmpty
 from .py.nodes.calc.lo_is_none import LoIsNone
 
-from .py.nodes.convert.lo_not_bool import LoNotBool
 from .py.nodes.convert.lo_to_int import LoToInt
 from .py.nodes.convert.lo_to_bool import LoToBool
 from .py.nodes.convert.lo_to_float import LoToFloat
@@ -55,9 +53,9 @@ classes = [
     # replacers
     Replacers, ReplacersApply, LoReplaceVars,
     # calc
-    LoEval, LoEvals, LoCompareNum, LoIsEmpty, LoIsNone, LoRandomNum, LoRandomBool,
+    LoEvals, LoCompareNum, LoIsEmpty, LoIsNone, LoRandomNum, LoRandomBool,
     # convert
-    LoNotBool, LoToInt, LoToFloat, LoToStr, LoToBool,
+    LoToInt, LoToFloat, LoToStr, LoToBool,
     # utils
     LoLog, LoBeep, LoSwitcher, LoCounter,
 
@@ -73,14 +71,9 @@ for cls in classes:
     mapping = getattr(cls, "NODE_MAPPINGS", None)
     node_id, display_name = mapping
     NODE_CLASS_MAPPINGS[node_id] = cls
-    NODE_DISPLAY_NAME_MAPPINGS[node_id] = display_name
+    NODE_DISPLAY_NAME_MAPPINGS[node_id] = display_name + " [lo]"
 
 
 # Регистрируем JS и CSS файлы
 WEB_DIRECTORY = "./web"
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
-
-
-# TODO: 
-# - Evals - дать описаение...
-# - ReplaceVars -> Replace ?

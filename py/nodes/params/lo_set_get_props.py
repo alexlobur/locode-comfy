@@ -1,9 +1,6 @@
 from ...utils.anytype import any_type, ByPassTypeTuple
 
 
-# TODO: Разобраться с Lazy
-
-
 #---
 #
 #   Формирует tuple из входных параметров
@@ -11,25 +8,15 @@ from ...utils.anytype import any_type, ByPassTypeTuple
 #---
 class LoSetProps:
 
-    NODE_MAPPINGS = ("LoSetProps", "Lo:SetProps") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoSetProps", "SetProps")
     CATEGORY = "locode/params"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Packs data into a single tuple for the Lo:GetProps node.
+Packs data into a single tuple for the `GetProps` node.
 Can accept any number of input parameters. Data types will be automatically packed into a tuple.
-
-RU:
-Упаковывает данные в один кортеж для узла Lo:GetProps.
-Может принимать любое количество входных параметров. Типы данных будут автоматически упакованы в кортеж.
-
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return True
 
 
     @classmethod
@@ -62,7 +49,7 @@ RU:
 #---
 class LoGetProps:
 
-    NODE_MAPPINGS = ("LoGetProps", "Lo:GetProps") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+    NODE_MAPPINGS = ("LoGetProps", "GetProps") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
     CATEGORY = "locode/params"
     AUTHOR = "LoCode"
     DESCRIPTION = """
@@ -98,6 +85,7 @@ RU:
     RETURN_TYPES = ByPassTypeTuple((any_type, ))
     FUNCTION = "execute"
 
+
     def execute(self, props: "LoProps", props_types) -> tuple:
 
         # список типов текущего узла
@@ -112,8 +100,11 @@ RU:
                 continue
             if setter_type.upper() not in ("*", "ANY", getter_type.upper()):
                 raise ValueError(f"Type mismatch: setter[{index}]='{setter_type}' does not match getter[{index}]='{getter_type}'")
-        return props.props
 
+        # возвращаем tuple из props и значений props.props
+        # return props.props
+        return (props, ) + props.props
+         
 
 
 #---

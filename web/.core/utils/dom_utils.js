@@ -24,28 +24,6 @@ const CSS_PATHS = []
 
 
 /**
- *  Загрузка скрипта
- * 
- *  @param {string} src - путь к скрипту
- *  @param {{ onLoad: function, onError: function }} options - Опции
- */
-export function loadScript( src, { async=true, onLoad=null, onError=null }={}){
-    // Если скрипт уже загружен - скип
-    if(SCRIPT_PATHS.includes(src)) return onLoad?.()
-
-    // Подключение скрипта
-    SCRIPT_PATHS.push(src)
-    const script = document.createElement('script')
-    script.src = src
-    script.async = async
-    script.onload = () => onLoad?.()
-    script.onerror = () => onError?.()
-    document.head.appendChild(script)
-}
-const SCRIPT_PATHS = []
-
-
-/**
  * Create a new element
  * 
  * @param {string} tagName - The tag name of the element
@@ -203,9 +181,7 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
 
     // Вычисляем высоту строки
     const metrics = ctx.measureText("M")
-    //const effectiveLineHeight = ((metrics.fontBoundingBoxAscent ?? 0) + (metrics.fontBoundingBoxDescent ?? 0))*1.25
-    // const effectiveLineHeight = metrics.fontBoundingBoxDescent*lineSpacing
-    const lineHeight = metrics.actualBoundingBoxDescent * lineSpacing
+    const lineHeight = metrics.fontBoundingBoxDescent * lineSpacing
 
     let cursorY = marginTop
     const result = { width: 0, height: 0 }
@@ -243,6 +219,8 @@ export function wrapCanvasText( ctx, text, maxWidth, { marginLeft=0, marginTop=0
         // Добавляем завершающую строку параграфа (возможно пустую).
         commitLine(line.trimEnd())
     }
+
+    result.height -= metrics.actualBoundingBoxAscent
 
     return result
 }

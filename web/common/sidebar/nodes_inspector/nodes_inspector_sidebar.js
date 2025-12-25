@@ -2,7 +2,7 @@ import LoCore from "../../../.core/lo_core.js"
 import Logger from "../../../.core/utils/Logger.js"
 import {createElement, importCss} from "../../../.core/utils/dom_utils.js"
 import {SidebarComponents} from "../components/sidebar_components.js"
-import {findNodeById, foreachNodes, gotoNode} from "../../../.core/utils/nodes_utils.js"
+import {LoGraphUtils} from "../../../.core/utils/lo_graph_utils.js"
 
 importCss("nodes_inspector_sidebar.css", import.meta)
 
@@ -160,8 +160,8 @@ export default class NodesInspectorSidebar {
 	 *	Переход к Узлу
 	 */
 	#gotoNode(nodeId){
-		const node = findNodeById(nodeId)
-		gotoNode(node)
+		const node = LoGraphUtils.findNodeById(nodeId)
+		LoGraphUtils.gotoNode(node)
 		Logger.debug(node, nodeId)
 	}
 
@@ -176,7 +176,7 @@ export default class NodesInspectorSidebar {
 			hasErrors: []
 		}
 
-		foreachNodes(null, (node, parentNodeIds)=>{
+		LoGraphUtils.foreachNodes(null, (node, parentNodeIds)=>{
 			// устаревший узел
 			if(LoCore.DEPRECATED_TYPES.has(node.type)){
 				result.deprecated.push({ node: node, ids: [...parentNodeIds, node.id] })

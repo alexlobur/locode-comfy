@@ -1,14 +1,21 @@
 import {app} from "../../../scripts/app.js"
-import {addEmptyNodeInput, normalizeDynamicInputs} from "../.core/utils/nodes_utils.js"
-import {InputsLabelsWidget} from "../.core/widgets/InputsLabelsWidget.js"
+import {InputsLabelsCollectorWidget} from "../.core/widgets/InputsLabelsCollectorWidget.js"
+import { LoNodeDynamicInputsOverrides } from "../.core/overrides/LoNodeDynamicInputsOverrides.js"
+import Logger from "../.core/utils/Logger.js"
 
 
 // Конфиг узла
 const NODE_CFG = {
-    type:           "LoEvals",
-    extName:        "locode.LoEvals",
-    inputPrefix:    "x",
-    applyDelay:     100,
+    type:               'LoEvals',
+    extName:            'locode.LoEvals',
+    widgetName:         'labels_of_vars',
+    widgetInputPrefix:  'x',
+    normalizeConfig: {
+        startName:  '',
+        startIndex: 0,
+        pattern:    'x{index}',
+        label:      ''
+    },
 }
 
 
@@ -22,39 +29,16 @@ app.registerExtension({
         // Проверяем, что имя узла соответствует нужному типу
         if (nodeType.comfyClass !== NODE_CFG.type) return
 
-        //
-        // Создание узла и инициализация виджета
-        const onNodeCreated = nodeType.prototype.onNodeCreated
-        nodeType.prototype.onNodeCreated = function(){
-            const ret = onNodeCreated?.apply(this, arguments)
-
-            // добавление скрытого виджета для сбора меток
-            this.addCustomWidget(new InputsLabelsWidget(this, "labels_of_vars", NODE_CFG.inputPrefix ))
-
-            // Обновление динамических инпутов
-            _normalizeInputs(this)
-            return ret
-        }
-
-        //
-        // При изменении соединений
-        const originalOnConnectionsChange = nodeType.prototype.onConnectionsChange;
-        nodeType.prototype.onConnectionsChange = function (side, slot, connect, link_info, output) {
-            const ret = originalOnConnectionsChange?.apply(this, arguments)
-            // задержка, чтобы успели обновить слоты
-            setTimeout( ()=>_normalizeInputs(this), NODE_CFG.applyDelay )
-            return ret
-        }
-
+        // Переопределение узла для динамических инпутов
+        new LoNodeDynamicInputsOverrides().override( nodeType.prototype, {
+            normalizeConfig: NODE_CFG.normalizeConfig,
+            onNodeCreated: function(){
+                Logger.debug('onNodeCreated', this)
+                this.addCustomWidget(
+                    new InputsLabelsCollectorWidget(this, NODE_CFG.widgetName, NODE_CFG.widgetInputPrefix )
+                )
+            }
+        })
     }
+
 })
-
-
-function _normalizeInputs(node){
-    normalizeDynamicInputs(node)
-    addEmptyNodeInput( node, {
-        prefix: NODE_CFG.inputPrefix,
-        label: NODE_CFG.inputPrefix+node.inputs.length
-    })
-}
-

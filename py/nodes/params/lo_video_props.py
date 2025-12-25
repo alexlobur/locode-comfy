@@ -9,7 +9,7 @@ from random import randint
 #---
 class LoSetVideoProps:
 
-    NODE_MAPPINGS = ("LoSetVideoProps", "Lo:SetVideoProps")
+    NODE_MAPPINGS = ("LoSetVideoProps", "SetVideoProps")
     AUTHOR = "LoCode"
     CATEGORY = "locode/params"
     DESCRIPTION = """
@@ -52,7 +52,7 @@ Set Video parameters
 #---
 class LoGetVideoProps:
 
-    NODE_MAPPINGS = ("LoGetVideoProps", "Lo:GetVideoProps")
+    NODE_MAPPINGS = ("LoGetVideoProps", "GetVideoProps")
     AUTHOR = "LoCode"
     CATEGORY = "locode/params"
     DESCRIPTION = """
@@ -70,8 +70,8 @@ Get Video parameters
             },
         }
 
-    RETURN_TYPES = ("INT", "INT", "FLOAT", "FLOAT", "INT", "LO_VIDEO_PROPS")
-    RETURN_NAMES = ("width", "height", "duration", "fps", "frames", "video_props")
+    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT")
+    RETURN_NAMES = ("video_props", "width", "height", "duration", "fps", "frames")
     FUNCTION = "execute"
 
     # 
@@ -119,7 +119,7 @@ class LoVideoProps:
     #
     def get_params(self):
         # возвращаем параметры
-        return (self.width, self.height, self.duration, self.fps, self.frames, self)
+        return (self, self.width, self.height, self.duration, self.fps, self.frames)
 
 
     # В виде строки

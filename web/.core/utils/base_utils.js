@@ -1,19 +1,20 @@
 /**
  *  Создает уникальное имя на основе списка имен
  *  
- *  @param {String} name - начальное имя
- *  @param {String[]} names - список имен
+ *  @param {String} name - начальное имя (если не указано, то будет браться из pattern)
+ *  @param {String[]} existingNames - список имен которые уже существуют
  *  @param {?String} pattern - паттерн вида: "{name}{index}"
  *  @param {?int} excludeIndex - исключить этот индекс из списка
+ *  @param {?boolean} indexed - использовать индекс в имени
  */
-export function makeUniqueName( name, names, { pattern="{name}_{index}", excludeIndex=null }={}){
-    if(excludeIndex!=null) names.splice(excludeIndex, 1)
+export function makeUniqueName( name='', existingNames, { pattern="{name}_{index}", excludeIndex=null, startIndex=1 }={}){
+    if(excludeIndex!=null) existingNames.splice(excludeIndex, 1)
 
-    let index=1
+    let index=startIndex
     let newName = name
     const maxIndex = 999
 
-    while (names.includes(newName)){
+    while (newName==='' || existingNames.includes(newName)){
         newName = pattern
             .replace("{name}", name)
             .replace("{index}", index)
@@ -115,4 +116,23 @@ export function watchProperty(object, property, { initialValue=undefined, proper
         }
     })
     return object
+}
+
+
+/**
+ *  Сопоставление значения с функциями (подобно switch-case)
+ * 
+ *  @param {*} value значение для сопоставления
+ *  @param {{[key: string]: (value: any)=>any}} cases функции для сопоставления
+ *  @example
+ *  const result = matchCase("a", {
+ *      a: () => "a",
+ *      b: () => "b",
+ *      c: () => "c",
+ *  })
+ *  console.log(result) // "a"
+ *  @returns {any} результат выполнения функции для сопоставления
+ */
+export function matchCase(value, cases){
+    return cases[value]?.()??null
 }
