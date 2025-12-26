@@ -283,6 +283,7 @@ const NODE_CFG = _CFG.setNode
 						},
 						{
 							content:   NODE_CFG.menu.submenu.createGetter,
+                            disabled:  this.namespace=='',
 							callback:  ()=> this._createGetter()
 						},
 					],

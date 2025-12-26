@@ -33,7 +33,7 @@ app.registerExtension({
             const ret = _onDrawForeground?.apply(this, arguments)
 
             // Если подключены входы, то рисовать оверлей не нужно
-            // if (this.inputs.some(input => input.isConnected)) return
+            if (this.inputs.some(input => input.isConnected)) return ret
 
             // Рассчитать размеры видео
             const videoProps = calculate(this)

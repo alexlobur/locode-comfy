@@ -14,6 +14,13 @@ class LoSetProps:
     DESCRIPTION = """
 Packs data into a single tuple for the `GetProps` node.
 Can accept any number of input parameters. Data types will be automatically packed into a tuple.
+IMPORTANT: the input data will be loaded into memory, so it is not recommended to use this node for large amounts of data.
+
+RU:
+Формирует кортеж из входных параметров для узла `GetProps`.
+Может принимать любое количество входных параметров. Типы данных будут автоматически упакованы в кортеж.
+Важно: входные данные будут загружены в память, поэтому не рекомендуется использовать этот узел для больших объемов данных.
+
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

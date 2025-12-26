@@ -1,4 +1,4 @@
-from ...utils.anytype import any_type
+from ...utils.anytype import any_type, FlexibleOptionalInputType
 
 
 #---
@@ -22,32 +22,33 @@ The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items
 
     @classmethod
     def INPUT_TYPES(cls):
+        lazy_opts = {"lazy": True}
         return {
             "required": {
                 "index_seed": ("INT", {"default": 0, "step": 1}),
             },
-            # "optional": FlexibleOptionalInputType(any_type),
+            "optional": FlexibleOptionalInputType(any_type, options=lazy_opts),
         }
 
     RETURN_TYPES = (any_type,)
     RETURN_NAMES = ('*',)
     FUNCTION = "execute"
 
+
+    def check_lazy_status(self, index_seed, **kwargs):
+        input_names = list(kwargs.keys())
+        if not input_names:
+            return
+        target = input_names[index_seed % len(input_names)]
+        if kwargs.get(target) is None:
+            return [target]
+
+
     def execute(self, index_seed, **kwargs):
-
-        # формируем список из не пустых значений
-        values = []
-        for value in kwargs.values():
-            if value is not None:
-                values.append(value)
-
-        # считаем количество значений в списке
-        values_count = len(values)
-
-        # проверяем, что есть хотя бы одно значение
-        if values_count == 0:
+        available = [(k, v) for k, v in kwargs.items() if v is not None]
+        if not available:
             raise ValueError("No values provided")
 
-        # возвращаем значение из списка по индексу
-        return (values[index_seed % values_count],)
+        key, value = available[index_seed % len(available)]
+        return (value,)
 
