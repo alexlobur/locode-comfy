@@ -39,7 +39,7 @@ const NODE_CFG = _CFG.getNode
 		this.title = NODE_CFG.title
 
 		// виджет пространства имен
-		this.#nsWidget = this.addWidget( "combo", "namespace", "",
+		this.#nsWidget = this.addWidget( "combo", NODE_CFG.widgetName, "",
 			(val) => {
 				this.#updateOutputsFromSetter(true)
 			},

@@ -25,9 +25,10 @@ export const _CFG = {
      */
     setNode: {
         type:               "Set [lo]",
-        title:              "Set:",
-        titleFromNamespace: "Set: {namespace}",
+        title:              "Set [lo]",
+        titleFromNamespace: "[{namespace}]",
         inputPrefix:        "in",
+        widgetName:         "set",
         nodesDefaults: { ...LO_NODES_DEFAULTS["LoSet"] },
         minWidth:       LO_NODES_MIN_WIDTH_OVERRIDES["LoSet"],
         menu: {
@@ -46,9 +47,10 @@ export const _CFG = {
      */
     getNode: {
         type:               "Get [lo]",
-        title:              "Get:",
-        titleFromNamespace: "Get: {namespace}",
+        title:              "Get [lo]",
+        titleFromNamespace: "[{namespace}]",
         outputPrefix:       "out",
+        widgetName:         "get",
         nodesDefaults: { ...LO_NODES_DEFAULTS["LoGet"] },
         minWidth:       LO_NODES_MIN_WIDTH_OVERRIDES["LoGet"],
         menu: {

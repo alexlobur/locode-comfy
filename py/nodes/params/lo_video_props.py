@@ -25,21 +25,21 @@ Set Video parameters
             "required": {
                 "width": ("INT", {"default": 1280}),
                 "height": ("INT", {"default": 720}),
-                "duration": ("FLOAT", {"default": 4.0}),
-                "fps": ("FLOAT", {"default": 24.0}),
+                "frames": ("INT", {"default": 81, "min": 1}),
+                "fps": ("FLOAT", {"default": 16.0}),
             },
         }
 
     RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT")
-    RETURN_NAMES = ("video_props", "width", "height", "duration", "fps", "frames")
+    RETURN_NAMES = ("video_props", "width", "height", "frames", "fps", "duration")
     FUNCTION = "execute"
 
 
     # 
     # Вычисление параметров видео
     #
-    def execute(self, width=0, height=0, duration=0.0, fps=0.0):
-        video_props = LoVideoProps(width, height, duration, fps)
+    def execute(self, width=0, height=0, frames=0, fps=0.0):
+        video_props = LoVideoProps(width, height, frames, fps)
         # возвращаем параметры
         return video_props.get_params()
 
@@ -70,8 +70,8 @@ Get Video parameters
             },
         }
 
-    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT")
-    RETURN_NAMES = ("video_props", "width", "height", "duration", "fps", "frames")
+    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT", )
+    RETURN_NAMES = ("video_props", "width", "height", "frames", "fps", "duration", )
     FUNCTION = "execute"
 
     # 
@@ -91,10 +91,10 @@ Get Video parameters
 class LoVideoProps:
     """Параметры видео.
     """
-    def __init__(self, width, height, duration, fps):
+    def __init__(self, width, height, frames, fps):
         self.width = width
         self.height = height
-        self.duration = duration
+        self.frames = frames
         self.fps = fps
 
         # если какие-то параметры не заданы кидаем ошибку с указанием параметра, который не задан
@@ -102,16 +102,13 @@ class LoVideoProps:
             raise ValueError("Width is not set")
         if self.height <= 0:
             raise ValueError("Height is not set")
-        if self.duration <= 0:
-            raise ValueError("Duration is not set")
+        if self.frames <= 1:
+            raise ValueError("Frames is not set or less than 1")
         if self.fps <= 0:
             raise ValueError("FPS is not set")
 
-        # считаем количество кадров (округляем до 4x)
-        self.frames = 1 + math.ceil(self.duration * self.fps/4)*4
-
-        # считаем окончательную продолжительность
-        self.durationFinal = round(self.frames / self.fps, 2)
+        # считаем продолжительность
+        self.duration = round(self.frames / self.fps, 2)
 
 
     # 
@@ -119,9 +116,9 @@ class LoVideoProps:
     #
     def get_params(self):
         # возвращаем параметры
-        return (self, self.width, self.height, self.duration, self.fps, self.frames)
+        return (self, self.width, self.height, self.frames, self.fps, self.duration, )
 
 
     # В виде строки
     def __str__(self):
-        return f"width: {self.width}, height: {self.height}, duration: {self.duration}, fps: {self.fps}, frames: {self.frames}, durationFinal: {self.durationFinal}"
+        return f"width: {self.width}, height: {self.height}, duration: {self.duration}, fps: {self.fps}, frames: {self.frames}"

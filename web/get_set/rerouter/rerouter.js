@@ -56,7 +56,7 @@ const NODE_CFG = _CFG.node
 			type:			"enum", // или "string"
 			widget:			"combo",    			// ключевое — combo
 			values:			_CFG.viewModes,			// варианты
-			default_value:	_CFG.viewModes[0]
+			default_value:	_CFG.viewModes[1]
 		})
 
 		// Начальные значения
@@ -155,7 +155,9 @@ const NODE_CFG = _CFG.node
 			ctx.font = this.titleFontStyle
 
 			// рисуем заголовок узла, если он выходит за пределы узла обрезаем
-			const text = `${this.title.trim()} ×${this.outputs.length}`
+			const text = this.title===NODE_CFG.title
+				? `× ${this.outputs.length}`
+				: `${this.title.trim()} × ${this.outputs.length}`
 			const measure = ctx.measureText(text)
 
 			// устанавливаем область обрезки по границам узла
@@ -163,7 +165,7 @@ const NODE_CFG = _CFG.node
 			ctx.rect(params.textPadding, 0, this.size[0] - 2 * params.textPadding, this.size[1])
 			ctx.clip()
 
-			const x = (this.size[0] - measure.width)/2
+			const x = (this.size[0] - measure.width - params.textPadding)
 			const y = (this.size[1] + measure.actualBoundingBoxAscent)/2
 			ctx.fillText(text, x, y)
 			ctx.restore()

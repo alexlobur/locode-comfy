@@ -6,13 +6,6 @@
 * SideBar - Проверка линков узлов ???
 * SideBar - SubGraph
 
-
-- - -
-
-* FIXME: SWITCHER -> может можно не грузить все?
-* FIXME: SET/GET -> {MODELS} ???
-* Тестирование Lazy у Get/SetProps.
-
 - - -
 
 * Дать описания
@@ -34,4 +27,3 @@
 * Replacers:
     - Reorder
 * Comment - добавить тень под текстом?
-* SubGraph Editor ???

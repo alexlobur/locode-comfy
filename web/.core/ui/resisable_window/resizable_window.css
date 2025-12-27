@@ -1,0 +1,14 @@
+
+.lo-modal-resizable{
+    --window-bg: var(--p-surface-800);
+    --window-padding: 16px 32px 16px 16px;
+    --window-border-radius: 8px;
+    --content-spacing: 8px;
+}
+
+.lo-modal-resizable INPUT{
+    font-size: 18px; padding: 8px;
+    border: none;
+    background-color: var(--p-surface-700);
+    border-radius: 8px;
+}

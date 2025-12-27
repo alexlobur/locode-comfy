@@ -58,7 +58,8 @@ const NODE_CFG = _CFG.setNode
 		this.title = NODE_CFG.title
 
 		// виджет пространства имен
-		this.#nsWidget = this.#addNamespaceWidget()
+		this.#nsWidget = this.#addNamespaceWidget( makeUniqueName("PROPS", LoSetNode.getNamespaces()) )
+        this._updateTitle()
 
 		// Нормализация инпутов
 		this._normalizeInputs()
@@ -232,7 +233,7 @@ const NODE_CFG = _CFG.setNode
 	 *	Добавление виджета
 	 */
      #addNamespaceWidget(namespace=''){
-        const widget = this.addWidget("string", "namespace", namespace,
+        const widget = this.addWidget("string", _CFG.setNode.widgetName, namespace,
 			(val) => {
                 val = val.trim()
                 // проверка имени
@@ -312,7 +313,7 @@ const NODE_CFG = _CFG.setNode
     /* STATIC */
 
     static setUp(){
-		LiteGraph.registerNodeType( _CFG.setNode.type, this )
+		LiteGraph.registerNodeType( NODE_CFG.type, this )
         this.category = _CFG.category
 
         // Переопределение присоединения к слоту

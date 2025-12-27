@@ -15,8 +15,8 @@ export const _CFG = {
 
     // Режимы отображения узлов
     viewModes: [
-        "System",
         "Compact",
+        "System",
         "Adaptive",
     ],
 
@@ -39,7 +39,7 @@ export const _CFG = {
 
         // начальные значения узла
         defaults: {
-            ...LO_NODES_DEFAULTS["Reroutes [lo]"],
+            ...LO_NODES_DEFAULTS["Reroutes"],
             isVirtualNode:      true,
             serialize_widgets:  true,
             size:               [50, 30],
