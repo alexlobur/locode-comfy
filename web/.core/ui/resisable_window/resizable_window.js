@@ -9,29 +9,25 @@ importCss("resizable_window.css", import.meta)
  *  @param {String} value
  *  @returns 
  */
-export async function showResizableWindow({ value='', title='' }){
+export async function showResizableWindow(){
 
     const dialog = createElement("dialog", {
+        className: "lo-modal-resizable",
+        content: createElement("div", {
+            className: "lo-modal-resizable-content",
+            children: [
+                createElement("div", {
+                    className: "lo-modal-resizable-header",
+                }),
+                createElement("div", {
+                    className: "lo-modal-resizable-body",
+                }),
+            ]
+        }),
         attributes: {
             "open": "open"
         }
     })
 
-    // return new Promise((resolve)=>{
-    //     const modal = showModal({
-    //         className: "lo-modal-resizable",
-    //         title: title,
-    //         content: createElement("input", {
-    //             attributes: { type: "text", value: value },
-    //             events: {
-    //                 "input": (e)=> value = e.target.value,
-    //                 "keydown": (e)=>{
-    //                     if(e.keyCode == 13) modal.close()
-    //                 }
-    //             }
-    //         }),
-    //         onClosed: ()=> resolve(value)
-    //     })
-    //     modal.element.querySelector("INPUT").focus()
-    // })
 }
+

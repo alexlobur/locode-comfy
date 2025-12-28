@@ -6,9 +6,3 @@
     --content-spacing: 8px;
 }
 
-.lo-modal-resizable INPUT{
-    font-size: 18px; padding: 8px;
-    border: none;
-    background-color: var(--p-surface-700);
-    border-radius: 8px;
-}

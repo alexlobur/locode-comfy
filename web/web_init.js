@@ -1,9 +1,10 @@
 import {app} from "../../../scripts/app.js"
 import LoCore from "./.core/lo_core.js"
-import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
-import { registerSidebarTab } from "./common/sidebar/sidebar.js"
+import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LoNodeComputeSizeOverride } from "./.core/overrides/LoNodeComputeSizeOverride.js"
+import { registerSidebarTab } from "./common/sidebar/sidebar.js"
+import { attachTopMenuButton } from "./common/top_menu/top_menu_extension.js"
 
 
 //---
@@ -49,6 +50,9 @@ app.registerExtension({
 
         // Регистрируем вкладку в боковой панели
         registerSidebarTab(app)
+
+        // Добавление кнопки в верхнее меню
+        attachTopMenuButton()
     }
 
 })
