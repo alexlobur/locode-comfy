@@ -13,7 +13,7 @@ from ...utils.anytype import any_type
 class LoDynamicPrompt:
 
     NODE_MAPPINGS = ("LoDynamicPrompt", "DynamicPrompt") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    CATEGORY = "locode/replacers"
+    CATEGORY = "locode/texts"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 

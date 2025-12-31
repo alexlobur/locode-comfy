@@ -9,7 +9,7 @@ class LoListJoin:
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Count items in list
+Join list into a string with a delimiter, prefix and suffix.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -20,11 +20,19 @@ Count items in list
         return {
             "required": {
                 "list": ( "LIST", {
-                    "tooltip" : "List of strings or any"
+                    "tooltip" : "List of strings or any types"
                 }),
                 "delimiter": ( "STRING", {
                     "default": "\\n",
                     "tooltip": "Delimiter can be any string. You can use `\\n` for new lines and `\\t` for tabs."
+                }),
+                "prefix": ( "STRING", {
+                    "default": "",
+                    "tooltip": "Prefix to add to the start of result string."
+                }),
+                "suffix": ( "STRING", {
+                    "default": "",
+                    "tooltip": "Suffix to add to the end of result string."
                 }),
             },
         }
@@ -37,16 +45,16 @@ Count items in list
     #
     #   Вычисляем значение
     #
-    def execute(self, strings_list: list, delimiter: str):
+    def execute(self, list: list, prefix: str, suffix: str, delimiter: str):
 
         # Заменяем символы \n и \t на символы новой строки и табуляции
         delimiter = delimiter.replace("\\n", "\n").replace("\\t", "\t")
 
         # Преобразуем все элементы списка в строки
-        string_list = [str(item) for item in strings_list]
+        string_list = [str(item) for item in list]
 
         # Объединяем строки
-        concatenated = delimiter.join(string_list)
+        concatenated = prefix + delimiter.join(string_list) + suffix
 
         # Возвращаем
         return (concatenated, )

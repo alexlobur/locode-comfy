@@ -4,6 +4,7 @@
     display: grid;
     grid-template-columns: auto 1fr auto;
     font-size: 12px;
+    align-items: stretch;
 
     &:empty{
         display: none;
@@ -14,6 +15,53 @@
 
 .locode-links-inspector .links-list > DIV{
     border-top: 1px solid color-mix(in srgb, var(--p-text-color) 15%, transparent);
-    padding: 8px;
+    padding: 8px 0;
+}
+
+
+.locode-links-inspector .links-list .origin,
+.locode-links-inspector .links-list .target{
+    color: color-mix(in srgb, var(--p-text-color) 75%, transparent);
+    text-wrap: nowrap;
+
+    &::before{
+        content: "#";
+    }
+
+    &:hover{
+        color: color-mix(in srgb, var(--p-text-color) 100%, transparent);
+        cursor: pointer;
+    }
+
+}
+
+.locode-links-inspector .links-list .type{
+    position: relative;
+    color: color-mix(in srgb, var(--p-text-color) 50%, transparent);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 10px;
+    padding: 0 14px;
+
+    &::before,
+    &::after {
+        content: ">";
+        font-size: 9px;
+        display: block; position: absolute; top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.5;
+    }
+
+    &::before{
+        left: 6px;
+    }
+
+    &::after{
+        right: 6px;
+    }
+
 }
 

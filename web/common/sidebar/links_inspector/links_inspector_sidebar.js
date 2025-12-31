@@ -12,6 +12,7 @@ importCss("links_inspector_sidebar.css", import.meta)
 export default class LinksInspectorSidebar {
 
 	#element = null
+	#topBar = null
 	get element(){
 		return this.#element
 	}
@@ -52,7 +53,7 @@ export default class LinksInspectorSidebar {
 		this.#refreshLinksList(this.#element.querySelector("#broken-links"))
 
 		// обновление сводной информации
-		this.#refreshInfo(data.allLinks.length, data.brokenLinks.length)
+		this.#refreshInfo(data.total)
 	}
 
 
@@ -71,22 +72,22 @@ export default class LinksInspectorSidebar {
 	 */
 	#createElement(parentElement){
 
+		// создание верхней панели
+		this.#topBar = SidebarComponents.TopBar({
+			header: "Links Inspector",
+			info: ``,
+			onCollapsePressed: () => this.#toggleCollapse()
+		})
+
+		// создание основного элемента
 		this.#element = createElement("DIV", {
 			classList: ["-section", "locode-links-inspector"],
 			content: [
-				// topbar
-				createElement("DIV", {
-					classList: ["--topbar"],
-					content: [
-						SidebarComponents.Header({ title: "Links Inspector", onCollapsePressed: () => this.#toggleCollapse() }),
-						'<div class="info"></div>',
-					]
-				}),
-				// content
+				this.#topBar,
 				createElement("DIV", {
 					classList: ["--content"],
 					content: `
-						<div id="broken-links"></div>
+						<div class="links-list"></div>
 					`
 				}),
 			],
@@ -101,9 +102,8 @@ export default class LinksInspectorSidebar {
 	/**
 	 *	Сводная информация
 	 */
-    #refreshInfo(total, broken){
-		this.#element.querySelector(".info")
-			.innerHTML = `broken: ${broken}, total: ${total}`
+    #refreshInfo(total){
+		this.#topBar.setInfo(`<span>total: ${total}</span>`)
 	}
 
 
@@ -111,32 +111,40 @@ export default class LinksInspectorSidebar {
 	 *	Обновление списка ссылок
 	 *	@returns
 	 */
-	 #refreshLinksList(parentElement){
-
+	 #refreshLinksList(){
 		const linksData = LoGraphUtils.foreachLinks()
 
 		// список ссылок
 		const items = []
 		for (const linkData of linksData){
 			const rowItems = [
-				createElement("div", { content: `#${linkData.origin_id} [${linkData.origin_slot}] &nbsp;&rarr; ` }),
-				createElement("div", { content: `${linkData.type}` }),
-				createElement("div", { content: ` &rarr;&nbsp; #${linkData.target_id} [${linkData.target_slot}]` }),
+				createElement("div", {
+					classList: ['origin'],
+					content: `${linkData.origin_id}.${linkData.origin_slot}`,
+					events: {
+						click: (e)=>this.#gotoNode(linkData.origin_id)
+					},
+					attributes: {
+						"title": `Node: #${linkData.origin_id}, Slot: ${linkData.origin_slot}`
+					}
+				}),
+				createElement("div", { classList: ['type'], content: linkData.type }),
+				createElement("div", {
+					classList: ['target'],
+					content: `${linkData.target_id}.${linkData.target_slot}`,
+					events: {
+						click: (e)=>this.#gotoNode(linkData.target_id)
+					},
+					attributes: {
+						"title": `Node: #${linkData.target_id}, Slot: ${linkData.target_slot}`
+					}
+				}),
 			]
 			items.push(...rowItems)
         }
 
-		// общий контейнер
-		parentElement.replaceChildren(
-			createElement("div", {
-				classList: ['label'],
-				content: "Broken links: " + linksData.length
-			}),
-			createElement("div", {
-				classList: ['links-list'],
-				content: items
-			})
-		)
+		// обновление списка ссылок
+		this.#element.querySelector(".links-list").replaceChildren(...items)
     }
 
 
@@ -155,14 +163,11 @@ export default class LinksInspectorSidebar {
 	 */
 	#getLinksData(){
 		const result = {
-			allLinks: [],
-			brokenLinks: [],
+			links: [],
+			total: 0
 		}
-		result.allLinks = LoGraphUtils.foreachLinks((link)=>{
-			if(link.broken){
-				result.brokenLinks.push(link)
-			}
-		})
+		result.links = LoGraphUtils.foreachLinks()
+		result.total = result.links.length
 		return result
 	}
 

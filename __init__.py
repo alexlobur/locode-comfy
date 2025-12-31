@@ -18,17 +18,18 @@ from .py.nodes.lists.lo_num_list import LoNumList
 from .py.nodes.lists.lo_list_len import LoListLen
 from .py.nodes.lists.lo_set_list import LoSetList
 
-from .py.nodes.replacers.lo_replace_vars import LoReplaceVars
-from .py.nodes.replacers.lo_replacers import Replacers
-from .py.nodes.replacers.lo_replacers_apply import ReplacersApply
+from .py.nodes.texts.lo_replace_vars import LoReplaceVars
+from .py.nodes.texts.lo_replacers import Replacers
+from .py.nodes.texts.lo_replacers_apply import ReplacersApply
+from .py.nodes.texts.lo_texts import LoTexts
 
 from .py.nodes.utils.lo_log import LoLog
 from .py.nodes.utils.lo_beep import LoBeep
 from .py.nodes.utils.lo_switcher import LoSwitcher
 from .py.nodes.utils.lo_counter import LoCounter
 
-from .py.nodes.params.lo_set_get_props import LoSetProps, LoGetProps
-from .py.nodes.params.lo_texts import LoTexts
+from .py.nodes.reroutes.lo_set_get_props import LoSetProps, LoGetProps
+
 from .py.nodes.params.lo_video_props import LoSetVideoProps, LoGetVideoProps
 
 from .py.nodes.system.lo_mkdir import LoMkDir

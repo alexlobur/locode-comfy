@@ -4,12 +4,12 @@ from ...utils.anytype import *
 class LoReplaceVars:
 
     NODE_MAPPINGS = ("LoReplaceVars", "ReplaceVars") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    CATEGORY = "locode/replacers"
+    CATEGORY = "locode/texts"
     AUTHOR = "LoCode"
     DESCRIPTION ="""
-Replaces parameters in a string enclosed in curly braces, for example: `Hello, {var0}!`.
+Replaces parameters in a string enclosed in curly braces, for example: `Hello, {var1}!`.
 The parameter name is taken from the input name (or label, if exists).
-You can redefine the parameter (input label) name using the context menu > "Rename Slot".
+You can redefine the parameter (input label) name using the `Context Menu > "Rename Slot"`.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -19,7 +19,7 @@ You can redefine the parameter (input label) name using the context menu > "Rena
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "Hello, {var0}!", "multiline": True }),
+                "string": ("STRING", {"default": "Hello, {var1}!", "multiline": True }),
             },
             "hidden": {
                 "labels_of_vars": ("DICT", )

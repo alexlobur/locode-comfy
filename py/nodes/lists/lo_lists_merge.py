@@ -9,7 +9,7 @@ class LoListsMerge:
     CATEGORY = "locode/lists"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Merging lists in one list
+Merging any lists or single values into one list.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

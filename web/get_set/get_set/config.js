@@ -3,7 +3,7 @@ import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "../../config.js
 
 // Конфиги узлов
 export const _CFG = {
-	category:       "locode/params",
+	category:       "locode/reroutes",
 
     /**
      *  Устанавливать ли заголовок узла из пространства имен

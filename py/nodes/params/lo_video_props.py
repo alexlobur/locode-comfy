@@ -13,8 +13,8 @@ class LoSetVideoProps:
     AUTHOR = "LoCode"
     CATEGORY = "locode/params"
     DESCRIPTION = """
-Set Video parameters
-    """
+Packs video parameters into a `LO_VIDEO_PROPS` object for the `GetVideoProps` node.
+"""
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -23,14 +23,14 @@ Set Video parameters
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "width": ("INT", {"default": 1280}),
-                "height": ("INT", {"default": 720}),
-                "frames": ("INT", {"default": 81, "min": 1}),
-                "fps": ("FLOAT", {"default": 16.0}),
+                "width": ("INT", {"default": 1280, "tooltip": "Width of the video"}),
+                "height": ("INT", {"default": 720, "tooltip": "Height of the video"}),
+                "frames": ("INT", {"default": 81, "min": 1, "tooltip": "Number of frames"}),
+                "fps": ("FLOAT", {"default": 16.0, "tooltip": "Frames per second"}),
             },
         }
 
-    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT")
+    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "INT", "FLOAT", "FLOAT")
     RETURN_NAMES = ("video_props", "width", "height", "frames", "fps", "duration")
     FUNCTION = "execute"
 
@@ -56,8 +56,8 @@ class LoGetVideoProps:
     AUTHOR = "LoCode"
     CATEGORY = "locode/params"
     DESCRIPTION = """
-Get Video parameters
-    """
+Unpacks video parameters from a `LO_VIDEO_PROPS` object.
+"""
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -66,7 +66,7 @@ Get Video parameters
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "video_props": ("LO_VIDEO_PROPS",),
+                "video_props": ("LO_VIDEO_PROPS", ),
             },
         }
 
@@ -121,4 +121,4 @@ class LoVideoProps:
 
     # В виде строки
     def __str__(self):
-        return f"width: {self.width}, height: {self.height}, duration: {self.duration}, fps: {self.fps}, frames: {self.frames}"
+        return f"width: {self.width}, height: {self.height}, frames: {self.frames}, fps: {self.fps}, duration: {self.duration}"

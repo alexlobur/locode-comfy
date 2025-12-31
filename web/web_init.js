@@ -4,7 +4,7 @@ import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LoNodeComputeSizeOverride } from "./.core/overrides/LoNodeComputeSizeOverride.js"
 import { registerSidebarTab } from "./common/sidebar/sidebar.js"
-import { attachTopMenuButton } from "./common/top_menu/top_menu_extension.js"
+import { LoTopMenuButton } from "./common/top_menu/top_menu_button.js"
 
 
 //---
@@ -52,7 +52,7 @@ app.registerExtension({
         registerSidebarTab(app)
 
         // Добавление кнопки в верхнее меню
-        attachTopMenuButton()
+        // LoTopMenuButton.attach()
     }
 
 })

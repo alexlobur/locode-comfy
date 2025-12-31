@@ -26,7 +26,7 @@ export class TextData {
      * @param {string} params.font - CSS font property
      * @param {number} params.lineSpacing - Line height multiplier
      */
-    constructor({ value = '', color = "#666666", font = '400 10px Arial, sans-serif', lineSpacing = 1.5 } = {}) {
+    constructor({ value = '', color = "#666666", font = '400 10px Arial, sans-serif', lineSpacing = 1.25 } = {}) {
         this.#value = value
         this.#color = color.trim()
         this.#font = font.trim()

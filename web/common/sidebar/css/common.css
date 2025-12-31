@@ -1,6 +1,6 @@
 .locode-sidebar{
     display: flex; flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     height: 100%;
     overflow: auto;
     padding: 4px;
@@ -12,9 +12,12 @@
     background-color: var(--p-content-background);
     transition: all 0.2s;
     border-radius: 8px;
+    outline: 1px solid var(--p-surface-800);
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.25);
 
     & .--topbar{
-
+        padding-bottom: 2px;
+        cursor: pointer;
     }
 
     & .--content{
@@ -40,17 +43,17 @@
 
 
 .locode-sidebar .header{
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    margin-bottom: 4px;
+    padding-bottom: 2px;
     color: color-mix(in srgb, var(--p-text-color) 75%, transparent);
-    cursor: pointer;
 }
 
 
 .locode-sidebar .info{
     font-size: 12px;
     text-align: right;
+    display: flex; gap: 2px 6px; flex-wrap: wrap; justify-content: flex-end;
     color: color-mix(in srgb, var(--p-text-color) 33%, transparent);
 }
 

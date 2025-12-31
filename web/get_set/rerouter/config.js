@@ -30,7 +30,7 @@ export const _CFG = {
 
         // параметры прототипа
         prototype: {
-            category:           "locode/params",
+            category:           "locode/reroutes",
             title_mode:         LiteGraph.NO_TITLE,
             isVirtualNode:      true,
             serialize_widgets:  true,

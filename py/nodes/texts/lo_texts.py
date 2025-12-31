@@ -11,15 +11,21 @@ from ...utils.utils import fit_val
 class LoTexts:
 
     NODE_MAPPINGS = ("LoTexts", "Texts")
-    CATEGORY = "locode/params"
+    CATEGORY = "locode/texts"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Selects text from an array of texts by the `index_seed`.
-If the index is out of bounds in either direction, the index is wrapped using modulo.
-Outputs:
-- `ACTIVE_STRING`: Text of the active tab.
-- `INDEX_STRING`: Text at the given index.
-- `STRINGS_LIST`: All texts joined into a single string with the delimiter.
+An array of texts. Can be used to create a list of prompts.
+
+Features:
+- Adding / Editing tabs.
+- Ability to temporarily disable a tab.
+- Ability to hide disabled tabs.
+- Copying / Pasting node data from the clipboard.
+- Saving / Loading node data to a JSON file on disk.
+- Outputs the text of the current tab, the text at the given index and the list of texts.
+- If the index is out of bounds in either direction, the index is wrapped using modulo.
+So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 = 3.
+
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -31,10 +37,7 @@ Outputs:
                 "index_seed": ("INT", {
                     "default": 0,
                     "step": 1,
-                    "tooltip": """
-If the index is out of bounds in either direction, the index is wrapped using modulo.
-So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 = 3.
-                    """,
+                    "tooltip": "If the index is out of bounds in either direction, the index is wrapped using modulo.",
                     "placeholder": "index_seed"
                 }),
             },

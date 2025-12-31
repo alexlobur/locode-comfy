@@ -109,19 +109,25 @@ class _LoCore {
         // добавление узла к графу
         app.graph.onNodeAdded = wrapWithEvent(app.graph.onNodeAdded, "graph_node_added")
 
-        // конфигурирование графа
-        app.graph.onConfigure = wrapWithEvent(app.graph.onConfigure, "graph_configure")
-
         // удаление узла из графа
         app.graph.onNodeRemoved = wrapWithEvent(app.graph.onNodeRemoved, "graph_node_removed")
 
-        // выделение узлов
+        // конфигурирование графа
+        app.graph.onConfigure = wrapWithEvent(app.graph.onConfigure, "graph_configure")
+
+        // не ясно как работает
+        app.graph.onAfterChange = wrapWithEvent(app.graph.onAfterChange, "graph_after_change")
+
+        // после изменения соединений
+        app.graph.onConnectionChange = wrapWithEvent(app.graph.onConnectionChange, "graph_connection_change")
+
+        // выделение узлов на канвасе
         app.canvas.onSelectionChange = wrapWithEvent(app.canvas.onSelectionChange, "canvas_selection_changed")
 
-        // перемещение узла
+        // перемещение узла на канвасе
         app.canvas.onNodeMoved = wrapWithEvent(app.canvas.onNodeMoved, "canvas_node_moved")
 
-        // открытие сабграфа
+        // открытие сабграфа на канвасе
         app.canvas.openSubgraph = wrapWithEvent(app.canvas.openSubgraph, "canvas_open_subgraph")
 
         Logger.debug("Events initialized", app)

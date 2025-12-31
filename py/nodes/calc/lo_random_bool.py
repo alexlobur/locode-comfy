@@ -13,7 +13,7 @@ class LoRandomBool:
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
-Generate random Bool value
+Generate random Bool value with probability `true_weight`
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

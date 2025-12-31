@@ -15,9 +15,9 @@ class LoLog:
     CATEGORY = "locode/utils"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Outputs any value to the console.
+Outputs `any` value to the console.
 Outputs to the console the elapsed time since the last call to a node of this type.
-Plays a sound alert when a node completes.
+Optional: Plays a `sound` alert when a node completes.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34,10 +34,10 @@ Plays a sound alert when a node completes.
 
         return {
             "required": {
-                "any": (any_type,),
-                "name": ("STRING",),
-                "start_time": ("BOOLEAN",),
-                "sound": (soundNames, {"default": soundNames[0]}),
+                "any": (any_type, {"tooltip": "The value to log"}),
+                "name": ("STRING", {"default": "Log", "tooltip": "The name of the log"}),
+                "start_time": ("BOOLEAN", {"default": False, "tooltip": "If True, the time will be reset"}),
+                "sound": (soundNames, {"default": soundNames[0], "tooltip": "The sound to play when the node completes"}),
             },
         }
 
@@ -67,7 +67,7 @@ Plays a sound alert when a node completes.
         current_time = time.time()
 
         # Сброс точки отсчета времени
-        if start_time:
+        if start_time or cls.first_time is None:
             cls.first_time = current_time
             cls.previous_time = current_time
 

@@ -13,7 +13,7 @@ class LoToInt:
     AUTHOR = "LoCode"
     CATEGORY = "locode/convert"
     DESCRIPTION = """
-Converts any type to an Integer.
+Converts any type to an Integer with rounding method.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,13 +36,13 @@ Converts any type to an Integer.
     #
     #   Вычисляем значение
     #
-    def execute(self, any_type: any_type, method: str):
+    def execute(self, any: any_type, method: str):
 
         try:
             # преобразуем любой тип в число
-            number = float(any_type)
+            number = float(any)
         except ValueError:
-            raise ValueError(f"Invalid any_type: {any_type}. Must be a number.")
+            raise ValueError(f"Invalid any: {any}. Must be a number like.")
 
         if method == "floor":
             return (int(math.floor(number)),)

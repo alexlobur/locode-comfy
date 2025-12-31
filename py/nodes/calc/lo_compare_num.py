@@ -12,7 +12,8 @@ class LoCompareNum:
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
-Compare two values. Values will be converted to number.
+Compare two values `a` and `b` on the basis of `operation`.
+Accepts any values that can be converted to a number.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,4 +80,4 @@ def to_number(x):
     try:
         return float(x)
     except Exception:
-        raise ValueError("Ожидались числовые значения для операций кроме сложения строк")
+        raise ValueError("Expected numerical values for operations")

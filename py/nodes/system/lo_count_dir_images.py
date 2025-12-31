@@ -15,9 +15,9 @@ class LoCountDirImages:
     CATEGORY = "locode/system"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-    Counts the number of images (png, jpg, jpeg, webp) in a directory.
-    If the directory does not exist, or error occurs, returns -1.
-    If the path is relative, it will be converted to an absolute path starting from the ComfyUI folder.
+Counts the number of images (png, jpg, jpeg, webp) in a directory.
+If the directory does not exist, or error occurs, returns -1.
+If the path is relative, it will be converted to an absolute path starting from the ComfyUI folder.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

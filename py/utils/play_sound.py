@@ -42,7 +42,7 @@ def play(path: str):
 #
 def get_beep_sounds():
     # базовая директория: корень пакета locode-comfy (два уровня вверх от этого файла)
-    dir_path = os.path.abspath( os.path.dirname(__file__) + "/../res/beeps" )
+    dir_path = os.path.abspath( os.path.dirname(__file__) + "/../../res/beeps" )
 
     # получаем список звуковых файлов
     files = os.listdir(dir_path)

@@ -21,7 +21,7 @@ Check value of any type for Empty.
 - **Collections**
   - (lists, dicts, sets, tuples): Empty → `True`
 
-Use Lo:IsNone to precisely check for None.
+Use IsNone [lo] to precisely check for None.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -30,7 +30,7 @@ Use Lo:IsNone to precisely check for None.
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
+            "optional": {
                 "any": ( any_type, ),
             },
         }
@@ -43,7 +43,7 @@ Use Lo:IsNone to precisely check for None.
         try:
             return (check_empty(any),)
         except Exception as e:
-            raise ValueError(f"Error converting to boolean: {any}. Error: {str(e)}")
+            raise ValueError(f"Error checking empty: {any}. Error: {str(e)}")
 
 
 def check_empty(any) -> bool:
@@ -60,5 +60,5 @@ def check_empty(any) -> bool:
     if isinstance(any, (list, dict, set, tuple)):
         return len(any) == 0
 
-    return True
+    return False
 

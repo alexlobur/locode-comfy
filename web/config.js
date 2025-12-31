@@ -1,7 +1,7 @@
 const LO_COLORS_DEF = {
     basic:      { color: "hsl(220, 12%, 25%)", bgcolor: "hsl(220, 12%, 22%)" },
     dark:       { color: "hsl(220, 12%, 20%)", bgcolor: "hsl(220, 12%, 16%)" },
-    blue:       { color: "hsl(225, 24%, 32%)", bgcolor: "hsl(225, 24%, 27%)" },
+    prompting:  { color: "hsl(225, 24%, 32%)", bgcolor: "hsl(225, 24%, 27%)" },
     magenta:    { color: "hsl(300, 25%, 27%)", bgcolor: "hsl(300, 25%, 22%)" },
     system:     { color: "hsl(320, 40%, 20%)", bgcolor: "hsl(320, 40%, 16%)" },
     // params:     { color: "hsl(204, 84.40%, 25.10%)", bgcolor: "hsl(204, 84%, 20%)" },
@@ -14,8 +14,13 @@ export const LO_NODES_DEFAULTS = {
     // ui
     "Docs"          : LO_COLORS_DEF.notes,
 
+    // prompting
+    "LoTexts"           : LO_COLORS_DEF.prompting,
+    "LoReplacers"       : LO_COLORS_DEF.prompting,
+    "LoReplacersApply"  : LO_COLORS_DEF.prompting,
+    "LoReplaceVars"     : LO_COLORS_DEF.prompting,
+
     // misc
-    "LoTexts"           : LO_COLORS_DEF.blue,
     "LoGetVideoProps"   : LO_COLORS_DEF.magenta,
     "LoSetVideoProps"   : LO_COLORS_DEF.magenta,
 
@@ -39,11 +44,6 @@ export const LO_NODES_DEFAULTS = {
     "LoToStr"       : LO_COLORS_DEF.basic,
     "LoToFloat"     : LO_COLORS_DEF.basic,
     "LoToBool"      : LO_COLORS_DEF.basic,
-
-    // replacers
-    "LoReplaceVars"     : LO_COLORS_DEF.basic,
-    "LoReplacers"       : LO_COLORS_DEF.basic,
-    "LoReplacersApply"  : LO_COLORS_DEF.basic,
 
     // lists
     "LoSetList"     : LO_COLORS_DEF.basic,

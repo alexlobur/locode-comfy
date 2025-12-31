@@ -15,7 +15,8 @@ class LoBeep:
     CATEGORY = "locode/utils"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Plays a sound. To add your own sound, place it in the `res/beeps` folder.
+Plays a `sound` and passes the `pass_any` value further.
+To add your own sound, place it in the `/res/beeps` folder.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34,14 +35,14 @@ Plays a sound. To add your own sound, place it in the `res/beeps` folder.
         # возвращаем типы входных данных
         return {
             "required": {
-                "any": (any_type,),
-                "sound": (soundNames, {"default": soundNames[0]}),
+                "pass_any": (any_type, {"tooltip": "The value to pass further"}),
+                "sound": (soundNames, {"default": soundNames[0], "tooltip": "The sound to play when the node completes"}),
             },
         }
 
 
     RETURN_TYPES = (any_type,)
-    RETURN_NAMES = ("any",)
+    RETURN_NAMES = ("pass_any",)
 
     FUNCTION = "execute"
     OUTPUT_NODE = True
@@ -50,11 +51,11 @@ Plays a sound. To add your own sound, place it in the `res/beeps` folder.
     #
     #   Вычисляем значение
     #
-    def execute(self, any: any_type, sound: str):
+    def execute(self, pass_any: any_type, sound: str):
 
         # воспроизводим звук
         play_sound.play_beep(sound)
 
         # Возвращаем значение
-        return (any,)
+        return (pass_any,)
 

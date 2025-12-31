@@ -16,8 +16,8 @@ class LoFileExists:
     CATEGORY = "locode/system"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-    Checks if a file or directory exists.
-    If the path is relative, it will be converted to an absolute path starting from the ComfyUI folder.
+Checks if a file or directory exists.
+If the path is relative, it will be converted to an absolute path starting from the ComfyUI folder.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

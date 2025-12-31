@@ -34,5 +34,5 @@ Converts any type to a string.
     #
     #   Вычисляем значение
     #
-    def execute(self, any_type: any_type):
-        return (str(any_type),)
+    def execute(self, any: any_type):
+        return (str(any),)

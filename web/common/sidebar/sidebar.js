@@ -77,8 +77,8 @@ export function registerSidebarTab(app){
         id:         "locode_sidebar",
         // icon: "mdi mdi-robot",  // Material Design Icons
         icon:       "locode-sidebar-icon",
-        title:      "LoCode Design",
-        tooltip:    "LoCode Nodes and Groups Design",
+        title:      "LoCode",
+        tooltip:    "LoCode SideBar",
         type:       "custom",
         render: (el) => sidebar.createLocodeSidebar(el)
     })

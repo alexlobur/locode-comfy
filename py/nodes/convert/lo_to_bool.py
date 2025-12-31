@@ -21,9 +21,6 @@ Converts any type to Boolean.
 - **Strings**:
   - "false", "0", "no", "off", "" (empty) → `False`
   - Any other non-empty string → `True`
-- **Collections**
-  - (lists, dicts, etc.): Empty → `False`
-  - non-empty → `True`
 - **Other types**:
   - Standard Python `bool()` conversion
 """
@@ -67,7 +64,6 @@ def get_bool(any) -> bool:
         # Для строк проверяем специальные значения
         if any.lower().strip() in ("false", "0", "no", "off", ""):
             return False
-        return bool(any)
 
     # Общий случай
     return bool(any)

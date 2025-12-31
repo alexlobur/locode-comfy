@@ -23,8 +23,6 @@ If the path is relative, it will be converted to an absolute path starting from 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    EXPERIMENTAL = True
-
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return time.time()

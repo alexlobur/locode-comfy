@@ -12,7 +12,7 @@ class LoToFloat:
     AUTHOR = "LoCode"
     CATEGORY = "locode/convert"
     DESCRIPTION = """
-Converts any type to Float number.
+Converts any type to `Float` number.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34,6 +34,9 @@ Converts any type to Float number.
     #
     #   Вычисляем значение
     #
-    def execute(self, any_type: any_type):
-        return (float(any_type),)
-
+    def execute(self, any: any_type):
+        try:
+            # преобразуем любой тип в число
+            return (float(any), )
+        except ValueError:
+            raise ValueError(f"Invalid any: {any}. Must be a number like.")

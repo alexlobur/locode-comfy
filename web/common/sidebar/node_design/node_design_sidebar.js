@@ -15,6 +15,8 @@ export default class NodeDesignSidebar {
 		return this.#element
 	}
 
+	#topBar = null
+
 	#widgets = []
 
 	get selectedNodes(){
@@ -104,9 +106,9 @@ export default class NodeDesignSidebar {
 	 *	Сводная информация
 	 */
 	 #refreshInfo(total, selected){
-		this.#element.querySelector(".info")
-			.innerHTML = `selected: ${selected}, total: ${total}`
+		this.#topBar.setInfo(`<span>selected: ${selected},</span><span>total: ${total}</span>`)
 	}
+
 
 	/**
 	 * Создание окна Node Design
@@ -124,18 +126,18 @@ export default class NodeDesignSidebar {
 			SidebarComponents.Options({ onChanged: this.#haddleChanges }),
 		]
 
+		// создание верхней панели
+		this.#topBar = SidebarComponents.TopBar({
+			header: "Nodes Design",
+			info: ``,
+			onCollapsePressed: () => this.#toggleCollapse()
+		})
+
+		// создание основного элемента
 		this.#element = createElement("DIV", {
 			classList: ["-section"],
 			content: [
-				// topbar
-				createElement("DIV", {
-					classList: ["--topbar"],
-					content: [
-						SidebarComponents.Header({ title: "Nodes Design", onCollapsePressed: () => this.#toggleCollapse() }),
-						'<div class="info"></div>',
-					]
-				}),
-				// content
+				this.#topBar,
 				createElement("DIV", {
 					classList: ["--content"],
 					content: this.#widgets

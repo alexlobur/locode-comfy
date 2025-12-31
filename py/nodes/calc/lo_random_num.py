@@ -13,7 +13,7 @@ class LoRandomNum:
     AUTHOR = "LoCode"
     CATEGORY = "locode/calc"
     DESCRIPTION = """
-Generate random Int and Float value
+Generate random Int and Float value in range `[min, max)`
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

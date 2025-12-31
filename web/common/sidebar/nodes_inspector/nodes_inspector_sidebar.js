@@ -17,6 +17,8 @@ export default class NodesInspectorSidebar {
 		return this.#element
 	}
 
+	#topBar = null
+
 
 	/**
 	 * Конструктор
@@ -25,10 +27,11 @@ export default class NodesInspectorSidebar {
 		this.#createElement(parentElement)
 		this.#setState()
 
-        // Обновление баннера устаревших нодов
-        LoCore.events.on("graph_load",          this.#eventHandler)
-        LoCore.events.on("graph_node_added",    this.#eventHandler)
-        LoCore.events.on("graph_node_removed",  this.#eventHandler)
+		// подписка на события
+        LoCore.events.on("graph_load",                this.#eventHandler)
+        LoCore.events.on("graph_node_added",          this.#eventHandler)
+        LoCore.events.on("graph_node_removed",  	  this.#eventHandler)
+        LoCore.events.on("canvas_selection_changed",  this.#eventHandler)
 	}
 
 
@@ -43,20 +46,17 @@ export default class NodesInspectorSidebar {
 	/* STATE */
 
 	/**
-	 * Обновление значений из выбранных групп графа
+	 * Обновление значений
 	 */
 	#setState = () => {
         // получение данных нодов
         const data = this.#getNodesData()
 
-		// обновление устеревших узлов
-		this.#refreshNodesList(data.deprecated, this.#element.querySelector("#deprecated-nodes"), "Deprecated nodes: " + data.deprecated.length)
-
-		// обновление узлов с ошибками
-		this.#refreshNodesList(data.hasErrors, this.#element.querySelector("#error-nodes"), "Nodes with errors: " + data.hasErrors.length)
+		// обновление узлов
+		this.#refreshNodesList(data.nodes)
 
 		// обновление сводной информации
-		this.#refreshInfo(data.deprecated.length, data.hasErrors.length)
+		this.#refreshInfo(data.total, data.deprecated, data.hasErrors)
 	}
 
 
@@ -75,23 +75,22 @@ export default class NodesInspectorSidebar {
 	 */
 	#createElement(parentElement){
 
+		// создание верхней панели
+		this.#topBar = SidebarComponents.TopBar({
+			header: "Nodes Inspector",
+			info: ``,
+			onCollapsePressed: () => this.#toggleCollapse()
+		})
+
+		// создание основного элемента
 		this.#element = createElement("DIV", {
 			classList: ["-section", "locode-nodes-inspector"],
 			content: [
-				// topbar
-				createElement("DIV", {
-					classList: ["--topbar"],
-					content: [
-						SidebarComponents.Header({ title: "Nodes Inspector", onCollapsePressed: () => this.#toggleCollapse() }),
-						'<div class="info"></div>',
-					]
-				}),
-				// content
+				this.#topBar,
 				createElement("DIV", {
 					classList: ["--content"],
 					content: `
-						<div id="deprecated-nodes"></div>
-						<div id="error-nodes"></div>
+						<div class="nodes-list"></div>
 					`
 				}),
 			],
@@ -106,9 +105,12 @@ export default class NodesInspectorSidebar {
 	/**
 	 *	Сводная информация
 	 */
-    #refreshInfo(deprecated, hasErrors){
-		this.#element.querySelector(".info")
-			.innerHTML = `deprecated: ${deprecated}, errors: ${hasErrors}`
+    #refreshInfo(total, deprecated, hasErrors){
+		this.#topBar.setInfo(`
+			<span>deprecated: ${deprecated},</span>
+			<span>errors: ${hasErrors},</span>
+			<span>total: ${total}</span>
+		`)
 	}
 
 
@@ -116,7 +118,7 @@ export default class NodesInspectorSidebar {
 	 *	Обновление списка узлов
 	 *	@returns
 	 */
-    #refreshNodesList(nodesData, parentElement, title){
+    #refreshNodesList(nodesData){
 
 		// список узлов
 		const items = []
@@ -132,27 +134,21 @@ export default class NodesInspectorSidebar {
 					}))
 				}),
 				createElement("div", {
-					classList: ["type"],
-					content: nodeData.node.type,
+					classList: ["type", nodeData.deprecated ? "deprecated" : "", nodeData.hasErrors ? "error" : ""],
+					content: nodeData.node.title || nodeData.node.type,
 					events: {
 						"click": (e)=>this.#gotoNode(nodeData.node.id)
+					},
+					attributes: {
+						"title": nodeData.node.type + (nodeData.deprecated ? " (deprecated)" : "") + (nodeData.hasErrors ? " (error)" : "")
 					}
 				})
 			]
 			items.push(...rowItems)
         }
 
-		// общий контейнер
-		parentElement.replaceChildren(
-			createElement("div", {
-				classList: ['label'],
-				content: title
-			}),
-			createElement("div", {
-				classList: ['nodes-list'],
-				content: items
-			})
-		)
+		// обновление списка узлов
+		this.#element.querySelector(".nodes-list").replaceChildren(...items)
     }
 
 
@@ -167,24 +163,30 @@ export default class NodesInspectorSidebar {
 
 
 	/**
-	 *	Получение данных устаревших и узлов с ошибками
+	 *	Получение данных узлов
 	 */
 	#getNodesData(){
 		const result = {
+			nodes: [],
 			total: 0,
-			deprecated: [],
-			hasErrors: []
+			deprecated: 0,
+			hasErrors: 0
 		}
 
 		LoGraphUtils.foreachNodes(null, (node, parentNodeIds)=>{
-			// устаревший узел
-			if(LoCore.DEPRECATED_TYPES.has(node.type)){
-				result.deprecated.push({ node: node, ids: [...parentNodeIds, node.id] })
-			}
-			// узлы с ошибками
-			if(node.has_errors){
-				result.hasErrors.push({ node: node, ids: [...parentNodeIds, node.id] })
-			}
+
+			const error = node.has_errors
+			const deprecated = LoCore.DEPRECATED_TYPES.has(node.type)
+
+			result.nodes.push({
+				node: node,
+				ids: [...parentNodeIds, node.id],
+				deprecated: deprecated,
+				hasErrors: error
+			})
+			result.total++
+			result.deprecated += deprecated ? 1 : 0
+			result.hasErrors += error ? 1 : 0
 		})
 		return result
 	}

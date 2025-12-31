@@ -9,7 +9,7 @@ from ...utils.anytype import any_type, ByPassTypeTuple
 class LoSetProps:
 
     NODE_MAPPINGS = ("LoSetProps", "SetProps")
-    CATEGORY = "locode/params"
+    CATEGORY = "locode/reroutes"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Packs data into a single tuple for the `GetProps` node.
@@ -57,7 +57,7 @@ RU:
 class LoGetProps:
 
     NODE_MAPPINGS = ("LoGetProps", "GetProps") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    CATEGORY = "locode/params"
+    CATEGORY = "locode/reroutes"
     AUTHOR = "LoCode"
     DESCRIPTION = """
 Extracts a tuple of input parameters from the Lo:SetProps node.

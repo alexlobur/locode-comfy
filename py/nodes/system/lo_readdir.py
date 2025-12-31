@@ -33,7 +33,7 @@ If the path is relative, it will be converted to an absolute path starting from 
         return {
             "required": {
                 "path": ("STRING", {"default": "", "tooltip": "Path to the directory to read" }),
-                "skip_not_exist" : ("BOOLEAN", {"default": False, "tooltip": "Dont throw error if directory does not exist and return empty lists" }),
+                "skip_not_exist" : ("BOOLEAN", {"default": False, "tooltip": "Don't throw error if directory does not exist and return empty lists" }),
             },
         }
 

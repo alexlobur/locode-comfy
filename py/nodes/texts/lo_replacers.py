@@ -10,10 +10,11 @@ from ...utils.anytype import any_type
 class Replacers:
 
     NODE_MAPPINGS = ("LoReplacers", "Replacers") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    CATEGORY = "locode/replacers"
+    CATEGORY = "locode/texts"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Builds a list of replacement pairs in the format [["find", "replace"], ...].
+Builds a list of `replacers` to replace text in a string.
+Can be used immediately or in combination with the `ReplacersApply` node.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -23,7 +24,9 @@ Builds a list of replacement pairs in the format [["find", "replace"], ...].
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "string": (any_type,),
+                "string": (any_type, {
+                    "tooltip": "Any value that can be converted to `STRING`"
+                }),
             },
             "hidden": {
                 "replacers": ("STRING", ),
@@ -31,7 +34,7 @@ Builds a list of replacement pairs in the format [["find", "replace"], ...].
         }
 
     RETURN_TYPES = ("STRING", "LIST")
-    RETURN_NAMES = ("STRING", "replacers")
+    RETURN_NAMES = ("string", "replacers")
     FUNCTION = "execute"
 
 
@@ -44,7 +47,6 @@ Builds a list of replacement pairs in the format [["find", "replace"], ...].
         # замена в строке
         if string.lstrip()!="":
             for replacer in data:
-                print(f"замена в строке: ${replacer}")
                 if len(replacer) >= 2 and replacer[0]:
                     string = string.replace(replacer[0], replacer[1])
 

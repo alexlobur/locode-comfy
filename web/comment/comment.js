@@ -8,8 +8,8 @@ import { CommentData } from "./CommentData.js"
 // Конфиг узла
 const NODE_CFG = {
 	nodeMinSize:	[ 30, 30 ],
-	nodeType:		"Lo:Comment",
-	title: 			"Lo:Comment",
+	nodeType:		"Comment [lo]",
+	title: 			"Comment [lo]",
 	commentDataDefault: new CommentData({
         header:			new TextData({ value: "Comment", color: '#FFFFFF66', font: '600 14px Arial, sans-serif' }),
         text:			new TextData({ value: 'Double click to Edit...', color: '#FFFFFF66', font: '400 10px Arial, sans-serif' }),

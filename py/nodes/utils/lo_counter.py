@@ -1,3 +1,5 @@
+import time
+
 #---
 #
 #   Двух-позиционный счетчик
@@ -10,19 +12,25 @@ class LoCounter:
     CATEGORY = "locode/utils"
     DESCRIPTION = """
 Two-position counter.
-When minor becomes greater than max_minor, it resets to zero, and major is incremented.
+Increments the `minor` value after the node is executed.
+When `minor` becomes greater than `max_minor`, it resets to zero, and `major` is incremented.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return time.time()
+
+
+    @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "major": ("INT", {"default": 0}),
-                "minor": ("INT", {"default": 0}),
-                "max_minor": ("INT", {"min": 0, "default": 5}),
+                "major": ("INT", {"default": 0, "tooltip": "The major value"}),
+                "minor": ("INT", {"default": 0, "tooltip": "The minor value"}),
+                "max_minor": ("INT", {"min": 0, "default": 5, "tooltip": "The maximum minor value"}),
             },
         }
 

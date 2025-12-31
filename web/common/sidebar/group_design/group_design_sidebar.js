@@ -16,6 +16,8 @@ export default class GroupDesignSidebar {
 	}
 	#widgets = []
 
+	#topBar = null
+
 	get selectedGroups(){
 		return this.groups.filter(group => group.selected)
 	}
@@ -105,8 +107,7 @@ export default class GroupDesignSidebar {
 	 *	Сводная информация
 	 */
 	 #refreshInfo(total, selected){
-		this.#element.querySelector(".info")
-			.innerHTML = `selected: ${selected}, total: ${total}`
+		this.#topBar.setInfo(`<span>selected: ${selected},</span><span>total: ${total}</span>`)
 	}
 
 
@@ -129,18 +130,18 @@ export default class GroupDesignSidebar {
 			SidebarComponents.Options({ onChanged: this.#haddleChanges, isGroup: true }),
 		]
 
+		// создание верхней панели
+		this.#topBar = SidebarComponents.TopBar({
+			header: "Groups Design",
+			info: ``,
+			onCollapsePressed: () => this.#toggleCollapse()
+		})
+
+		// создание основного элемента
 		this.#element = createElement("DIV", {
 			classList: ["-section"],
 			content: [
-				// topbar
-				createElement("DIV", {
-					classList: ["--topbar"],
-					content: [
-						SidebarComponents.Header({ title: "Groups Design", onCollapsePressed: () => this.#toggleCollapse() }),
-						'<div class="info"></div>',
-					]
-				}),
-				// content
+				this.#topBar,
 				createElement("DIV", {
 					classList: ["--content"],
 					content: this.#widgets

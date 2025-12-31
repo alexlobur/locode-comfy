@@ -44,9 +44,9 @@ const _SidebarComponents = {
 
 
 	/**
-	 *	Заголовок
+	 *	Верхняя панель
 	 */
-	Header: _HeaderBlock,
+	TopBar: _TopBarBlock,
 
 	/**
      * Блок для выбора цвета
@@ -89,19 +89,32 @@ export const SidebarComponents = Object.freeze(_SidebarComponents)
 
 
 /**
- *	Создание блока для текста
+ *	Создание блока для верхней панели
  *
  *	@param {()=>void} onCollapsePressed - Колбэк для переключения свернутости
  *	@returns {HTMLElement}
  */
- function _HeaderBlock({ title, onCollapsePressed }){
+ function _TopBarBlock({ header='', info='', onCollapsePressed }){
+
+	// создание элемента
 	const element = createElement("DIV", {
-		classList: [ "header" ],
-		content: title,
+		classList: ["--topbar"],
+		content: [
+			`<div class="header">${header}</div>`,
+			`<div class="info">${info}</div>`,
+		],
 		events: {
 			click: (e)=>onCollapsePressed?.()
 		}
 	})
+	// обновление заголовка
+	element.setTitle = function(header){
+		this.querySelector(".header").innerHTML = header ?? ''
+	}
+	// обновление информации
+	element.setInfo = function(info){
+		this.querySelector(".info").innerHTML = info ?? ''
+	}
 	return element
 }
 

@@ -60,11 +60,11 @@ You can redefine the variable name (input label) using the context menu > "Renam
             result_bool = bool(result)
 
             # Печатаем результат
-            print(f"LoEval2: {expression} = {result}")
+            print(f"Evals [lo]: {expression} = {result}")
             return (result_int, result_float, result_bool)
 
         except Exception as e:
-            error_msg = f"LoEval2 Error: {str(e)}"
+            error_msg = f"Evals [lo] Error: {str(e)}"
             print(error_msg)
             raise e
 

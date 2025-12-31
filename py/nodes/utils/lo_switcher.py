@@ -15,6 +15,7 @@ class LoSwitcher:
     DESCRIPTION = """
 Selects a value from a list of values based on the index_seed.
 The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items, then the result index will be 10 % 7 = 3.
+Supports lazy loading: asks ComfyUI to calculate only the required input.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -25,7 +26,7 @@ The index_seed is wrapped using modulo. So if index_seed=10 and list has 7 items
         lazy_opts = {"lazy": True}
         return {
             "required": {
-                "index_seed": ("INT", {"default": 0, "step": 1}),
+                "index_seed": ("INT", {"default": 0, "step": 1, "tooltip": "The index to select the value from the list"}),
             },
             "optional": FlexibleOptionalInputType(any_type, options=lazy_opts),
         }

@@ -9,10 +9,10 @@ from ...utils.anytype import any_type
 class ReplacersApply:
 
     NODE_MAPPINGS = ("LoReplacersApply", "ReplacersApply") # NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
-    CATEGORY = "locode/replacers"
+    CATEGORY = "locode/texts"
     AUTHOR = "LoCode"
     DESCRIPTION = """
-Applying Replacers from Lo:Replacers to a String
+Applying replacers from `Replacers` node to a string.
 """
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -28,7 +28,7 @@ Applying Replacers from Lo:Replacers to a String
         }
 
     RETURN_TYPES = ("STRING", )
-    RETURN_NAMES = ("STRING", )
+    RETURN_NAMES = ("string", )
     FUNCTION = "execute"
 
 
