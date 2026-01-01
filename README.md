@@ -1,14 +1,3 @@
-<style>
-  .category{
-    margin-top: 44px;
-    padding: 6px 10px;
-    background: rgba(127,127,127,0.2);
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-  }
-</style>
-
 <!-- CONTENT -->
 
 <h1 align="center">
@@ -42,7 +31,7 @@ Clone this repo into `custom_nodes` folder.
 
 # **The Nodes**
 
-<div class="category">ui/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">ui/</div>
 
 ## Comment [lo]
 
@@ -89,7 +78,7 @@ A node for creating Markdown documentation as part of your workflow.
 <br/>
 
 
-<div class="category">texts/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">texts/</div>
 
 ## Texts [lo]
 
@@ -208,7 +197,7 @@ Replaces parameters in a string enclosed in curly braces, for example: `Hello, {
 <br/>
 
 
-<div class="category">reroutes/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">reroutes/</div>
 
 
 ## ReRoutes [lo]
@@ -321,7 +310,7 @@ Allows you to pass an array of parameters through a single Link for a cleaner wo
 <br/>
 
 
-<div class="category">utils/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">utils/</div>
 
 ## Counter [lo]
 
@@ -441,7 +430,7 @@ Optional: Plays a `sound` alert when a node completes.
 <br/>
 
 
-<div class="category">lists/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">lists/</div>
 
 ## SetList [lo]
 
@@ -629,7 +618,7 @@ Join List into a string with a `delimiter`, `prefix` and `suffix`.
 <br/>
 
 
-<div class="category">calc/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">calc/</div>
 
 ## Evals [lo]
 
@@ -795,7 +784,7 @@ Checks the input value for `None` while passing through the original value.
 <br/>
 
 
-<div class="category">convert/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">convert/</div>
 
 ## ToInt [lo]
 
@@ -901,7 +890,7 @@ Converts any type to a String.
 <br/>
 
 
-<div class="category">system/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">system/</div>
 
 ## MkDir [lo]
 
@@ -1065,7 +1054,7 @@ Removes a directory and all its contents.
 <br/>
 
 
-<div class="category">params/</div>
+<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">params/</div>
 
 ## SetVideoProps [lo] &rarr; GetVideoProps [lo] <a id="-set-get-video-props"></a>
 
