@@ -2,7 +2,7 @@
 
 <h1 align="center">
     <br> 
-    LoCode Nodes and improvements
+    LoCode nodes and improvements
     <br> 
     for ComfyUI
 </h1>
