@@ -31,7 +31,7 @@ Clone this repo into `custom_nodes` folder.
 
 # **The Nodes**
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">ui/</div>
+>### 🗁 ui/
 
 ## Comment [lo]
 
@@ -78,7 +78,7 @@ A node for creating Markdown documentation as part of your workflow.
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">texts/</div>
+>### 🗁 texts/
 
 ## Texts [lo]
 
@@ -197,8 +197,7 @@ Replaces parameters in a string enclosed in curly braces, for example: `Hello, {
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">reroutes/</div>
-
+>### 🗁 reroutes/
 
 ## ReRoutes [lo]
 
@@ -310,7 +309,7 @@ Allows you to pass an array of parameters through a single Link for a cleaner wo
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">utils/</div>
+>### 🗁 utils/
 
 ## Counter [lo]
 
@@ -430,7 +429,7 @@ Optional: Plays a `sound` alert when a node completes.
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">lists/</div>
+>### 🗁 lists/
 
 ## SetList [lo]
 
@@ -618,7 +617,7 @@ Join List into a string with a `delimiter`, `prefix` and `suffix`.
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">calc/</div>
+>### 🗁 calc/
 
 ## Evals [lo]
 
@@ -784,7 +783,7 @@ Checks the input value for `None` while passing through the original value.
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">convert/</div>
+>### 🗁 convert/
 
 ## ToInt [lo]
 
@@ -890,7 +889,7 @@ Converts any type to a String.
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">system/</div>
+>### 🗁 system/
 
 ## MkDir [lo]
 
@@ -1054,7 +1053,8 @@ Removes a directory and all its contents.
 <br/>
 
 
-<div style="margin-top: 44px; padding: 6px 10px; background: rgba(127,127,127,0.2); border-radius: 12px; font-size: 16px; font-weight: bold;">params/</div>
+>### 🗁 params/
+
 
 ## SetVideoProps [lo] &rarr; GetVideoProps [lo] <a id="-set-get-video-props"></a>
 
