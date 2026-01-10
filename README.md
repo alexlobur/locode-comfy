@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-    <a href="#-the-nodes">Nodes</a> &nbsp; | &nbsp; <a href="#-side-bar">LoCode Side bar</a>
+    <a href="#-the-nodes">Nodes</a> &nbsp; | &nbsp; <a href="#-side-bar">LoCode Sidebar</a>
 </p>
 <hr>
 
