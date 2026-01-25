@@ -70,7 +70,7 @@ Unpacks video parameters from a `LO_VIDEO_PROPS` object.
             },
         }
 
-    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "FLOAT", "FLOAT", "INT", )
+    RETURN_TYPES = ("LO_VIDEO_PROPS", "INT", "INT", "INT", "FLOAT", "INT", )
     RETURN_NAMES = ("video_props", "width", "height", "frames", "fps", "duration", )
     FUNCTION = "execute"
 

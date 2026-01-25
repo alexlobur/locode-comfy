@@ -68,6 +68,26 @@ const NODE_CFG = _CFG.getNode
     }
 
 
+    /**
+     *  Клонирование виджета
+     */
+    clone(){
+        const cloned = super.clone()
+		cloned._onCloned()
+        return cloned
+    }
+
+
+	/**
+     *  После клонирования
+     */
+    _onCloned(){
+        setTimeout(()=>{
+			this.has_errors = false // сброс ошибки, а то чета гонит ComfyUI
+		}, _CFG.applyDelay )
+    }
+
+
 	/**
      *  При удалении узла
      */

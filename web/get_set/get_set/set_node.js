@@ -201,6 +201,10 @@ const NODE_CFG = _CFG.setNode
         const getter = LiteGraph.createNode(_CFG.getNode.type)
         if (!getter) return
 
+        // Установка цвета узла
+        getter.color = this.color
+        getter.bgcolor = this.bgcolor
+
         // ставим рядом с текущим узлом
         getter.pos = [
             this.pos[0] + this.size[0] + _CFG.onCreateGetterOffset[0],
