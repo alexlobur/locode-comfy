@@ -136,3 +136,26 @@ export function watchProperty(object, property, { initialValue=undefined, proper
 export function matchCase(value, cases){
     return cases[value]?.()??null
 }
+
+
+/**
+ *  Переопределение метода
+ * 
+ *  @param {Object} proto - прототип объекта
+ *  @param {string} methodName - имя метода
+ *  @param {Function} before - функция для выполнения перед методом
+ *  @param {Function} after - функция для выполнения после метода
+ *  @returns {void}
+ */
+export function hookMethod(proto, methodName, { before, after } = {}){
+    // если прототип или имя метода не указаны, то выходим
+    if(!proto || !methodName) return
+    const method = proto[methodName]
+    proto[methodName] = function(){
+        before?.apply(this, arguments)
+        const ret = method?.apply(this, arguments)
+        after?.apply(this, arguments)
+        return ret
+    }
+}
+

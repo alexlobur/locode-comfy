@@ -169,6 +169,21 @@ export const LoNodesUtils = {
                 }
             }
         }
+    },
+
+    /**
+     *  Обмен местами двух слотов
+     * 
+     *  @param {LGraphNode} node
+     *  @param {number} slot1
+     *  @param {number} slot2
+     *  @returns {void}
+     */
+    swapSlots: (node, slot1, slot2) => {
+        const tmp = node.inputs[slot1]
+        node.inputs[slot1] = node.inputs[slot2]
+        node.inputs[slot2] = tmp
     }
+
 
 }

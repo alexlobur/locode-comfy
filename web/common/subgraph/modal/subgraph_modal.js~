@@ -1,7 +1,7 @@
 import { app } from "../../../../scripts/app.js"
-import LoCore from "../../.core/lo_core.js"
-import Logger from "../../.core/utils/Logger.js"
-import { createElement, importCss } from "../../.core/utils/dom_utils.js"
+import LoCore from "../../../.core/lo_core.js"
+import Logger from "../../../.core/utils/Logger.js"
+import { createElement, importCss } from "../../../.core/utils/dom_utils.js"
 
 importCss("subgraph_modal.css", import.meta)
 

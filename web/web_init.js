@@ -4,7 +4,7 @@ import { LO_NODES_DEFAULTS, LO_NODES_MIN_WIDTH_OVERRIDES } from "./config.js"
 import { setObjectParams } from "./.core/utils/base_utils.js"
 import { LoNodeComputeSizeOverride } from "./.core/overrides/LoNodeComputeSizeOverride.js"
 import { registerSidebarTab } from "./common/sidebar/sidebar.js"
-import { LoTopMenuButton } from "./common/top_menu/top_menu_button.js"
+// import { LoSubgraphOverrides } from "./common/subgraph/context_menu/subgraph_overrides.js"
 
 
 //---
@@ -36,10 +36,9 @@ app.registerExtension({
 
     // AFTER NODE CREATED
     async nodeCreated(node){
-        // Установка контекстного меню для сабграфов
-        if(node.subgraph) setSubgraphContextMenu(node)
+        // Переопределение сабграфов
+        // LoSubgraphOverrides.setOverrides(node)
     }, 
-
 
     // SETUP
     async setup(app){
@@ -51,7 +50,7 @@ app.registerExtension({
         // Регистрируем вкладку в боковой панели
         registerSidebarTab(app)
 
-        // Добавление кнопки в верхнее меню
+        // TODO: Добавление кнопки в верхнее меню
         // LoTopMenuButton.attach()
     }
 
@@ -92,7 +91,7 @@ function setContextMenu(nodeType){
     const _getExtraMenuOptions = nodeType.prototype.getExtraMenuOptions
     nodeType.prototype.getExtraMenuOptions = function(canvas, menu){
         const ret = _getExtraMenuOptions?.apply(this, arguments)
-        //...
+        // TODO: Пока в разработке
         return ret
     }
 }
@@ -112,42 +111,9 @@ function setSelectionContextMenu(){
 }
 
 
-/**
- * Устанавливает контекстное меню для сабграфов
- * @param {*} node - Сабграф
- */
-function setSubgraphContextMenu(node){
-    if(!node.subgraph) return
-
-    const _getExtraMenuOptions = node.getExtraMenuOptions
-    node.getExtraMenuOptions = function(canvas, menu){
-        const ret = _getExtraMenuOptions?.apply(this, arguments)
-
-        //FIXME: Пока приостанавливаем — в разработке
-
-        // menu.unshift(...[
-        //     {
-        //         content: "Lo: Better Subgraph Edit",
-        //         callback: () => {
-        //             SubgraphModal.show(node)
-        //         },
-        //     },
-        //     null
-        // ])
-        // return ret
-    }
-}
-
-
 
 /*
 Это если понадобится перехватывать регистрацию узлов
-
-const _registerNodeType = LiteGraph.registerNodeType
-LiteGraph.registerNodeType = function(type, baseClass){
-    const ret = _registerNodeType.apply(this, arguments)
-    Logger.debug("registerNodeType", baseClass)
-    return ret
-}
+LiteGraph.registerNodeType = function(type, baseClass){}
 */
 
