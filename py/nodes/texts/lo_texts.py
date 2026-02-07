@@ -70,17 +70,20 @@ So if index_seed=10 and array has 7 items, then the result index will be 10 % 7 
         tabs = data.get("tabs") or []
         active_index = data.get("activeIndex", 0)
 
+        # Список всех текстов
+        textsAll: list[str] = [(t.get("text") or "") for t in tabs]
+
         # Формируем список текстов из вкладок без disabled
-        texts: list[str] = [(t.get("text") or "") for t in tabs if isinstance(t, dict) and not t.get("disabled")]        
+        texts: list[str] = [(t.get("text") or "") for t in tabs if isinstance(t, dict) and not t.get("disabled")]
 
         # Если список пуст — возвращаем пустые значения
         if len(texts) == 0:
             return ("", "", [])
 
         # Безопасные индексы
-        active_index = fit_val(active_index, 0, len(texts) - 1)
+        active_index = fit_val(active_index, 0, len(textsAll) - 1)
         seed_index = index_seed % len(texts)
 
         # Возвращаем: текст активной вкладки, текст по index_seed, список текстов
-        return (texts[active_index], texts[seed_index], texts)
+        return (textsAll[active_index], texts[seed_index], texts)
 
